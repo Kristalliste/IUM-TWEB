@@ -10,3 +10,16 @@ solution/Data/rotten_tomatoes_reviews.csv
 solution/Data/studios.csv
 solution/Data/the_oscar_awards.csv
 solution/Data/themes.csv
+
+solution/Data/DataFinal/actors_v2.csv
+solution/Data/DataFinal/countries_v2.csv
+solution/Data/DataFinal/crew_v2.csv
+solution/Data/DataFinal/genres_v2.csv
+solution/Data/DataFinal/languages_v2.csv
+solution/Data/DataFinal/movies_v2.csv
+solution/Data/DataFinal/posters_v2.csv
+solution/Data/DataFinal/releases_v2.csv
+solution/Data/DataFinal/reviews_v2.csv
+solution/Data/DataFinal/studios_v2.csv
+solution/Data/DataFinal/the_oscar_awards_v2.csv
+solution/Data/DataFinal/themes_v2.csv
