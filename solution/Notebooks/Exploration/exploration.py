@@ -6,7 +6,7 @@ def normalization(reviews_df):
         'F': 1
     }
 
-    # Initialize normalized_score column
+    #Initialize normalized_score column
     reviews_df['normalized_score'] = np.nan
 
     # --- FRACTION FORMAT ---
