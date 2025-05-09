@@ -1,5 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
+import squarify
+
 # --- AnalysisReport ---
 def language_movies_merge(languages_df, movies_df):
     languages_movies_df = pd.merge(
