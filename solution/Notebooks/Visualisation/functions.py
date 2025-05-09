@@ -1,4 +1,5 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 
 def top15_language_trend(movies_df, languages_df):
     languages_movies_df = pd.merge(movies_df[['id','date']], languages_df[['id', 'language']], on='id', how='inner')
@@ -58,3 +59,9 @@ def oscar_reviews_merged(movies_df, oscar_df, reviews_df):
     reviews_merged_df = pd.merge(reviews_df[['movie_title', 'normalized_score']], temp_oscar_df[['film', 'winner']],
                                 left_on='movie_title', right_on='film')
     return reviews_merged_df
+
+#Define the main palette we used in the visualisation file
+def color_palette(df):
+    cmap = plt.colormaps.get_cmap('viridis')
+    colors = [cmap(i / len(df)) for i in range(len(df))]
+    return colors
