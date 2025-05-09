@@ -152,3 +152,106 @@ def plot_most_common_genre_theatrical(releases_df, genres_df):
     # Show the plot
     plt.tight_layout()
     plt.show()
+
+
+def top_studios_lollipop_chart(studios_df):
+    """
+    This function displays a lollipop chart of the top 15 studios that produced the most films.
+    """
+    # Count the number of films produced by each studio
+    studio_counts = studios_df['studio'].value_counts().head(15).sort_values()
+
+    # Create the figure
+    plt.figure(figsize=(12, 8))
+
+    # Define colors using a palette
+    colors = sns.color_palette('viridis', len(studio_counts))
+
+    # Plot the sticks
+    plt.hlines(y=studio_counts.index, xmin=0, xmax=studio_counts.values, color='grey', alpha=0.7, linewidth=2)
+
+    # Plot the lollipops
+    plt.scatter(studio_counts.values, studio_counts.index, color=colors, s=100, zorder=2, edgecolor='black')
+
+    # Title and labels
+    plt.title('Top 15 Studios by Number of Films Produced', fontsize=16, weight='bold', pad=20)
+    plt.xlabel('Number of Films', fontsize=14)
+    plt.ylabel('Studio', fontsize=14)
+
+    # Show the grid for better readability
+    plt.grid(axis='x', linestyle='--', alpha=0.5)
+
+    # Adjust layout to avoid clipping
+    plt.tight_layout()
+    plt.show()
+
+
+def bbc_rating_trend(studios_df, movies_df):
+    """
+    This function creates a line-column chart showing:
+    - The average rating of BBC films by decade (line plot)
+    - The number of films produced by BBC per decade (bar plot)
+    """
+
+    # Filter for BBC-produced films
+    bbc_ids = studios_df[studios_df['studio'].str.contains('BBC', case=False, na=False)]['id']
+    bbc_movies = movies_df[movies_df['id'].isin(bbc_ids)].copy()
+
+    # Ensure date is in datetime format
+    bbc_movies['date'] = pd.to_datetime(bbc_movies['date'], errors='coerce')
+
+    # Remove rows with missing or NaT dates
+    bbc_movies = bbc_movies.dropna(subset=['date'])
+
+    # Extract the release year and decade
+    bbc_movies['year'] = bbc_movies['date'].dt.year
+    bbc_movies['decade'] = (bbc_movies['year'] // 10) * 10
+
+    # Calculate average rating per decade
+    decade_avg_rating = bbc_movies.groupby('decade')['rating'].mean()
+    # Count the number of films per decade
+    decade_count = bbc_movies['decade'].value_counts().sort_index()
+
+    # Plotting
+    fig, ax1 = plt.subplots(figsize=(14, 8))
+
+    # Bar plot - Number of Films
+    bars = ax1.bar(
+        decade_count.index,
+        decade_count.values,
+        color='skyblue',
+        alpha=0.7,
+        label='Number of Films',
+        width=8,
+        zorder=2
+    )
+
+    ax1.set_ylabel('Number of Films', fontsize=14, labelpad=10)
+    ax1.set_xlabel('Decade', fontsize=14, labelpad=10)
+    ax1.set_xticks(decade_count.index)
+    ax1.set_xticklabels(decade_count.index, rotation=45)
+    ax1.grid(alpha=0.3, linestyle='--', zorder=1)
+
+    # Line plot - Average Rating
+    ax2 = ax1.twinx()
+    ax2.plot(
+        decade_avg_rating.index,
+        decade_avg_rating.values,
+        marker='o',
+        linestyle='-',
+        linewidth=2,
+        color='orange',
+        label='Average Rating',
+        zorder=3
+    )
+    ax2.set_ylabel('Average Rating', fontsize=14, labelpad=10)
+    ax2.set_ylim(0, 10)  # Assuming rating scale is 0-10
+
+    # Adding labels to the line chart points
+    for x, y in zip(decade_avg_rating.index, decade_avg_rating.values):
+        ax2.text(x, y + 0.1, f"{y:.2f}", ha='center', fontsize=10, alpha=0.8)
+
+    # Title and layout adjustments
+    plt.title('BBC Film Ratings and Production Count by Decade', fontsize=16, weight='bold', pad=20, loc='left')
+    fig.tight_layout()
+    plt.show()
