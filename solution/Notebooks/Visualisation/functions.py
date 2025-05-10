@@ -6,7 +6,7 @@ import squarify
 # --- AnalysisReport ---
 def language_movies_merge(languages_df, movies_df):
     languages_movies_df = pd.merge(
-        movies_df[['id', 'date']],
+        movies_df[['id', 'name', 'date']],
         languages_df[['id', 'language']],
         on='id',
         how='inner')
@@ -14,7 +14,7 @@ def language_movies_merge(languages_df, movies_df):
 
 def countries_movies_merge(countries_df, movies_df):
     countries_movies_df = pd.merge(
-        movies_df[['id', 'name']],
+        movies_df[['id', 'name', 'date']],
         countries_df[['id', 'country']],
         on='id',
         how='inner')
@@ -32,8 +32,19 @@ def countries_oscar_merge(countries_df, oscar_df):
     # Dropping the entries with null `film` values
     temp_oscar_df = oscar_df.dropna(subset=['film'], how='all')
     countries_wins_merged_df = pd.merge(
-        countries_df[['name', 'country']],
+        countries_df[['name', 'country', 'date']],
         temp_oscar_df[['film','winner']],
+        left_on='name',
+        right_on='film')
+    return countries_wins_merged_df
+
+# We use this when we need the year of the Oscar ceremony, not when the film was made
+def countries_oscar_year_merge(countries_movies_df, oscar_df):
+    # Dropping the entries with null `film` values
+    temp_oscar_df = oscar_df.dropna(subset=['film'], how='all')
+    countries_wins_merged_df = pd.merge(
+        countries_movies_df[['name', 'country']],
+        temp_oscar_df[['film', 'winner', 'year_ceremony']],
         left_on='name',
         right_on='film')
     return countries_wins_merged_df
@@ -60,18 +71,29 @@ def genres_oscar_merge(genres_movies_df, oscar_df):
         right_on='film')
     return genres_merged_df
 
-def nom_win_number(genres_oscar_df):
-    # Count each row as a nomination
-    genres_oscar_df['nominations'] = 1
-    # Count wins
-    genres_oscar_df['wins'] = genres_oscar_df['winner'].astype(int)
-
-    # Group by genre and sum nominations and wins
-    genre_stats_df = genres_oscar_df.groupby('genre').agg(
+def nom_win_number_c(countries_df):
+    # Add a column to count each nomination explicitly
+    countries_df['nominations'] = 1
+    # Add a column that is 1 if the film won, 0 otherwise
+    countries_df['wins'] = countries_df['winner'].astype(int)
+    # Group by genre and aggregate nominations, wins, and win rate
+    count_stats_df = countries_df.groupby('country').agg(
         Nominations=('nominations', 'sum'),
         Wins=('wins', 'sum')
     ).reset_index()
-    return genre_stats_df
+    return count_stats_df
+
+def nom_win_number_g(genres_df):
+    # Add a column to count each nomination explicitly
+    genres_df['nominations'] = 1
+    # Add a column that is 1 if the film won, 0 otherwise
+    genres_df['wins'] = genres_df['winner'].astype(int)
+    # Group by genre and aggregate nominations, wins, and win rate
+    count_stats_df = genres_df.groupby('genre').agg(
+        Nominations=('nominations', 'sum'),
+        Wins=('wins', 'sum')
+    ).reset_index()
+    return count_stats_df
 
 def genres_reviews_merge(genres_df, reviews_df):
     genres_reviews_df = pd.merge(
@@ -112,8 +134,17 @@ def pivot_count_gen(genres_countries_df, reviews_df):
     pivot_df = countries_grouped.pivot(index='country', columns='genre', values='normalized_score')
     return pivot_df
 
-#####FAI PRIMA OSCAR E MOVIES
-def oscar_reviews_merge(movies_df, oscar_df, reviews_df):
+def oscar_movies_merge(movies_df, oscar_df):
+    temp_oscar_df = oscar_df.dropna(subset=['film'])
+    oscar_movies_df = pd.merge(
+        temp_oscar_df[['film', 'winner']],
+        movies_df[['id', 'name','date']],
+        left_on = 'film',
+        right_on = 'name',
+        how = 'inner')
+    return oscar_movies_df
+
+def oscar_reviews_merge(oscar_df, reviews_df):
     temp_oscar_df = oscar_df.dropna(subset=['film'])
     reviews_merged_df = pd.merge(
         reviews_df[['movie_title', 'normalized_score']],
@@ -121,6 +152,38 @@ def oscar_reviews_merge(movies_df, oscar_df, reviews_df):
         left_on='movie_title',
         right_on='film')
     return reviews_merged_df
+
+def map_data_rev(oscar_df, reviews_df):
+    oscar_wins = oscar_df[oscar_df['winner']].groupby('film').size().reset_index(name='wins')
+    oscar_nominations = oscar_df.groupby('film').size().reset_index(name='nominations')
+    review_scores = reviews_df.groupby('movie_title')['normalized_score'].mean().reset_index()
+
+    # Merge datasets
+    merged = pd.merge(oscar_nominations, oscar_wins, on='film', how='left')
+    merged = pd.merge(merged, review_scores, left_on='film', right_on='movie_title', how='outer')
+    merged['wins'] = merged['wins'].fillna(0)
+    merged['nominations'] = merged['nominations'].fillna(0)
+    merged['film'] = merged['film'].fillna(merged['movie_title'])
+
+    # Top selections
+    top_wins = merged.nlargest(10, 'wins')
+    top_scores = merged.nlargest(10, 'normalized_score')
+
+    # Combine and label
+    combined = pd.concat([top_wins, top_scores])
+    combined['Category'] = '🏆 Top 10 Oscar-Winning'
+    combined.loc[combined['film'].isin(top_scores['film']), 'Category'] = '⭐ Top 10 Review-Scored'
+    combined.loc[
+        (combined['film'].isin(top_scores['film'])) &
+        (combined['film'].isin(top_wins['film'])), 'Category'
+    ] = '🏆⭐ Both'
+
+    combined = combined.drop_duplicates(subset='film').copy()
+    combined['film'] = combined['film'].str.title()
+    combined['film_label'] = combined['Category'] + ' - ' + combined['film'] + '\t\t'
+
+    return combined
+
 
 
 
@@ -135,10 +198,9 @@ def color_palette(df):
 # how the change of the languages during the decades
 def top15_language_trend(languages_df):
     top15_languages = languages_df['language'].value_counts().head(15).index
-
     filtered_df = languages_df.loc[languages_df['language'].isin(top15_languages)].copy()
-    filtered_df.loc[:, 'year'] = filtered_df['date'].dt.year
 
+    filtered_df.loc[:, 'year'] = filtered_df['date'].dt.year
     #Group by year and language, count the number of films
     lang_usage = filtered_df.groupby(['year', 'language']).size().reset_index(name='film_count')
     return lang_usage
