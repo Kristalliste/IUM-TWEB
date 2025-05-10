@@ -6,7 +6,7 @@ import squarify
 # --- AnalysisReport ---
 def language_movies_merge(languages_df, movies_df):
     languages_movies_df = pd.merge(
-        movies_df[['id', 'date']],
+        movies_df[['id', 'name', 'date']],
         languages_df[['id', 'language']],
         on='id',
         how='inner')
@@ -14,7 +14,7 @@ def language_movies_merge(languages_df, movies_df):
 
 def countries_movies_merge(countries_df, movies_df):
     countries_movies_df = pd.merge(
-        movies_df[['id', 'name']],
+        movies_df[['id', 'name', 'date']],
         countries_df[['id', 'country']],
         on='id',
         how='inner')
@@ -32,8 +32,19 @@ def countries_oscar_merge(countries_df, oscar_df):
     # Dropping the entries with null `film` values
     temp_oscar_df = oscar_df.dropna(subset=['film'], how='all')
     countries_wins_merged_df = pd.merge(
-        countries_df[['name', 'country']],
+        countries_df[['name', 'country', 'date']],
         temp_oscar_df[['film','winner']],
+        left_on='name',
+        right_on='film')
+    return countries_wins_merged_df
+
+# We use this when we need the year of the Oscar ceremony, not when the film was made
+def countries_oscar_year_merge(countries_movies_df, oscar_df):
+    # Dropping the entries with null `film` values
+    temp_oscar_df = oscar_df.dropna(subset=['film'], how='all')
+    countries_wins_merged_df = pd.merge(
+        countries_movies_df[['name', 'country']],
+        temp_oscar_df[['film', 'winner', 'year_ceremony']],
         left_on='name',
         right_on='film')
     return countries_wins_merged_df
@@ -142,42 +153,36 @@ def oscar_reviews_merge(oscar_df, reviews_df):
         right_on='film')
     return reviews_merged_df
 
-def parallel_data_rev(oscar_reviews_df, reviews_df):
-    # Step 1: Count nominations (every row in oscar_df is a nomination)
-    oscar_reviews_df['nominations'] = 1
+def map_data_rev(oscar_df, reviews_df):
+    oscar_wins = oscar_df[oscar_df['winner']].groupby('film').size().reset_index(name='wins')
+    oscar_nominations = oscar_df.groupby('film').size().reset_index(name='nominations')
+    review_scores = reviews_df.groupby('movie_title')['normalized_score'].mean().reset_index()
 
-    # Step 2: Convert 'winner' column to integer (True = 1, False = 0)
-    oscar_reviews_df['wins'] = oscar_reviews_df['winner'].astype(int)
+    # Merge datasets
+    merged = pd.merge(oscar_nominations, oscar_wins, on='film', how='left')
+    merged = pd.merge(merged, review_scores, left_on='film', right_on='movie_title', how='outer')
+    merged['wins'] = merged['wins'].fillna(0)
+    merged['nominations'] = merged['nominations'].fillna(0)
+    merged['film'] = merged['film'].fillna(merged['movie_title'])
 
-    # Step 3: Group by film to sum nominations and wins
-    film_oscar_stats = oscar_reviews_df.groupby('film').agg(
-        nominations=('nominations', 'sum'),
-        wins=('wins', 'sum')
-    ).reset_index()
+    # Top selections
+    top_wins = merged.nlargest(10, 'wins')
+    top_scores = merged.nlargest(10, 'normalized_score')
 
-    # Step 4: Merge with reviews to get normalized scores
-    film_scores_df = pd.merge(film_oscar_stats, reviews_df, left_on='film', right_on='movie_title', how='inner')
+    # Combine and label
+    combined = pd.concat([top_wins, top_scores])
+    combined['Category'] = '🏆 Top 10 Oscar-Winning'
+    combined.loc[combined['film'].isin(top_scores['film']), 'Category'] = '⭐ Top 10 Review-Scored'
+    combined.loc[
+        (combined['film'].isin(top_scores['film'])) &
+        (combined['film'].isin(top_wins['film'])), 'Category'
+    ] = '🏆⭐ Both'
 
-    # Optional: Keep only top 20 films by number of wins
-    top20 = film_scores_df.sort_values(by='wins', ascending=False).head(20)
-    return top20
+    combined = combined.drop_duplicates(subset='film').copy()
+    combined['film'] = combined['film'].str.title()
+    combined['film_label'] = combined['Category'] + ' - ' + combined['film'] + '\t\t'
 
-############TOGLI
-def map_data_rev(oscar_reviews_df):
-
-    film_win_counts = oscar_reviews_df[oscar_reviews_df['winner'] == True].groupby('film').size().reset_index(name='win_count')
-
-    # Get top 20 most-winning films
-    top_20_films = film_win_counts.sort_values(by='win_count', ascending=False).head(20)
-    # Filter merged data to only those top 20 films
-    top_20_df = oscar_reviews_df[oscar_reviews_df['film'].isin(top_20_films['film'])].copy()
-
-    # Compute average review score and total wins per film
-    heatmap_data = top_20_df.groupby('film').agg({
-        'normalized_score': 'mean',
-        'winner': 'sum'
-    }).reset_index()
-    return heatmap_data
+    return combined
 
 
 
