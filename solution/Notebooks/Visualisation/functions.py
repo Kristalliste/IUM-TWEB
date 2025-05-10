@@ -217,7 +217,7 @@ def plot_most_common_genre_theatrical(releases_df, genres_df):
 
     # Step 4: Create a bar chart for the most common genres
     plt.figure(figsize=(10, 6))
-    genre_counts.plot(kind='bar', color='viridis', edgecolor='black')
+    genre_counts.plot(kind='bar', edgecolor='black')
 
     # Title and labels
     plt.title('Most Common Genres Released in Theatrical', fontsize=16)
