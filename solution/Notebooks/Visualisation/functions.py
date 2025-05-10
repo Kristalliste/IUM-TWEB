@@ -60,18 +60,29 @@ def genres_oscar_merge(genres_movies_df, oscar_df):
         right_on='film')
     return genres_merged_df
 
-def nom_win_number(genres_oscar_df):
-    # Count each row as a nomination
-    genres_oscar_df['nominations'] = 1
-    # Count wins
-    genres_oscar_df['wins'] = genres_oscar_df['winner'].astype(int)
-
-    # Group by genre and sum nominations and wins
-    genre_stats_df = genres_oscar_df.groupby('genre').agg(
+def nom_win_number_c(countries_df):
+    # Add a column to count each nomination explicitly
+    countries_df['nominations'] = 1
+    # Add a column that is 1 if the film won, 0 otherwise
+    countries_df['wins'] = countries_df['winner'].astype(int)
+    # Group by genre and aggregate nominations, wins, and win rate
+    count_stats_df = countries_df.groupby('country').agg(
         Nominations=('nominations', 'sum'),
         Wins=('wins', 'sum')
     ).reset_index()
-    return genre_stats_df
+    return count_stats_df
+
+def nom_win_number_g(genres_df):
+    # Add a column to count each nomination explicitly
+    genres_df['nominations'] = 1
+    # Add a column that is 1 if the film won, 0 otherwise
+    genres_df['wins'] = genres_df['winner'].astype(int)
+    # Group by genre and aggregate nominations, wins, and win rate
+    count_stats_df = genres_df.groupby('genre').agg(
+        Nominations=('nominations', 'sum'),
+        Wins=('wins', 'sum')
+    ).reset_index()
+    return count_stats_df
 
 def genres_reviews_merge(genres_df, reviews_df):
     genres_reviews_df = pd.merge(
@@ -112,8 +123,17 @@ def pivot_count_gen(genres_countries_df, reviews_df):
     pivot_df = countries_grouped.pivot(index='country', columns='genre', values='normalized_score')
     return pivot_df
 
-#####FAI PRIMA OSCAR E MOVIES
-def oscar_reviews_merge(movies_df, oscar_df, reviews_df):
+def oscar_movies_merge(movies_df, oscar_df):
+    temp_oscar_df = oscar_df.dropna(subset=['film'])
+    oscar_movies_df = pd.merge(
+        temp_oscar_df[['film', 'winner']],
+        movies_df[['id', 'name','date']],
+        left_on = 'film',
+        right_on = 'name',
+        how = 'inner')
+    return oscar_movies_df
+
+def oscar_reviews_merge(oscar_df, reviews_df):
     temp_oscar_df = oscar_df.dropna(subset=['film'])
     reviews_merged_df = pd.merge(
         reviews_df[['movie_title', 'normalized_score']],
@@ -121,6 +141,44 @@ def oscar_reviews_merge(movies_df, oscar_df, reviews_df):
         left_on='movie_title',
         right_on='film')
     return reviews_merged_df
+
+def parallel_data_rev(oscar_reviews_df, reviews_df):
+    # Step 1: Count nominations (every row in oscar_df is a nomination)
+    oscar_reviews_df['nominations'] = 1
+
+    # Step 2: Convert 'winner' column to integer (True = 1, False = 0)
+    oscar_reviews_df['wins'] = oscar_reviews_df['winner'].astype(int)
+
+    # Step 3: Group by film to sum nominations and wins
+    film_oscar_stats = oscar_reviews_df.groupby('film').agg(
+        nominations=('nominations', 'sum'),
+        wins=('wins', 'sum')
+    ).reset_index()
+
+    # Step 4: Merge with reviews to get normalized scores
+    film_scores_df = pd.merge(film_oscar_stats, reviews_df, left_on='film', right_on='movie_title', how='inner')
+
+    # Optional: Keep only top 20 films by number of wins
+    top20 = film_scores_df.sort_values(by='wins', ascending=False).head(20)
+    return top20
+
+############TOGLI
+def map_data_rev(oscar_reviews_df):
+
+    film_win_counts = oscar_reviews_df[oscar_reviews_df['winner'] == True].groupby('film').size().reset_index(name='win_count')
+
+    # Get top 20 most-winning films
+    top_20_films = film_win_counts.sort_values(by='win_count', ascending=False).head(20)
+    # Filter merged data to only those top 20 films
+    top_20_df = oscar_reviews_df[oscar_reviews_df['film'].isin(top_20_films['film'])].copy()
+
+    # Compute average review score and total wins per film
+    heatmap_data = top_20_df.groupby('film').agg({
+        'normalized_score': 'mean',
+        'winner': 'sum'
+    }).reset_index()
+    return heatmap_data
+
 
 
 
@@ -135,10 +193,9 @@ def color_palette(df):
 # how the change of the languages during the decades
 def top15_language_trend(languages_df):
     top15_languages = languages_df['language'].value_counts().head(15).index
-
     filtered_df = languages_df.loc[languages_df['language'].isin(top15_languages)].copy()
-    filtered_df.loc[:, 'year'] = filtered_df['date'].dt.year
 
+    filtered_df.loc[:, 'year'] = filtered_df['date'].dt.year
     #Group by year and language, count the number of films
     lang_usage = filtered_df.groupby(['year', 'language']).size().reset_index(name='film_count')
     return lang_usage
