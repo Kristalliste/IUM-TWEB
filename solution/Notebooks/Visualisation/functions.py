@@ -131,7 +131,8 @@ def color_palette(df):
     colors = [cmap(i / len(df)) for i in range(len(df))]
     return colors
 
-
+# Count the first 15 languages for number of films and then see
+# how the change of the languages during the decades
 def top15_language_trend(languages_df):
     top15_languages = languages_df['language'].value_counts().head(15).index
 
