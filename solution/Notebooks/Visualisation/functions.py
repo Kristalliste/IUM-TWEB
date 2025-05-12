@@ -205,6 +205,62 @@ def top15_language_trend(languages_df):
     lang_usage = filtered_df.groupby(['year', 'language']).size().reset_index(name='film_count')
     return lang_usage
 
+def top15_director(crew_df):
+    # Filter for the role 'Director'
+    directors_df = crew_df[crew_df['role'].str.lower() == 'director']
+
+    # Count the number of films for every director (Top 15)
+    director_counts = directors_df['name'].value_counts().head(15)
+
+    # Colors
+    colors = sns.color_palette('viridis', len(director_counts))
+
+    # Create chart
+    plt.figure(figsize=(10, 8))
+
+    # Vertical lines
+    plt.vlines(
+        x=director_counts.index,
+        ymin=0,
+        ymax=director_counts.values,
+        color=colors,
+        linewidth=2,
+        alpha=0.7
+    )
+
+    # Marker
+    plt.scatter(
+        x=director_counts.index,
+        y=director_counts.values,
+        color=colors,
+        s=100,
+        zorder=3
+    )
+    # Spacing between dots and values
+    spacing = 10  # Adjust this value to increase/decrease spacing
+
+    # Adding the labels on the marker
+    for i, value in enumerate(director_counts.values):
+        plt.text(
+            i,
+            value + spacing,
+            f'{value}',
+            ha='center',
+            va='bottom',
+            fontsize=10,
+            fontweight='bold'
+        )
+
+    # Titles and labels
+    plt.title('Top 15 Directors by Number of Films', fontsize=16, weight='bold', pad=20)
+    plt.xlabel('Director', fontsize=14)
+    plt.ylabel('Number of Films', fontsize=14)
+    plt.xticks(rotation=45, ha='right', fontsize=12)
+    plt.grid(axis='y', linestyle='--', alpha=0.5)
+
+    plt.tight_layout()
+    plt.show()
+
 def movie_rating_century(movies_df, after_2000=True):
     """
         This function creates a treemap that shows the distribution of film ratings
@@ -261,7 +317,6 @@ def movie_rating_century(movies_df, after_2000=True):
     plt.axis('off')
     plt.tight_layout()
     plt.show()
-
 
 def plot_most_common_genre_theatrical(releases_df, genres_df):
     """
