@@ -134,25 +134,6 @@ def pivot_count_gen(genres_countries_df, reviews_df):
     pivot_df = countries_grouped.pivot(index='country', columns='genre', values='normalized_score')
     return pivot_df
 
-def oscar_movies_merge(movies_df, oscar_df):
-    temp_oscar_df = oscar_df.dropna(subset=['film'])
-    oscar_movies_df = pd.merge(
-        temp_oscar_df[['film', 'winner']],
-        movies_df[['id', 'name','date']],
-        left_on = 'film',
-        right_on = 'name',
-        how = 'inner')
-    return oscar_movies_df
-
-def oscar_reviews_merge(oscar_df, reviews_df):
-    temp_oscar_df = oscar_df.dropna(subset=['film'])
-    reviews_merged_df = pd.merge(
-        reviews_df[['movie_title', 'normalized_score']],
-        temp_oscar_df[['film', 'winner']],
-        left_on='movie_title',
-        right_on='film')
-    return reviews_merged_df
-
 def map_data_rev(oscar_df, reviews_df):
     oscar_wins = oscar_df[oscar_df['winner']].groupby('film').size().reset_index(name='wins')
     oscar_nominations = oscar_df.groupby('film').size().reset_index(name='nominations')
@@ -183,6 +164,33 @@ def map_data_rev(oscar_df, reviews_df):
     combined['film_label'] = combined['Category'] + ' - ' + combined['film'] + '\t\t'
 
     return combined
+
+def reviews_movies_merge(movies_df, reviews_df):
+    movies_df = movies_df.copy()
+    movies_df['minute'] = pd.to_numeric(movies_df['minute'], errors='coerce')
+    movies_df = movies_df[movies_df['minute'] <= 800]  # Remove long-duration films
+
+    merged_df = pd.merge(
+        reviews_df,
+        movies_df[['name', 'minute']],
+        left_on='movie_title',
+        right_on='name',
+        how='inner'
+    )
+
+    # Step 4: Group by movie
+    duration_grouped = merged_df.groupby('movie_title').agg(
+        avg_score=('normalized_score', 'mean'),
+        review_count=('normalized_score', 'count'),
+        duration=('minute', 'first'),  # Keep original duration
+        original_title=('movie_title', 'first')
+    ).reset_index()
+    # We will only work with films with >10 reviews
+    duration_grouped = duration_grouped[duration_grouped['review_count'] >= 10]
+    # Capitalize movie titles for display
+    duration_grouped['original_title'] = duration_grouped['original_title'].str.title()
+    return duration_grouped
+
 
 
 
