@@ -345,7 +345,6 @@ def plot_most_common_genre_theatrical(releases_df, genres_df):
     plt.tight_layout()
     plt.show()
 
-
 def top_studios_lollipop_chart(studios_df):
     """
     This function displays a lollipop chart of the top 15 studios that produced the most films.
@@ -376,7 +375,6 @@ def top_studios_lollipop_chart(studios_df):
     # Adjust layout to avoid clipping
     plt.tight_layout()
     plt.show()
-
 
 def bbc_rating_trend(studios_df, movies_df):
     """
