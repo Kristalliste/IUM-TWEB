@@ -282,9 +282,9 @@ def movie_rating_century(movies_df, after_2000=True):
 
     # Filter for films based on 'after_2000'
     if after_2000:
-        df_filtered = movies_df[movies_df['year_int'] > 2000].copy()
+        df_filtered = movies_df[movies_df['year_int'] >= 2000].copy()
     else:
-        df_filtered = movies_df[movies_df['year_int'] <= 2000].copy()
+        df_filtered = movies_df[movies_df['year_int'] < 2000].copy()
 
     # Gestione dei NaN e inf
     df_filtered.loc[:, 'rating'] = pd.to_numeric(df_filtered['rating'], errors='coerce')
@@ -306,7 +306,7 @@ def movie_rating_century(movies_df, after_2000=True):
               for rating, count in zip(rating_counts.index, rating_counts.values)]
 
     # Creazione della treemap
-    plt.figure(figsize=(8, 8))
+    plt.figure(figsize=(6, 6))
     squarify.plot(
         sizes=rating_counts.values,
         label=labels,
@@ -318,9 +318,9 @@ def movie_rating_century(movies_df, after_2000=True):
 
     # Titolo dinamico in base al periodo selezionato
     if after_2000:
-        plt.title('Distribuzione delle valutazioni dei film (Dopo il 2000)', fontsize=16, weight='bold')
+        plt.title('Rating Distribution After 2000', fontsize=16, weight='bold')
     else:
-        plt.title('Distribuzione delle valutazioni dei film (Prima del 2000)', fontsize=16, weight='bold')
+        plt.title('Rating Distribution Before 2000', fontsize=16, weight='bold')
 
     plt.axis('off')
     plt.tight_layout()
