@@ -165,7 +165,7 @@ def map_data_rev(oscar_df, reviews_df):
 
     return combined
 
-def reviews_movies_merge(movies_df, reviews_df):
+def duration_merge(movies_df, reviews_df):
     movies_df = movies_df.copy()
     movies_df['minute'] = pd.to_numeric(movies_df['minute'], errors='coerce')
     movies_df = movies_df[movies_df['minute'] <= 800]  # Remove long-duration films
@@ -178,19 +178,36 @@ def reviews_movies_merge(movies_df, reviews_df):
         how='inner'
     )
 
-    # Step 4: Group by movie
+    # Group by movie
     duration_grouped = merged_df.groupby('movie_title').agg(
         avg_score=('normalized_score', 'mean'),
         review_count=('normalized_score', 'count'),
         duration=('minute', 'first'),  # Keep original duration
         original_title=('movie_title', 'first')
     ).reset_index()
+
     # We will only work with films with >10 reviews
     duration_grouped = duration_grouped[duration_grouped['review_count'] >= 10]
     # Capitalize movie titles for display
     duration_grouped['original_title'] = duration_grouped['original_title'].str.title()
     return duration_grouped
 
+def reviews_movies_merge(movies_df, reviews_df):
+    movies_df = movies_df.dropna(subset=['date', 'rating', 'minute'])
+    merged_df = pd.merge(
+        reviews_df,
+        movies_df[['name', 'minute', 'date']],
+        left_on='movie_title',
+        right_on='name',
+        how='inner'
+    )
+    #  Grouping by year and calculating means
+    agg_time_df = merged_df.groupby('date').agg({
+        'normalized_score': 'mean',
+        'minute': 'mean'
+    }).reset_index()
+
+    return agg_time_df
 
 
 
@@ -269,60 +286,52 @@ def top15_director(crew_df):
     plt.tight_layout()
     plt.show()
 
-def movie_rating_century(movies_df, after_2000=True):
+
+def movie_rating_century(movies_df):
     """
-        This function creates a treemap that shows the distribution of film ratings
-        based on the films released before or after the year 2000.
-        If 'after_2000' is True, it counts films released after 2000,
-        if False, it counts films released before 2000.
+    This function creates a treemap that shows the distribution of film ratings
+    based on the films released before and after the year 2000.
     """
+    fig, axes = plt.subplots(1, 2, figsize=(14, 7))
 
-    # Extract the year as an integer
-    movies_df['year_int'] = movies_df['date'].dt.year
+    # Before 2000
+    df_before = movies_df[movies_df['date'].dt.year < 2000].copy()
+    df_before.loc[:, 'rating'] = pd.to_numeric(df_before['rating'], errors='coerce')
+    df_before = df_before.dropna(subset=['rating'])
+    df_before['rating_rounded'] = df_before['rating'].round().astype(int)
 
-    # Filter for films based on 'after_2000'
-    if after_2000:
-        df_filtered = movies_df[movies_df['year_int'] >= 2000].copy()
-    else:
-        df_filtered = movies_df[movies_df['year_int'] < 2000].copy()
+    rating_counts_before = df_before['rating_rounded'].value_counts().sort_index()
+    colors_before = sns.color_palette('viridis', len(rating_counts_before))
 
-    # Gestione dei NaN e inf
-    df_filtered.loc[:, 'rating'] = pd.to_numeric(df_filtered['rating'], errors='coerce')
+    labels_before = [f"{rating}\n{count} films\n{count / rating_counts_before.sum() * 100:.1f}%"
+                     for rating, count in zip(rating_counts_before.index, rating_counts_before.values)]
 
-    # Rimuovi eventuali NaN
-    df_filtered = df_filtered.dropna(subset=['rating'])
-
-    # Round ratings to the nearest integer for binning
-    df_filtered['rating_rounded'] = df_filtered['rating'].round().astype(int)
-
-    # Count the number of films per rating
-    rating_counts = df_filtered['rating_rounded'].value_counts().sort_index()
-
-    # Colori distinti per ogni fetta
-    colors = sns.color_palette('viridis', len(rating_counts))
-
-    # Crea le etichette con le percentuali
-    labels = [f"{rating}\n{count} films\n{count / rating_counts.sum() * 100:.1f}%"
-              for rating, count in zip(rating_counts.index, rating_counts.values)]
-
-    # Creazione della treemap
-    plt.figure(figsize=(6, 6))
-    squarify.plot(
-        sizes=rating_counts.values,
-        label=labels,
-        color=colors,
-        alpha=0.8,
-        pad=True,
-        text_kwargs={'fontsize': 12, 'weight': 'bold', 'color': 'black'}
+    squarify.plot(sizes=rating_counts_before.values,label=labels_before, color=colors_before, alpha=0.8,
+                  pad=True, text_kwargs={'fontsize': 12, 'weight': 'bold', 'color': 'black'}, ax=axes[0]
     )
 
-    # Titolo dinamico in base al periodo selezionato
-    if after_2000:
-        plt.title('Rating Distribution After 2000', fontsize=16, weight='bold')
-    else:
-        plt.title('Rating Distribution Before 2000', fontsize=16, weight='bold')
+    axes[0].set_title('Rating Distribution Before 2000', fontsize=16, weight='bold')
+    axes[0].axis('off')
 
-    plt.axis('off')
+    # After 2000
+    df_after = movies_df[movies_df['date'].dt.year >= 2000].copy()
+    df_after.loc[:, 'rating'] = pd.to_numeric(df_after['rating'], errors='coerce')
+    df_after = df_after.dropna(subset=['rating'])
+    df_after['rating_rounded'] = df_after['rating'].round().astype(int)
+
+    rating_counts_after = df_after['rating_rounded'].value_counts().sort_index()
+    colors_after = sns.color_palette('viridis', len(rating_counts_after))
+
+    labels_after = [f"{rating}\n{count} films\n{count / rating_counts_after.sum() * 100:.1f}%"
+                    for rating, count in zip(rating_counts_after.index, rating_counts_after.values)]
+
+    squarify.plot(
+        sizes=rating_counts_after.values, label=labels_after, color=colors_after, alpha=0.8,
+        pad=True, text_kwargs={'fontsize': 12, 'weight': 'bold', 'color': 'black'}, ax=axes[1]
+    )
+
+    axes[1].set_title('Rating Distribution After 2000', fontsize=16, weight='bold')
+    axes[1].axis('off')
     plt.tight_layout()
     plt.show()
 
@@ -330,26 +339,18 @@ def plot_most_common_genre_theatrical(releases_df, genres_df):
     """
     This function creates a chart that shows the most common genres released in 'Theatrical' release type.
     """
-
-    # Step 1: Filter releases for 'Theatrical' type
     theatrical_releases = releases_df[releases_df['type'] == 'Theatrical']
-
-    # Step 2: Merge releases_df with genres_df to get genres for theatrical films
     merged_df = pd.merge(theatrical_releases, genres_df, on='id', how='inner')
 
-    # Step 3: Count the occurrences of each genre
     genre_counts = merged_df['genre'].value_counts()
 
-    # Step 4: Create a bar chart for the most common genres
     plt.figure(figsize=(10, 6))
     genre_counts.plot(kind='bar', edgecolor='black')
 
-    # Title and labels
     plt.title('Most Common Genres Released in Theatrical', fontsize=16)
     plt.xlabel('Genre', fontsize=14)
     plt.ylabel('Number of Films', fontsize=14)
 
-    # Show the plot
     plt.tight_layout()
     plt.show()
 
@@ -360,27 +361,18 @@ def top_studios_lollipop_chart(studios_df):
     # Count the number of films produced by each studio
     studio_counts = studios_df['studio'].value_counts().head(15).sort_values()
 
-    # Create the figure
     plt.figure(figsize=(12, 8))
-
-    # Define colors using a palette
     colors = sns.color_palette('viridis', len(studio_counts))
-
-    # Plot the sticks
     plt.hlines(y=studio_counts.index, xmin=0, xmax=studio_counts.values, color='grey', alpha=0.7, linewidth=2)
 
-    # Plot the lollipops
+    # Lollipop plot
     plt.scatter(studio_counts.values, studio_counts.index, color=colors, s=100, zorder=2, edgecolor='black')
 
-    # Title and labels
     plt.title('Top 15 Studios by Number of Films Produced', fontsize=16, weight='bold', pad=20)
     plt.xlabel('Number of Films', fontsize=14)
     plt.ylabel('Studio', fontsize=14)
-
-    # Show the grid for better readability
     plt.grid(axis='x', linestyle='--', alpha=0.5)
 
-    # Adjust layout to avoid clipping
     plt.tight_layout()
     plt.show()
 
@@ -443,13 +435,11 @@ def bbc_rating_trend(studios_df, movies_df):
         zorder=3
     )
     ax2.set_ylabel('Average Rating', fontsize=14, labelpad=10)
-    ax2.set_ylim(0, 10)  # Assuming rating scale is 0-10
+    ax2.set_ylim(0, 10)
 
-    # Adding labels to the line chart points
     for x, y in zip(decade_avg_rating.index, decade_avg_rating.values):
         ax2.text(x, y + 0.1, f"{y:.2f}", ha='center', fontsize=10, alpha=0.8)
 
-    # Title and layout adjustments
     plt.title('BBC Film Ratings and Production Count by Decade', fontsize=16, weight='bold', pad=20, loc='left')
     fig.tight_layout()
     plt.show()
