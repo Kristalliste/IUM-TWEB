@@ -165,7 +165,7 @@ def map_data_rev(oscar_df, reviews_df):
 
     return combined
 
-def reviews_movies_merge(movies_df, reviews_df):
+def duration_merge(movies_df, reviews_df):
     movies_df = movies_df.copy()
     movies_df['minute'] = pd.to_numeric(movies_df['minute'], errors='coerce')
     movies_df = movies_df[movies_df['minute'] <= 800]  # Remove long-duration films
@@ -178,19 +178,36 @@ def reviews_movies_merge(movies_df, reviews_df):
         how='inner'
     )
 
-    # Step 4: Group by movie
+    # Group by movie
     duration_grouped = merged_df.groupby('movie_title').agg(
         avg_score=('normalized_score', 'mean'),
         review_count=('normalized_score', 'count'),
         duration=('minute', 'first'),  # Keep original duration
         original_title=('movie_title', 'first')
     ).reset_index()
+
     # We will only work with films with >10 reviews
     duration_grouped = duration_grouped[duration_grouped['review_count'] >= 10]
     # Capitalize movie titles for display
     duration_grouped['original_title'] = duration_grouped['original_title'].str.title()
     return duration_grouped
 
+def reviews_movies_merge(movies_df, reviews_df):
+    movies_df = movies_df.dropna(subset=['date', 'rating', 'minute'])
+    merged_df = pd.merge(
+        reviews_df,
+        movies_df[['name', 'minute', 'date']],
+        left_on='movie_title',
+        right_on='name',
+        how='inner'
+    )
+    #  Grouping by year and calculating means
+    agg_time_df = merged_df.groupby('date').agg({
+        'normalized_score': 'mean',
+        'minute': 'mean'
+    }).reset_index()
+
+    return agg_time_df
 
 
 
