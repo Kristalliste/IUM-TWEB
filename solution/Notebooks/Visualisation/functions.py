@@ -1,5 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import plotly.express as px
 import seaborn as sns
 import squarify
 
@@ -151,19 +153,51 @@ def map_data_rev(oscar_df, reviews_df):
     top_scores = merged.nlargest(10, 'normalized_score')
 
     # Combine and label
-    combined = pd.concat([top_wins, top_scores])
-    combined['Category'] = '🏆 Top 10 Oscar-Winning'
-    combined.loc[combined['film'].isin(top_scores['film']), 'Category'] = '⭐ Top 10 Review-Scored'
-    combined.loc[
-        (combined['film'].isin(top_scores['film'])) &
-        (combined['film'].isin(top_wins['film'])), 'Category'
+    map_data_df = pd.concat([top_wins, top_scores])
+    map_data_df['Category'] = '🏆 Top 10 Oscar-Winning'
+    map_data_df.loc[map_data_df['film'].isin(top_scores['film']), 'Category'] = '⭐ Top 10 Review-Scored'
+    map_data_df.loc[
+        (map_data_df['film'].isin(top_scores['film'])) &
+        (map_data_df['film'].isin(top_wins['film'])), 'Category'
     ] = '🏆⭐ Both'
 
-    combined = combined.drop_duplicates(subset='film').copy()
-    combined['film'] = combined['film'].str.title()
-    combined['film_label'] = combined['Category'] + ' - ' + combined['film'] + '\t\t'
+    map_data_df = map_data_df.drop_duplicates(subset='film').copy()
+    map_data_df['film'] = map_data_df['film'].str.title()
+    map_data_df['film_label'] = map_data_df['Category'] + ' - ' + map_data_df['film'] + '\t\t'
 
-    return combined
+    # Prepare heatmap data
+    z_nominations = map_data_df[['nominations']].values
+    z_wins = map_data_df[['wins']].values
+    z_scores = map_data_df[['normalized_score']].values
+    y_labels = map_data_df['film_label'].tolist()
+
+    # 3 Heatmaps
+    fig = go.Figure()
+    # Nominations heatmap
+    fig.add_trace(go.Heatmap(z=z_nominations, x=['Nominations'], y=y_labels, text=z_nominations.astype(str),
+                             texttemplate="%{text}", colorscale='Viridis',
+                             colorbar=dict(title='Oscar Nominations', len=0.3, y=0.85), hoverinfo='skip'))
+
+    # Wins heatmap
+    fig.add_trace(go.Heatmap(z=z_wins, x=['Oscar Wins'], y=y_labels, text=z_wins.astype(str), texttemplate="%{text}",
+                             colorscale='Viridis', colorbar=dict(title='Wins', len=0.3, y=0.5), xaxis='x2', yaxis='y2',
+                             hoverinfo='skip'))
+
+    # Review scores heatmap
+    fig.add_trace(go.Heatmap(z=z_scores, x=['Review Score'], y=y_labels, text=z_scores.round(2).astype(str),
+                             texttemplate="%{text}", colorscale='Viridis',
+                             colorbar=dict(title='Review Score', len=0.3, y=0.15), xaxis='x3', yaxis='y3',
+                             hoverinfo='skip'))
+
+    fig.update_layout(xaxis=dict(domain=[0, 0.25]), yaxis=dict(domain=[0, 1], showticklabels=True),
+                      xaxis2=dict(domain=[0.35, 0.6]), yaxis2=dict(domain=[0, 1], showticklabels=False),
+                      xaxis3=dict(domain=[0.7, 0.95]), yaxis3=dict(domain=[0, 1], showticklabels=False),
+                      height=800,
+                      width=1150,
+                      title='Heatmaps of Nominations, Wins, and Review Scores for Top Films',
+                      margin=dict(l=200)
+                      )
+    fig.show()
 
 def duration_merge(movies_df, reviews_df):
     movies_df = movies_df.copy()
@@ -209,15 +243,99 @@ def reviews_movies_merge(movies_df, reviews_df):
 
     return agg_time_df
 
+def genres_reviews_violin(genres_reviews_df):
+    unique_genres = sorted(genres_reviews_df['genre'].dropna().unique())
+    first_half = unique_genres[:9]
+    second_half = unique_genres[9:]
+    plot_df1 = genres_reviews_df[genres_reviews_df['genre'].isin(first_half)]
+    plot_df2 = genres_reviews_df[genres_reviews_df['genre'].isin(second_half)]
 
+    fig, axes = plt.subplots(2, 1, figsize=(12, 12))
+    # First plot (First 9 genres) on the first axis (axes[0])
+    sns.violinplot(
+        x='genre',
+        y='normalized_score',
+        data=plot_df1,
+        inner='quart',
+        hue='genre',
+        palette='cubehelix',
+        ax=axes[0]
+    )
+    axes[0].set_title('Rotten Tomatoes Scores by Genre (1–9)', fontsize=14)
+    axes[0].set_xlabel('Genre', fontsize=12)
+    axes[0].set_ylabel('Normalized Score (out of 10)', fontsize=12)
+    axes[0].tick_params(axis='x', rotation=45)
 
+    # Second plot (Next 9 genres) on the second axis (axes[1])
+    sns.violinplot(
+        x='genre',
+        y='normalized_score',
+        data=plot_df2,
+        inner='quart',
+        hue='genre',
+        palette='cubehelix',
+        ax=axes[1]
+    )
+    axes[1].set_title('Rotten Tomatoes Scores by Genre (10–18)', fontsize=14)
+    axes[1].set_xlabel('Genre', fontsize=12)
+    axes[1].set_ylabel('Normalized Score (out of 10)', fontsize=12)
+    axes[1].tick_params(axis='x', rotation=45)
 
-# --- Visualisation ---
-#Define the main palette we used in the visualisation file
-def color_palette(df):
-    cmap = plt.colormaps.get_cmap('viridis')
-    colors = [cmap(i / len(df)) for i in range(len(df))]
-    return colors
+    plt.tight_layout()
+    plt.show()
+
+def genres_reviews_bar(genres_reviews_df):
+    genre_avg_scores = genres_reviews_df.groupby('genre')['normalized_score'].mean().sort_values(ascending=False)
+
+    # Bar plot
+    plt.figure(figsize=(10, 6))
+    sns.barplot(
+        x=genre_avg_scores.index,
+        y=genre_avg_scores.values,
+        hue=genre_avg_scores.index,
+        palette='viridis'
+    )
+
+    plt.title('Average Rotten Tomatoes Score by Genre', fontsize=16)
+    plt.xlabel('Genre', fontsize=12)
+    plt.ylabel('Average Score (out of 10)', fontsize=12)
+    plt.xticks(rotation=45)
+    plt.ylim(0, 10)
+    plt.tight_layout()
+    plt.show()
+
+def avg_score_genres(genres_reviews_df):
+    temp_gen_rev_df = genres_reviews_df
+    # Extract year from date
+    temp_gen_rev_df['year'] = genres_reviews_df['date'].dt.year
+
+    genres_grouped_df = (
+        temp_gen_rev_df
+        .groupby(['year', 'genre'])['normalized_score']
+        .mean()
+        .reset_index())
+
+    fig = px.line(
+        genres_grouped_df,
+        x='year',
+        y='normalized_score',
+        color='genre',
+        title="Average Rotten Tomatoes Score by Genre Over Time",
+        labels={
+            'normalized_score': 'Average Score',
+            'year': 'Year',
+            'genre': 'Genre'},
+        markers=True
+    )
+
+    fig.update_traces(line=dict(width=1))  # thinner lines
+    fig.update_layout(
+        height=500,
+        title_font=dict(size=20),
+        legend_title_text='Genre',
+        yaxis=dict(range=[1, 10])
+    )
+    fig.show()
 
 # Count the first 15 languages for number of films and then see
 # how the change of the languages during the decades
@@ -229,6 +347,16 @@ def top15_language_trend(languages_df):
     #Group by year and language, count the number of films
     lang_usage = filtered_df.groupby(['year', 'language']).size().reset_index(name='film_count')
     return lang_usage
+
+
+
+
+# --- Visualisation ---
+#Define the main palette we used in the visualisation file
+def color_palette(df):
+    cmap = plt.colormaps.get_cmap('viridis')
+    colors = [cmap(i / len(df)) for i in range(len(df))]
+    return colors
 
 def top15_director(crew_df):
     # Filter for the role 'Director'
