@@ -114,6 +114,15 @@ def genres_countries_merge(genres_movies_df, countries_df):
         how='inner')
     return genres_countries_df
 
+def languages_reviews_merge(lang_movies_df, reviews_df):
+    languages_reviews_df = pd.merge(
+        lang_movies_df,
+        reviews_df[['movie_title', 'normalized_score']],
+        left_on='name',
+        right_on='movie_title',
+        how='inner')
+    return languages_reviews_df
+
 def pivot_count_gen(genres_countries_df, reviews_df):
     # Selecting only the top 20 countries by number of films
     top_20_countries = genres_countries_df['country'].value_counts().nlargest(20).index
@@ -180,7 +189,7 @@ def map_data_rev(oscar_df, reviews_df):
 
     # Wins heatmap
     fig.add_trace(go.Heatmap(z=z_wins, x=['Oscar Wins'], y=y_labels, text=z_wins.astype(str), texttemplate="%{text}",
-                             colorscale='Viridis', colorbar=dict(title='Wins', len=0.3, y=0.5), xaxis='x2', yaxis='y2',
+                             colorscale='Viridis', colorbar=dict(title='Oscar Wins', len=0.3, y=0.5), xaxis='x2', yaxis='y2',
                              hoverinfo='skip'))
 
     # Review scores heatmap
@@ -337,16 +346,32 @@ def avg_score_genres(genres_reviews_df):
     )
     fig.show()
 
-# Count the first 15 languages for number of films and then see
-# how the change of the languages during the decades
-def top15_language_trend(languages_df):
-    top15_languages = languages_df['language'].value_counts().head(15).index
-    filtered_df = languages_df.loc[languages_df['language'].isin(top15_languages)].copy()
+def top_language_trend(languages_df, movies_df, reviews_df, num_lang=15, num_films=10000):
+    lang_movies_df = language_movies_merge(languages_df, movies_df)
+    lang_rev_df = languages_reviews_merge(lang_movies_df, reviews_df)
+
+    # Select top num_films movies by normalized_score
+    top_films_df = lang_rev_df.nlargest(num_films, 'normalized_score').copy()
+
+    # Identify top num_lang languages within this subset
+    top15_languages = top_films_df['language'].value_counts().head(num_lang).index
+
+    # Filter for only top languages
+    filtered_df = top_films_df[top_films_df['language'].isin(top15_languages)].copy()
 
     filtered_df.loc[:, 'year'] = filtered_df['date'].dt.year
-    #Group by year and language, count the number of films
+    filtered_df = filtered_df[filtered_df['year'] < 2024]
+
     lang_usage = filtered_df.groupby(['year', 'language']).size().reset_index(name='film_count')
-    return lang_usage
+
+    fig = px.line(lang_usage,
+                  x='year',
+                  y='film_count',
+                  color='language',
+                  title="Top 15 Language Usage in Films Over Time",
+                  labels={'film_count': 'Number of Films', 'year': 'Year', 'language': 'Language'},
+                  markers=True)
+    fig.show()
 
 
 
@@ -357,6 +382,18 @@ def color_palette(df):
     cmap = plt.colormaps.get_cmap('viridis')
     colors = [cmap(i / len(df)) for i in range(len(df))]
     return colors
+
+# Count the first 15 languages for number of films and then see their trend over time
+def top15_language_trend(languages_df,num_lang=15):
+    top15_languages = languages_df['language'].value_counts().head(num_lang).index
+    filtered_df = languages_df.loc[languages_df['language'].isin(top15_languages)].copy()
+
+    filtered_df.loc[:, 'year'] = filtered_df['date'].dt.year
+    filtered_df = filtered_df[filtered_df['year'] < 2024]
+
+    #Group by year and language, count the number of films
+    lang_usage = filtered_df.groupby(['year', 'language']).size().reset_index(name='film_count')
+    return lang_usage
 
 def top15_director(crew_df):
     # Filter for the role 'Director'
