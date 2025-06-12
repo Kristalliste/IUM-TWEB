@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 /**
  * Module dependencies.
  */
@@ -8,40 +10,51 @@ const reviewsRoutes = require('./reviews/ReviewsController');
 const Reviews = require('./reviews/Reviews');
 
 const app = express();
-const url = "mongodb://127.0.0.1:27017/MongoDB_TWEB";
+const PORT = process.env.PORT || 3000;
+const API_BASE_PATH = process.env.API_BASE_PATH || '/api';
+const mongo_url = "mongodb://127.0.0.1:27017/MongoDB_TWEB";
 
 // Middleware to parse JSON
 app.use(express.json());
 
-// Setup Swagger
-swaggerSetup(app);
+// Swagger setup
+swaggerSetup(app, API_BASE_PATH);
 
-// Mount API routes
-app.use('/api', reviewsRoutes);
+// Mounting API routes using the base path
+app.use(`${API_BASE_PATH}/reviews`, reviewsRoutes);
+
 
 // Root route
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to the Reviews API' });
 });
 
-// Fallback for undefined routes
+// 404 fallback
 app.use((req, res) => {
     res.status(404).json({ error: 'Route not found' });
 });
 
-// Connect to MongoDB
+
+// Connecting to MongoDB
 mongoose.Promise = global.Promise;
-mongoose.connect(url)
+mongoose.connect(mongo_url)
     .then(() => {
         console.log('Successfully connected to MongoDB');
         return Reviews.createIndexes();
-    })
-    .then(() => {
-        console.log('Indexes created successfully');
     })
     .catch((error) => {
         console.error('Failed to connect to MongoDB', error);
     });
 
-// Start server
-app.listen(3000, () => console.log('Server running on http://localhost:3000'));
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    const statusCode = err.status || 500;
+    const message = err.message || 'Internal Server Error';
+    res.status(statusCode).json({ error: { message } });
+});
+
+// Starting server
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}${API_BASE_PATH}`);
+});

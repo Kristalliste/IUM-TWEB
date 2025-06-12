@@ -10,6 +10,12 @@ const reviewsService = require('./ReviewsService');
  *     responses:
  *       200:
  *         description: A list of reviews
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Review'
  */
 router.get('/', async (req, res, next) => {
     try {
@@ -22,27 +28,29 @@ router.get('/', async (req, res, next) => {
 
 /**
  * @swagger
- * /reviews/{id}:
- *   get:
- *     summary: Get a single review by ID
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
+ * /reviews:
+ *   post:
+ *     summary: Create a new review
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Review'
  *     responses:
- *       200:
- *         description: A single review
+ *       201:
+ *         description: Review created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Review'
+ *       500:
+ *         description: Server error
  */
-router.get('/:id', async (req, res, next) => {
+router.post('/', async (req, res, next) => {
     try {
-        const review = await reviewsService.getReviewById(req.params.id);
-        if (review) {
-            res.json(review);
-        } else {
-            res.status(404).json({message: 'Review not found'});
-        }
+        const newReview = await reviewsService.createReview(req.body);
+        res.status(201).json(newReview);
     } catch (err) {
         next(err);
     }
@@ -52,14 +60,18 @@ router.get('/:id', async (req, res, next) => {
  * @swagger
  * /reviews/{id}:
  *   delete:
- *     summary: Delete a review
+ *     summary: Delete a review by ID
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         schema:
+ *           type: string
  *     responses:
  *       204:
- *         description: Review deleted
+ *         description: Review deleted successfully
+ *       404:
+ *         description: Review not found
  */
 router.delete('/:id', async (req, res, next) => {
     try {
@@ -109,10 +121,10 @@ router.delete('/:id', async (req, res, next) => {
  *       500:
  *         description: Internal server error.
  */
-router.get('/movie/:movieTitle', async (req, res, next) => {
+router.get('/:movieTitle', async (req, res, next) => {
     try {
         const movieTitle = req.params.movieTitle;
-        const reviews = await reviewService.getReviewsByMovieTitle(movieTitle);
+        const reviews = await reviewsService.getReviewsByMovieTitle(movieTitle);
         if (reviews.length > 0) {
             res.status(200).json(reviews);
         } else {
