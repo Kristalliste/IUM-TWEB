@@ -23,7 +23,6 @@ swaggerSetup(app, API_BASE_PATH);
 // Mounting API routes using the base path
 app.use(`${API_BASE_PATH}/reviews`, reviewsRoutes);
 
-
 // Root route
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to the Reviews API' });
@@ -47,7 +46,7 @@ mongoose.connect(mongo_url)
     });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
     console.error(err.stack);
     const statusCode = err.status || 500;
     const message = err.message || 'Internal Server Error';
@@ -56,5 +55,5 @@ app.use((err, req, res, next) => {
 
 // Starting server
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}${API_BASE_PATH}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });
