@@ -1,0 +1,71 @@
+<!-- chat-test.html -->
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Film</title>
+</head>
+<body>
+<h2><span id="roomName">Chat</span></h2>
+<div id="chatBox" style="border:1px solid black; height:200px; overflow:auto;"></div>
+<input id="chatInput" type="text" placeholder="Scrivi un messaggio...">
+<button id="sendBtn">Invia</button>
+
+<!-- Importa la libreria socket.io per la comunicazione in tempo reale -->
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+
+    // Chiedi il nome PRIMA di connetterti
+    const user = prompt("Inserisci il tuo nome:")?.trim();
+
+    // Se l'utente non inserisce nulla, assegna un default
+    const username = user.length > 0 ? user : "Anonimo";
+
+    const room = prompt("Inserisci il nome della stanza:")?.trim() || "Generale";
+    const socket = io("http://localhost:3001"); // connessione al server
+
+    // Quando la connessione socket è stabilita
+    socket.on("connect", () => {
+        // Invia al server l'evento 'joinRoom' con stanza e nome utente
+        socket.emit("joinRoom", { room, user: username });
+        // Stampa in console la conferma di connessione
+        console.log(`🔗 Connesso alla stanza ${room} come ${username}`);
+    });
+
+    // Quando si clicca sul bottone "Invia"
+    document.getElementById("sendBtn").onclick = () => {
+        // Prendi il valore dell'input e lo pulisci
+        const msg = document.getElementById("chatInput").value.trim();
+        // Se il messaggio è vuoto, non fare nulla
+        if (msg.length === 0) return;
+
+        // Invia l'evento 'chatMessage' con stanza, utente e messaggio
+        socket.emit("chatMessage", {
+            room,
+            user: username,
+            message: msg
+        });
+        // Pulisce l'input dopo l'invio
+        document.getElementById("chatInput").value = "";
+    };
+
+    // Ascoltatore per il tasto Enter!
+    document.getElementById("chatInput").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+            document.getElementById("sendBtn").click(); // Simula il click su "Invia"
+        }
+    });
+
+    // Ascolta i messaggi in arrivo dal server
+    socket.on("message", (data) => {
+        const chatBox = document.getElementById("chatBox");     // Seleziona il contenitore messaggi
+        const div = document.createElement("div");              // Crea un nuovo div per il messaggio
+
+        // Inserisce il testo nel div: [ora] nome utente: messaggio
+        div.innerText = `[${data.time.slice(11, 19)}] ${data.user}: ${data.message}`;
+        chatBox.appendChild(div);                   // Aggiunge il messaggio al contenitore
+        chatBox.scrollTop = chatBox.scrollHeight;   // Scorri in fondo per mostrare l'ultimo messaggio
+    });
+</script>
+</body>
+</html>
