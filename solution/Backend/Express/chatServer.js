@@ -4,6 +4,7 @@
 const express = require('express');        // Framework per creare server web
 const http = require('http');                           // Modulo per creare server HTTP (usato da Express)
 const socketIo = require('socket.io');                  // Libreria per WebSocket, real-time communication
+const path = require('path');               // Modulo per gestire i percorsi dei file
 const cors = require('cors'); // Permette richieste da altri domini (Cross-Origin)
 
 // Crea un'applicazione Express
@@ -23,6 +24,16 @@ const io = socketIo(server, {
 // Middleware per gestire CORS e JSON
 app.use(cors());
 app.use(express.json());
+
+
+// Servi file statici (come chat-test.html) dalla cartella "public"
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Rotta di default per accedere direttamente
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'chat-test.html'));
+});
+
 
 /* ------------- Gestione degli eventi socket.io ------------- */
 
