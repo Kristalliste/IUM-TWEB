@@ -1,0 +1,42 @@
+<!-- chat-test.html -->
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Film</title>
+</head>
+<body>
+<h2>Chat Stanza: <span id="roomName">Oppenheimer</span></h2>
+<div id="chatBox" style="border:1px solid black; height:200px; overflow:auto;"></div>
+<input id="chatInput" type="text" placeholder="Scrivi un messaggio...">
+<button id="sendBtn">Invia</button>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+    const socket = io("http://localhost:3001");
+
+    const room = "Oppenheimer";
+    const user = prompt("Inserisci il tuo nome:");
+
+    socket.emit("joinRoom", room);
+
+    document.getElementById("sendBtn").onclick = () => {
+        const msg = document.getElementById("chatInput").value;
+        socket.emit("chatMessage", {
+            room,
+            user,
+            message: msg
+        });
+        document.getElementById("chatInput").value = "";
+    };
+
+    socket.on("message", (data) => {
+        const chatBox = document.getElementById("chatBox");
+        const div = document.createElement("div");
+        div.innerText = `[${data.time}] ${data.user}: ${data.message}`;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+</script>
+</body>
+</html>
