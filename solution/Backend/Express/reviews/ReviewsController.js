@@ -135,4 +135,44 @@ router.get('/:movieTitle', async (req, res, next) => {
     }
 });
 
+/**
+ * @swagger
+ * /reviews/score/{normalized_score}:
+ *   get:
+ *     summary: Retrieve reviews by score
+ *     description: Returns a list of 200 reviews with a specific score.
+ *     parameters:
+ *       - in: path
+ *         name: normalized_score
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: The score to search for.
+ *     responses:
+ *       200:
+ *         description: A list of matching reviews.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Review'
+ *       404:
+ *         description: No reviews found.
+ */
+router.get('/score/:normalized_score', async (req, res, next) => {
+    try {
+        const score = parseFloat(req.params.normalized_score);
+        const reviews = await reviewsService.getReviewsByScore(score);
+        if (reviews.length > 0) {
+            res.status(200).json(reviews);
+        } else {
+            res.status(404).json({ message: 'No reviews found with that score' });
+        }
+    } catch (err) {
+        next(err);
+    }
+});
+
+
 module.exports = router;
