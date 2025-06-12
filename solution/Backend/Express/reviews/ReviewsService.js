@@ -1,21 +1,45 @@
-const ReviewRepository = require('./ReviewsRepository');
+const ReviewsRepository = require('./ReviewsRepository');
 
-const ReviewService = {
+const ReviewsService = {
     getAllReviews: async () => {
-        return await ReviewRepository.findAll();
+        try {
+            return await ReviewsRepository.findAll();
+        } catch (err) {
+            throw new Error('Failed to fetch all reviews');
+        }
     },
 
     getReviewsByMovieTitle: async (title) => {
-        return await ReviewRepository.findByMovieTitle(title);
+        try {
+            return await ReviewsRepository.findByMovieTitle(title);
+        } catch (err) {
+            throw new Error('Failed to fetch reviews by title');
+        }
     },
 
     createReview: async (data) => {
-        return await ReviewRepository.save(data);
+        try {
+            return await ReviewsRepository.save(data);
+        } catch (err) {
+            throw new Error('Failed to create review');
+        }
     },
 
     deleteReview: async (id) => {
-        return await ReviewRepository.deleteById(id);
+        try {
+            return await ReviewsRepository.deleteById(id);
+        } catch (err) {
+            throw new Error('Failed to delete review');
+        }
+    },
+
+    getReviewsByScore: async (score) => {
+        try {
+            return await ReviewsRepository.findByScore(score);
+        } catch (err) {
+            throw new Error('Failed to fetch reviews by score');
+        }
     }
 };
 
-module.exports = ReviewService;
+module.exports = ReviewsService;
