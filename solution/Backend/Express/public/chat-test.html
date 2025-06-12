@@ -6,7 +6,7 @@
     <title>Chat Film</title>
 </head>
 <body>
-<h2>Chat Stanza: <span id="roomName">Oppenheimer</span></h2>
+<h2><span id="roomName">Chat</span></h2>
 <div id="chatBox" style="border:1px solid black; height:200px; overflow:auto;"></div>
 <input id="chatInput" type="text" placeholder="Scrivi un messaggio...">
 <button id="sendBtn">Invia</button>
@@ -21,7 +21,7 @@
     // Se l'utente non inserisce nulla, assegna un default
     const username = user.length > 0 ? user : "Anonimo";
 
-    const room = "Oppenheimer"; // stanza fissa per ora
+    const room = prompt("Inserisci il nome della stanza:")?.trim() || "Generale";
     const socket = io("http://localhost:3001"); // connessione al server
 
     // Quando la connessione socket è stabilita
