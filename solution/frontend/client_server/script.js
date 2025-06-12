@@ -88,7 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {
             movieCard.classList.add('movie-card');
             
             movieCard.innerHTML = `
-                <img src="${movie.posterUrl}" alt="Locandina di ${movie.title}" loading="lazy">
+                <div class="movie-poster-container">
+                    <img src="${movie.posterUrl}" alt="Locandina di ${movie.title}" loading="lazy">
+                    <div class="movie-overlay">
+                        <p class="movie-description">${movie.description}</p>
+                    </div>
+                </div>
                 <div class="movie-info">
                     <h3>${movie.title} (${movie.year})</h3>
                     <div class="movie-rating">
