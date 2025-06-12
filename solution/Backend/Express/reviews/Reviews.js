@@ -27,5 +27,4 @@ const reviewsSchema = new mongoose.Schema({
     normalized_score: { type: Number, default: 0 }
 });
 
-const Reviews = mongoose.model('Reviews', reviewsSchema);
-module.exports = Reviews;
+module.exports = mongoose.model('Reviews', reviewsSchema);

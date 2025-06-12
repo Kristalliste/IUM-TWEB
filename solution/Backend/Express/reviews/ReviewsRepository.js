@@ -1,22 +1,10 @@
 const Reviews = require('./Reviews');
 
-class ReviewRepository {
-    async findAll() {
-        return Reviews.find();
-    }
+const ReviewRepository = {
+    findAll: () => Reviews.find().exec(),
+    findByMovieTitle: (title) => Reviews.find({ movie_title: new RegExp(title, 'i') }).exec(),
+    save: (reviewData) => new Reviews(reviewData).save(),
+    deleteById: (id) => Reviews.findByIdAndDelete(id).exec(),
+};
 
-    async findById(id) {
-        return Reviews.findById(id);
-    }
-
-    async delete(id) {
-        return Reviews.findByIdAndDelete(id);
-    }
-
-    async findByMovieTitle(movieTitle) {
-        return Reviews.find({ movie_title: { $regex: new RegExp(movieTitle, 'i') } });
-    }
-
-}
-
-module.exports = new ReviewRepository();
+module.exports = ReviewRepository;
