@@ -37,6 +37,104 @@ header .container {
     cursor: pointer;
 }
 
+.main-nav {
+    flex-grow: 1;
+}
+
+.main-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.main-nav ul li {
+    position: relative;
+}
+
+.main-nav ul li a {
+    color: #eee;
+    text-decoration: none;
+    font-size: 1.1em;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    padding: 5px 0;
+}
+
+.main-nav ul li a:hover,
+.main-nav ul li a.active {
+    color: #f5c518;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #1f1f1f;
+    min-width: 180px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    z-index: 1001;
+    border-radius: 5px;
+    padding: 10px 0;
+    border: 1px solid #333;
+    margin-top: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a {
+    color: #eee;
+    padding: 8px 15px;
+    text-decoration: none;
+    display: block;
+    font-size: 1em;
+    font-weight: normal;
+    white-space: normal;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dropdown-content a:hover {
+    background-color: #f5c518;
+    color: #121212;
+}
+
+/* Custom scrollbar for description */
+.movie-description::-webkit-scrollbar {
+    width: 5px;
+}
+
+.movie-description::-webkit-scrollbar-track {
+    background: #2a2a2a;
+}
+
+.movie-description::-webkit-scrollbar-thumb {
+    background: #f5c518;
+    border-radius: 5px;
+}
+
+/* Add scrollbar styling */
+.dropdown-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dropdown-content::-webkit-scrollbar-track {
+    background: #2a2a2a;
+    border-radius: 0 5px 5px 0;
+}
+
+.dropdown-content::-webkit-scrollbar-thumb {
+    background: #f5c518;
+    border-radius: 4px;
+
+}
+
 .search-bar input {
     width: 300px;
     padding: 10px 15px;
@@ -128,20 +226,6 @@ main h2 {
     max-height: 100%;
     overflow-y: auto;
     padding-right: 5px; /* space for scrollbar */
-}
-
-/* Custom scrollbar for description */
-.movie-description::-webkit-scrollbar {
-    width: 5px;
-}
-
-.movie-description::-webkit-scrollbar-track {
-    background: #2a2a2a;
-}
-
-.movie-description::-webkit-scrollbar-thumb {
-    background: #f5c518;
-    border-radius: 5px;
 }
 
 .movie-info {
@@ -344,6 +428,86 @@ footer {
 .chat-section {
     display: flex;
     flex-direction: column;
+}
+
+.username-prompt {
+    background-color: #1a1a1a;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #2a2a2a;
+}
+
+.username-prompt p {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #ccc;
+}
+
+.username-prompt input {
+    width: 80%;
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 1px solid #333;
+    background-color: #333;
+    color: #fff;
+    font-size: 1em;
+    outline: none;
+    margin-bottom: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.username-prompt input:focus {
+    border-color: #f5c518;
+    box-shadow: 0 0 8px rgba(245, 197, 24, 0.5);
+}
+
+.username-prompt-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.username-prompt-buttons button {
+    background-color: #f5c518;
+    color: #121212;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.username-prompt-buttons button:hover {
+    background-color: #fff;
+}
+
+.username-prompt-buttons button#anonymous-chat-btn {
+    background-color: #444;
+    color: #eee;
+}
+
+.username-prompt-buttons button#anonymous-chat-btn:hover {
+    background-color: #555;
+}
+
+.chat-username-display {
+    background-color: #1f1f1f;
+    padding: 8px 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #ccc;
+    font-size: 0.9em;
+    border: 1px solid #333;
+}
+
+.chat-username-display strong {
+    color: #f5c518;
 }
 
 .chat-messages {
