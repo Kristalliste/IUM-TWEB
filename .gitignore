@@ -1,26 +1,3 @@
-solution/Data/actors.csv
-solution/Data/countries.csv
-solution/Data/crew.csv
-solution/Data/genres.csv
-solution/Data/languages.csv
-solution/Data/movies.csv
-solution/Data/posters.csv
-solution/Data/releases.csv
-solution/Data/rotten_tomatoes_reviews.csv
-solution/Data/studios.csv
-solution/Data/the_oscar_awards.csv
-solution/Data/themes.csv
+# Ignore the Data directory in the solution folder
+solution/Data/
 
-solution/Data/DataFinal/actors_v2.csv
-solution/Data/DataFinal/countries_v2.csv
-solution/Data/DataFinal/crew_v2.csv
-solution/Data/DataFinal/genres_v2.csv
-solution/Data/DataFinal/languages_v2.csv
-solution/Data/DataFinal/movies_v2.csv
-solution/Data/DataFinal/posters_v2.csv
-solution/Data/DataFinal/releases_v2.csv
-solution/Data/DataFinal/rotten_tomatoes_reviews_v2.csv
-solution/Data/DataFinal/studios_v2.csv
-solution/Data/DataFinal/the_oscar_awards_v2.csv
-solution/Data/DataFinal/themes_v2.csv
-/.idea/vcs.xml
