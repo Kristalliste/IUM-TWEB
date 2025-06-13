@@ -1,6 +1,9 @@
 package com.tweb.moviesProject.Actors;
 
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +31,16 @@ public class ActorController {
         }
     }
 
+    @GetMapping("/paged")
+    public ResponseEntity<Page<Actor>> getPagedActors(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Actor> result = actorService.findByNameContainingIgnoreCase(name, pageable);
+        return ResponseEntity.ok(result);
+    }
 
 }
 

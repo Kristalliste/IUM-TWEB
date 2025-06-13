@@ -11,6 +11,9 @@
 
 <ul id="listaPersone"></ul>
 
+<br>
+<br>
+
 <h1>Attori Casuali</h1>
 <button id="loadActorBtn">Carica Attore Casuale</button>
 <table id="actorsTable">
@@ -26,6 +29,17 @@
     <!-- Attori caricati qui -->
     </tbody>
 </table>
+
+<br>
+<br>
+
+<input type="text" id="nomeInputPaged" placeholder="Cerca attore">
+<button onclick="cerca()">Cerca</button>
+
+<ul id="listaAttori"></ul>
+
+<button id="prevBtn" onclick="paginaPrecedente()">← Indietro</button>
+<button id="nextBtn" onclick="paginaSuccessiva()">Avanti →</button>
 
 <script src="../js/script.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

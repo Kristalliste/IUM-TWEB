@@ -25,9 +25,9 @@ function filtraPersone() {
             lista.innerHTML = ""; // Pulisce la lista
 
             response.data.forEach(persona => {
-                console.log(persona);
+                console.log(persona.role);
                 const item = document.createElement("li");
-                item.textContent = persona.nome;
+                item.textContent = persona.name;
                 lista.appendChild(item);
             });
         })
@@ -64,4 +64,58 @@ function addActorToTable(actor) {
     `;
 
     tbody.appendChild(tr);
+}
+
+
+
+
+
+let paginaCorrente = 0;
+const dimensionePagina = 10;
+let nomeAttuale = "";
+
+function cerca() {
+    nomeAttuale = document.getElementById("nomeInputPaged").value;
+    paginaCorrente = 0;
+    caricaPagina();
+}
+
+function caricaPagina() {
+    axios.get("http://localhost:8080/api/actors/paged", {
+        params: {
+            name: nomeAttuale,
+            page: paginaCorrente,
+            size: dimensionePagina
+        }
+    })
+        .then(response => {
+            const data = response.data;
+            const lista = document.getElementById("listaAttori");
+            lista.innerHTML = "";
+
+            data.content.forEach(actor => {
+                const item = document.createElement("li");
+                item.textContent = actor.name;
+                lista.appendChild(item);
+            });
+
+            // Abilita/disabilita i pulsanti
+            document.getElementById("prevBtn").disabled = data.first;
+            document.getElementById("nextBtn").disabled = data.last;
+        })
+        .catch(error => {
+            console.error("Errore nella richiesta:", error);
+        });
+}
+
+function paginaSuccessiva() {
+    paginaCorrente++;
+    caricaPagina();
+}
+
+function paginaPrecedente() {
+    if (paginaCorrente > 0) {
+        paginaCorrente--;
+        caricaPagina();
+    }
 }
