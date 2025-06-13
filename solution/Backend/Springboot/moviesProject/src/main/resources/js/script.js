@@ -116,3 +116,18 @@ function toCamelCase(str) {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 }
+
+function getActorById() {
+    const actorId = document.getElementById("actorId").value;
+
+    axios.get(`http://localhost:8080/api/actors/findActorById/${actorId}`)
+        .then(response => {
+
+            console.log(response.data.actorId + " " + response.data.name);
+
+        })
+        .catch(error => {
+            console.error("Errore:", error);
+            alert("Attore non trovato.");
+        });
+}

@@ -24,4 +24,7 @@ public interface ActorRepository extends JpaRepository<Actor,Integer> {
 
     @Query(value = "SELECT DISTINCT m.name FROM \"Actors\" a JOIN \"Movies\" m ON a.movie_id = m.id WHERE a.name ILIKE :name ", nativeQuery = true)
     List<String> findMovieNameByActorNameIgnoreCase(@Param("name") String name);
+
+    @Query(value = "SELECT * FROM \"Actors\" a WHERE a.actor_id = :id", nativeQuery = true)
+    Actor findActorById(@Param("id") Integer id);
 }

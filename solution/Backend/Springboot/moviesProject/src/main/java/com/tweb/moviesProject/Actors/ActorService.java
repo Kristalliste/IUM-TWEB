@@ -28,4 +28,8 @@ public class ActorService {
     public List<String> findMovieNameByActorNameIgnoreCase(String name) {
         return actorRepository.findMovieNameByActorNameIgnoreCase(name);
     }
+
+    public Actor findActorById(Integer id){
+        return actorRepository.findActorById(id);
+    }
 }

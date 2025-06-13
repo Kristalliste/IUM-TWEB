@@ -41,5 +41,14 @@ public class ActorController {
         }
         return ResponseEntity.ok(movieTitles);
     }
+
+    @GetMapping("/findActorById/{id}")
+    public ResponseEntity<Actor> findActorById(@PathVariable Integer id) {
+        Actor actorFound = actorService.findActorById(id);
+        if(actorFound == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(actorFound);
+    }
 }
 
