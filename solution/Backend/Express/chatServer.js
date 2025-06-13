@@ -52,19 +52,20 @@ io.on('connection', (socket) => {
         io.to(room).emit('systemMessage', {
             type: 'join',
             username,
+            room, // Include the room in the system message
             time: new Date().toISOString()
         });
     });
 
     // Receives a chat message from a client and forwards it to everyone in the same room
     socket.on('chatMessage', ({ room, message }) => {
-        if (socket.data.room === room) {
-            io.to(room).emit('message', {
-                username: socket.data.username,
-                message,
-                time: new Date().toISOString()
-            });
-        }
+        // Invia il messaggio SOLO alla stanza specificata
+        io.to(room).emit('message', {
+            username: socket.data.username,
+            message,
+            room, // Include the room in the message
+            time: new Date().toISOString()
+        });
     });
 
     socket.on('disconnect', () => {
@@ -73,6 +74,7 @@ io.on('connection', (socket) => {
             io.to(socket.data.room).emit('systemMessage', {
                 type: 'leave',
                 username: socket.data.username,
+                room: socket.data.room, // Include the room in the system message
                 time: new Date().toISOString()
             });
         }

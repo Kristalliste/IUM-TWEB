@@ -60,8 +60,10 @@ export function showDetailView(movie, mainView, detailView) {
     
     const chatWrapper = document.getElementById('chat-wrapper');
     // Usa l'ID del film o genera un slug dal titolo
-    const movieId = movie.id || movie.title.toLowerCase().replace(/\s+/g, '-');
-    renderUsernamePrompt(chatWrapper, movie.title);
+    const movieId = movie.title.toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '');
+    renderUsernamePrompt(chatWrapper, movie.title, movieId);
 }
 
 export function renderMovies(movieList, movieGrid, currentPage, mainView, detailView) {

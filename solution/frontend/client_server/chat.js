@@ -39,7 +39,9 @@ export function renderUsernamePrompt(container, movieTitle, movieId) {
 function connectToChat(username, movieTitle, roomId) {
     // Chiudi connessione esistente se presente
     if (socket) {
+        socket.removeAllListeners(); // Rimuovi tutti i listener
         socket.disconnect();
+        socket = null;
     }
 
     currentUsername = username;
@@ -55,21 +57,27 @@ function connectToChat(username, movieTitle, roomId) {
     });
 
     socket.on('message', (data) => {
-        appendMessage(data.username, data.message, data.time);
+        // Solo se siamo nella stanza corretta
+        if (data.room === currentRoom) {
+            appendMessage(data.username, data.message, data.time);
+        }
     });
 
     socket.on('systemMessage', (data) => {
-        const systemMsg = document.createElement('p');
-        systemMsg.className = 'chat-system';
+        // Solo se siamo nella stanza corretta
+        if (data.room === currentRoom) {
+            const systemMsg = document.createElement('p');
+            systemMsg.className = 'chat-system';
 
-        if (data.type === 'join') {
-            systemMsg.textContent = `${data.username} si è unito alla chat`;
-        } else if (data.type === 'leave') {
-            systemMsg.textContent = `${data.username} ha lasciato la chat`;
+            if (data.type === 'join') {
+                systemMsg.textContent = `${data.username} si è unito alla chat`;
+            } else if (data.type === 'leave') {
+                systemMsg.textContent = `${data.username} ha lasciato la chat`;
+            }
+
+            document.getElementById('chat-messages').appendChild(systemMsg);
+            scrollToBottom();
         }
-
-        document.getElementById('chat-messages').appendChild(systemMsg);
-        scrollToBottom();
     });
 
     socket.on('disconnect', () => {
