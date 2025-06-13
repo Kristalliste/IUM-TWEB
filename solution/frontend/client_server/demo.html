@@ -8,37 +8,48 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-<header>
-    <div class="container">
-        <div class="logo">MyMDb</div>
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Cerca film...">
+    <header>
+        <div class="container">
+            <div class="logo">MyMDb</div>
+            <nav class="main-nav">
+                <ul>
+                    <li class="dropdown">
+                        <a href="#" id="genres-link">Generi <i class="fas fa-caret-down"></i></a>
+                        <div id="genres-dropdown" class="dropdown-content">
+                            <!-- Populated by JS -->
+                        </div>
+                    </li>
+                    <li><a href="#" id="top-rated-link">Film Top Rated</a></li>
+                </ul>
+            </nav>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Cerca film...">
+            </div>
         </div>
-    </div>
-</header>
+    </header>
 
-<main>
-    <div class="container">
-        <h2>Film Popolari</h2>
-        <div id="movie-grid" class="movie-grid">
-            <!-- Le schede dei film verranno inserite qui dal JS -->
+    <main>
+        <div class="container">
+            <h2>Film più recenti</h2>
+            <div id="movie-grid" class="movie-grid">
+                <!-- Le schede dei film verranno inserite qui dal JS -->
+            </div>
+            <div id="pagination-container" class="pagination-container">
+                <!-- I controlli di paginazione verranno inseriti qui -->
+            </div>
         </div>
-        <div id="pagination-container" class="pagination-container">
-            <!-- I controlli di paginazione verranno inseriti qui -->
+    </main>
+
+    <div id="movie-detail-view" class="container">
+        <!-- I dettagli del film verranno inseriti qui dal JS -->
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 MyMDb. Realizzato con passione.</p>
         </div>
-    </div>
-</main>
+    </footer>
 
-<div id="movie-detail-view" class="container">
-    <!-- I dettagli del film verranno inseriti qui dal JS -->
-</div>
-
-<footer>
-    <div class="container">
-        <p>&copy; 2024 MyMDb. Realizzato con passione.</p>
-    </div>
-</footer>
-
-<script src="script.js"></script>
+    <script type="module" src="main.js"></script>
 </body>
 </html>
