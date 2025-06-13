@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             description: 'La storia di Henry Hill e della sua vita nella mafia, la sua relazione con sua moglie Karen Hill e i suoi soci mafiosi.',
             actors: ['Robert De Niro', 'Ray Liotta', 'Joe Pesci'],
             reviews: [
-                { user: 'ScorseseFan', comment: 'Veloce, stiloso e brutalmente onesto. Un capolavoro del genere gangster.' }
+                 { user: 'ScorseseFan', comment: 'Veloce, stiloso e brutalmente onesto. Un capolavoro del genere gangster.' }
             ]
         },
         {
@@ -120,6 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainView = document.querySelector('main');
     const detailView = document.getElementById('movie-detail-view');
     const logo = document.querySelector('.logo');
+    const paginationContainer = document.getElementById('pagination-container');
+
+    const moviesPerPage = 8;
+    let currentPage = 1;
 
     function showMainView() {
         mainView.style.display = 'block';
@@ -223,7 +227,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        movieList.forEach(movie => {
+        const startIndex = (currentPage - 1) * moviesPerPage;
+        const endIndex = startIndex + moviesPerPage;
+        const paginatedMovies = movieList.slice(startIndex, endIndex);
+
+        paginatedMovies.forEach(movie => {
             const movieCard = document.createElement('div');
             movieCard.classList.add('movie-card');
             
@@ -247,6 +255,52 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function renderPagination(movieList) {
+        paginationContainer.innerHTML = '';
+        const totalPages = Math.ceil(movieList.length / moviesPerPage);
+
+        if (totalPages <= 1) return;
+
+        // Previous Button
+        const prevButton = document.createElement('button');
+        prevButton.innerHTML = `&laquo; Prec`;
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => {
+            currentPage--;
+            displayMoviePage(movieList);
+        });
+        paginationContainer.appendChild(prevButton);
+
+        // Page Number Buttons
+        for (let i = 1; i <= totalPages; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
+            if (i === currentPage) {
+                pageButton.classList.add('active');
+            }
+            pageButton.addEventListener('click', () => {
+                currentPage = i;
+                displayMoviePage(movieList);
+            });
+            paginationContainer.appendChild(pageButton);
+        }
+
+        // Next Button
+        const nextButton = document.createElement('button');
+        nextButton.innerHTML = `Succ &raquo;`;
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener('click', () => {
+            currentPage++;
+            displayMoviePage(movieList);
+        });
+        paginationContainer.appendChild(nextButton);
+    }
+
+    function displayMoviePage(movieList) {
+        renderMovies(movieList);
+        renderPagination(movieList);
+    }
+
     searchInput.addEventListener('input', (e) => {
         // If we are on the detail page, switch back to the main view first.
         if (mainView.style.display === 'none') {
@@ -256,18 +310,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const filteredMovies = movies.filter(movie =>
             movie.title.toLowerCase().includes(searchTerm) || movie.year.toString().includes(searchTerm)
         );
-        renderMovies(filteredMovies);
+        currentPage = 1;
+        displayMoviePage(filteredMovies);
     });
 
     logo.addEventListener('click', () => {
         searchInput.value = '';
+        currentPage = 1;
         showMainView();
-        renderMovies(movies);
+        displayMoviePage(movies);
     });
 
     // Initial render
-    renderMovies(movies);
     showMainView();
+    displayMoviePage(movies);
 
 });
 

@@ -173,6 +173,49 @@ main h2 {
     font-size: 1.1em;
 }
 
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 40px;
+    padding: 10px;
+    flex-wrap: wrap;
+}
+
+.pagination-container button {
+    background-color: #2a2a2a;
+    color: #eee;
+    border: 1px solid #444;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-weight: bold;
+    min-width: 45px;
+    text-align: center;
+}
+
+.pagination-container button:hover:not(:disabled) {
+    background-color: #f5c518;
+    color: #121212;
+    border-color: #f5c518;
+}
+
+.pagination-container button.active {
+    background-color: #f5c518;
+    color: #121212;
+    border-color: #f5c518;
+    cursor: default;
+}
+
+.pagination-container button:disabled {
+    background-color: #1f1f1f;
+    color: #555;
+    cursor: not-allowed;
+    border-color: #333;
+}
+
 footer {
     background-color: #1f1f1f;
     text-align: center;
