@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <p class="description">${movie.description}</p>
                     
-                    <h3>Attori Principali</h3>
+                    <h3>Cast & Crew</h3>
                     <ul class="actors-list">
                         ${movie.actors.map(actor => `<li>${actor}</li>`).join('')}
                     </ul>
