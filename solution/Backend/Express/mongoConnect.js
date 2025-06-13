@@ -6,15 +6,11 @@ const mongo_url = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/MongoDB_TW
 
 async function connectToMongoDB() {
     try {
-        await mongoose.connect(mongo_url, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
+        await mongoose.connect(mongo_url);
 
         console.log('Successfully connected to MongoDB');
 
-        // Optional: ensure indexes are created for performance
-        await Reviews.createIndexes();
+        await Reviews.createIndexes(); // Ensure indexes are created for performance
 
     } catch (error) {
         console.error('Failed to connect to MongoDB:', error.message);
@@ -25,5 +21,5 @@ async function connectToMongoDB() {
 // Connect immediately when this module is imported
 connectToMongoDB();
 
-// Optional: export connection or function for re-use
+// Export connection or function for re-use
 module.exports = mongoose;

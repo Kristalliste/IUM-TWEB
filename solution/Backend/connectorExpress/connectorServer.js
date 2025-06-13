@@ -10,7 +10,6 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const API_BASE_PATH = process.env.API_BASE_PATH || '/api';
 
-
 // JSON parser
 app.use(express.json());
 
@@ -31,7 +30,7 @@ app.use((req, res) => {
 });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
     console.error(err.stack);
     const statusCode = err.status || 500;
     res.status(statusCode).json({ error: { message: err.message || 'Internal Server Error' } });
