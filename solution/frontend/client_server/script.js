@@ -119,6 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchInput');
     const mainView = document.querySelector('main');
     const detailView = document.getElementById('movie-detail-view');
+    const logo = document.querySelector('.logo');
 
     function showMainView() {
         mainView.style.display = 'block';
@@ -247,15 +248,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     searchInput.addEventListener('input', (e) => {
+        // If we are on the detail page, switch back to the main view first.
+        if (mainView.style.display === 'none') {
+            showMainView();
+        }
         const searchTerm = e.target.value.toLowerCase().trim();
-        const filteredMovies = movies.filter(movie => 
+        const filteredMovies = movies.filter(movie =>
             movie.title.toLowerCase().includes(searchTerm) || movie.year.toString().includes(searchTerm)
         );
         renderMovies(filteredMovies);
     });
 
+    logo.addEventListener('click', () => {
+        searchInput.value = '';
+        showMainView();
+        renderMovies(movies);
+    });
+
     // Initial render
     renderMovies(movies);
+    showMainView();
 
 });
 
