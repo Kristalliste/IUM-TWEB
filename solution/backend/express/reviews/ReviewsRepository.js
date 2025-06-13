@@ -1,12 +1,47 @@
 const Reviews = require('./Reviews');
-const reviewLimit = 200;
+const limit = 200;
 
 const ReviewsRepository = {
-    findAll: () => Reviews.find().exec(),
-    findByMovieTitle: (title) => Reviews.find({ movie_title: new RegExp(title, 'i') }).exec(),
-    save: (reviewData) => new Reviews(reviewData).save(),
-    deleteById: (id) => Reviews.findByIdAndDelete(id).exec(),
-    findByScore: (score) => Reviews.find({ normalized_score: score }).limit(reviewLimit).exec(),
+    findAll: async () => {
+        try {
+            return await Reviews.find().limit(limit);
+        } catch (err) {
+            throw new Error('Error fetching all reviews: ' + err.message);
+        }
+    },
+
+    findByMovieTitle: async (title) => {
+        try {
+            return await Reviews.find({ movie_title: new RegExp(title, 'i') });
+        } catch (err) {
+            throw new Error(`Error fetching reviews for movie title "${title}": ` + err.message);
+        }
+    },
+
+    save: async (reviewData) => {
+        try {
+            const review = new Reviews(reviewData);
+            return await review.save();
+        } catch (err) {
+            throw new Error('Error saving review: ' + err.message);
+        }
+    },
+
+    deleteById: async (id) => {
+        try {
+            return await Reviews.findByIdAndDelete(id);
+        } catch (err) {
+            throw new Error(`Error deleting review with id ${id}: ` + err.message);
+        }
+    },
+
+    findByScore: async (score) => {
+        try {
+            return await Reviews.find({ normalized_score: score }).limit(limit);
+        } catch (err) {
+            throw new Error(`Error fetching reviews with score ${score}: ` + err.message);
+        }
+    }
 };
 
 module.exports = ReviewsRepository;

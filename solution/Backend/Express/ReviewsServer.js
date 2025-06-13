@@ -1,8 +1,7 @@
-require('dotenv').config();
-
 /**
  * Module dependencies.
  */
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const swaggerSetup = require('./swagger');
@@ -33,17 +32,9 @@ app.use((req, res) => {
     res.status(404).json({ error: 'Route not found' });
 });
 
-
 // Connecting to MongoDB
-mongoose.Promise = global.Promise;
-mongoose.connect(mongo_url)
-    .then(() => {
-        console.log('Successfully connected to MongoDB');
-        return Reviews.createIndexes();
-    })
-    .catch((error) => {
-        console.error('Failed to connect to MongoDB', error);
-    });
+require('./mongoConnect');
+
 
 // Error handling middleware
 app.use((err, req, res, _next) => {
