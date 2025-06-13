@@ -44,4 +44,3 @@ export function renderPagination(movieList, paginationContainer, movieGrid, curr
     });
     paginationContainer.appendChild(nextButton);
 }
-

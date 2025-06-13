@@ -11,4 +11,3 @@ export function escapeHTML(str) {
 }
 
 export const moviesPerPage = 8;
-

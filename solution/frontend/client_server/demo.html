@@ -6,6 +6,7 @@
     <title>MyMDb - Il tuo database di film</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 </head>
 <body>
     <header>
@@ -30,7 +31,7 @@
 
     <main>
         <div class="container">
-            <h2>Film più recenti</h2>
+            <h2 id="main-title">Film più recenti</h2>
             <div id="movie-grid" class="movie-grid">
                 <!-- Le schede dei film verranno inserite qui dal JS -->
             </div>

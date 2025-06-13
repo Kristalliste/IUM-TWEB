@@ -26,14 +26,16 @@ app.use(cors());
 app.use(express.json());
 
 
-// Serve static files (like chat-test.html) from the "public" folder
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files (like demo.html) from the "client_server" folder
+app.use(express.static(path.join(__dirname, '../../frontend/client_server')));
 
 // Default route to access directly
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'chat-test.html'));
+    res.sendFile(path.join(__dirname, '../../frontend/client_server', 'demo.html'));
 });
 
+// Gestione delle stanze per film
+const movieRooms = new Map();
 
 /* ------------- Socket.io event handling ------------- */
 
@@ -42,31 +44,38 @@ io.on('connection', (socket) => {
     console.log(`🟢 Utente connesso: ${socket.id}`);
 
     // Client can send "joinRoom" to join a specific room
-    socket.on('joinRoom', ({ room, user }) => {
+    socket.on('joinRoom', ({ room, username }) => {
         socket.join(room);                      // Joins the client to the specified "room"
-        socket.data.username = user;            // Save the username in the socket for future reference
-        console.log(`📥 ${user} ha joinato la stanza ${room}`);
-    });
+        socket.data = { room, username };
 
-    // Event to leave the room (optional)
-    socket.on('leaveRoom', ({ room, user }) => {
-        socket.leave(room);                 // Removes the client from the room
-        console.log(`📤 ${socket.data.username || socket.id} ha lasciato la stanza ${room}`);
+        // Notifica l'ingresso nella chat
+        io.to(room).emit('systemMessage', {
+            type: 'join',
+            username,
+            time: new Date().toISOString()
+        });
     });
 
     // Receives a chat message from a client and forwards it to everyone in the same room
-    socket.on('chatMessage', ({ room, user, message }) => {
-        const payload = {
-            user,               // Name of the user who sent the message
-            message,            // Contents of the message
-            time: new Date().toISOString()  // Timestamp of the message
-        };
-        io.to(room).emit('message', payload);   // Send the message to everyone in the room
+    socket.on('chatMessage', ({ room, message }) => {
+        if (socket.data.room === room) {
+            io.to(room).emit('message', {
+                username: socket.data.username,
+                message,
+                time: new Date().toISOString()
+            });
+        }
     });
 
-    // Event executed when a user disconnects from the server
     socket.on('disconnect', () => {
-        console.log(`🔴 ${socket.data.username || socket.id} si è disconnesso`);
+        if (socket.data?.room && socket.data?.username) {
+            // Notifica l'uscita dalla chat
+            io.to(socket.data.room).emit('systemMessage', {
+                type: 'leave',
+                username: socket.data.username,
+                time: new Date().toISOString()
+            });
+        }
     });
 });
 

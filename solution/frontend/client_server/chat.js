@@ -1,6 +1,11 @@
 import { escapeHTML } from './utils.js';
 
-export function renderUsernamePrompt(container, movieTitle) {
+let socket = null;
+let currentRoom = null;
+let currentUsername = null;
+
+export function renderUsernamePrompt(container, movieTitle, movieId) {
+    currentRoom = movieId;
     container.innerHTML = `
         <div class="username-prompt">
             <p>Scegli il tuo nome per la chat o partecipa in modo anonimo.</p>
@@ -17,34 +22,69 @@ export function renderUsernamePrompt(container, movieTitle) {
     const usernameInput = document.getElementById('username-input');
 
     const handleStartChat = () => {
-        const name = usernameInput.value.trim();
-        if (name) {
-            chatUsername = name;
-            renderChatInterface(container, movieTitle);
-        } else {
-            usernameInput.style.borderColor = 'red';
-            usernameInput.focus();
-        }
+        const username = usernameInput.value.trim() || 'Anonimo';
+        connectToChat(username, movieTitle, movieId);
     };
 
     startChatBtn.addEventListener('click', handleStartChat);
     usernameInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            handleStartChat();
-        }
+        if (e.key === 'Enter') handleStartChat();
     });
 
     anonymousChatBtn.addEventListener('click', () => {
-        chatUsername = 'Anonimo';
-        renderChatInterface(container, movieTitle);
+        connectToChat('Anonimo', movieTitle, movieId);
     });
 }
 
-export function renderChatInterface(container, movieTitle) {
+function connectToChat(username, movieTitle, roomId) {
+    // Chiudi connessione esistente se presente
+    if (socket) {
+        socket.disconnect();
+    }
+
+    currentUsername = username;
+    socket = io('http://localhost:3001');
+
+    socket.on('connect', () => {
+        currentUsername = username;
+        socket.emit('joinRoom', {
+            room: roomId,
+            username: username
+        });
+        renderChatInterface(document.getElementById('chat-wrapper'), movieTitle, username, roomId);
+    });
+
+    socket.on('message', (data) => {
+        appendMessage(data.username, data.message, data.time);
+    });
+
+    socket.on('systemMessage', (data) => {
+        const systemMsg = document.createElement('p');
+        systemMsg.className = 'chat-system';
+
+        if (data.type === 'join') {
+            systemMsg.textContent = `${data.username} si è unito alla chat`;
+        } else if (data.type === 'leave') {
+            systemMsg.textContent = `${data.username} ha lasciato la chat`;
+        }
+
+        document.getElementById('chat-messages').appendChild(systemMsg);
+        scrollToBottom();
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Disconnesso dalla chat');
+    });
+}
+
+export function renderChatInterface(container, movieTitle, username, roomId) {
     container.innerHTML = `
-        <div class="chat-username-display">Stai chattando come: <strong>${escapeHTML(chatUsername)}</strong></div>
+        <div class="chat-username-display">
+            Stai chattando come: <strong>${escapeHTML(username)}</strong> | 
+            Film: <strong>${escapeHTML(movieTitle)}</strong>
+        </div>
         <div id="chat-messages" class="chat-messages">
-            <p class="chat-system">Benvenuto nella chat per "${movieTitle}"!</p>
+            <p class="chat-system">Benvenuto nella chat per "${escapeHTML(movieTitle)}"!</p>
         </div>
         <div class="chat-input-area">
             <input type="text" id="chat-input" placeholder="Scrivi un messaggio...">
@@ -54,28 +94,48 @@ export function renderChatInterface(container, movieTitle) {
     
     const sendBtn = document.getElementById('send-chat-btn');
     const chatInput = document.getElementById('chat-input');
-    const chatMessages = document.getElementById('chat-messages');
 
     const handleSendMessage = () => {
         const message = chatInput.value.trim();
-        if (message) {
-            const messageEl = document.createElement('p');
-            messageEl.innerHTML = `<strong>${escapeHTML(chatUsername)}:</strong> ${escapeHTML(message)}`;
-            chatMessages.appendChild(messageEl);
+        if (message&& socket && socket.connected) {
+            socket.emit('chatMessage', {
+                room: roomId,
+                message: message
+            });
             chatInput.value = '';
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            chatInput.focus();
         }
     };
     
     sendBtn.addEventListener('click', handleSendMessage);
     chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            handleSendMessage();
-        }
+        if (e.key === 'Enter') handleSendMessage();
     });
     chatInput.focus();
 }
 
-export let chatUsername = null;
+function appendMessage(username, message, timestamp) {
+    const chatMessages = document.getElementById('chat-messages');
+    const messageEl = document.createElement('p');
 
+    const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    messageEl.innerHTML = `
+        <strong>${escapeHTML(username)}</strong>
+        <span class="message-time">[${time}]</span>: 
+        ${escapeHTML(message)}
+    `;
+
+    chatMessages.appendChild(messageEl);
+    scrollToBottom();
+}
+
+function scrollToBottom() {
+    const chatMessages = document.getElementById('chat-messages');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Cleanup quando si lascia la pagina
+window.addEventListener('beforeunload', () => {
+    if (socket) {
+        socket.disconnect();
+    }
+});

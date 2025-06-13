@@ -59,6 +59,8 @@ export function showDetailView(movie, mainView, detailView) {
     document.getElementById('back-button').addEventListener('click', () => showMainView(mainView, detailView));
     
     const chatWrapper = document.getElementById('chat-wrapper');
+    // Usa l'ID del film o genera un slug dal titolo
+    const movieId = movie.id || movie.title.toLowerCase().replace(/\s+/g, '-');
     renderUsernamePrompt(chatWrapper, movie.title);
 }
 
