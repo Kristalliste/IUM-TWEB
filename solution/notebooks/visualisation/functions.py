@@ -6,6 +6,7 @@ import seaborn as sns
 import squarify
 
 # --- AnalysisReport ---
+# Merges movie titles with their languages based on the movie ID
 def language_movies_merge(languages_df, movies_df):
     languages_movies_df = pd.merge(
         movies_df[['id', 'name', 'date']],
@@ -14,6 +15,7 @@ def language_movies_merge(languages_df, movies_df):
         how='inner')
     return languages_movies_df
 
+# Merges movie titles with their countries based on the movie ID
 def countries_movies_merge(countries_df, movies_df):
     countries_movies_df = pd.merge(
         movies_df[['id', 'name', 'date']],
@@ -22,6 +24,7 @@ def countries_movies_merge(countries_df, movies_df):
         how='inner')
     return countries_movies_df
 
+# Merges movie titles with their genres based on the movie ID
 def genres_movies_merge(genres_df, movies_df):
     genres_movies_df = pd.merge(
         movies_df[['id', 'name', 'date']],
@@ -30,6 +33,7 @@ def genres_movies_merge(genres_df, movies_df):
         how='inner')
     return genres_movies_df
 
+# Merges country information with Oscar data based on film names, after removing rows with null film values
 def countries_oscar_merge(countries_df, oscar_df):
     # Dropping the entries with null `film` values
     temp_oscar_df = oscar_df.dropna(subset=['film'], how='all')
@@ -40,6 +44,7 @@ def countries_oscar_merge(countries_df, oscar_df):
         right_on='film')
     return countries_wins_merged_df
 
+# Merges country-movie data with Oscar data (including ceremony year) for analysis by year
 # We use this when we need the year of the Oscar ceremony, not when the film was made
 def countries_oscar_year_merge(countries_movies_df, oscar_df):
     # Dropping the entries with null `film` values
@@ -51,6 +56,7 @@ def countries_oscar_year_merge(countries_movies_df, oscar_df):
         right_on='film')
     return countries_wins_merged_df
 
+# Merges country data with reviews, keeping only entries that have both movie title and review score
 def countries_reviews_merge(countries_df, reviews_df):
     # Dropping the entries with null `movie_title` or 'review_score' values
     temp_reviews_df = reviews_df.dropna(subset=['movie_title', 'normalized_score'], how='any')
@@ -62,6 +68,7 @@ def countries_reviews_merge(countries_df, reviews_df):
         right_on='movie_title')
     return countries_merged_df
 
+# Merges genre-movie data with Oscar data to identify wins per genre
 def genres_oscar_merge(genres_movies_df, oscar_df):
     # Dropping the entries with null `film` values
     temp_oscar_df = oscar_df.dropna(subset=['film'])
@@ -73,6 +80,7 @@ def genres_oscar_merge(genres_movies_df, oscar_df):
         right_on='film')
     return genres_merged_df
 
+# Calculates total Oscar nominations and wins per country
 def nom_win_number_c(countries_df):
     # Add a column to count each nomination explicitly
     countries_df['nominations'] = 1
@@ -85,6 +93,7 @@ def nom_win_number_c(countries_df):
     ).reset_index()
     return count_stats_df
 
+# Calculates total Oscar nominations and wins per genre
 def nom_win_number_g(genres_df):
     # Add a column to count each nomination explicitly
     genres_df['nominations'] = 1
@@ -97,6 +106,7 @@ def nom_win_number_g(genres_df):
     ).reset_index()
     return count_stats_df
 
+# Merges genre data with reviews based on movie titles
 def genres_reviews_merge(genres_df, reviews_df):
     genres_reviews_df = pd.merge(
         genres_df,
@@ -106,6 +116,7 @@ def genres_reviews_merge(genres_df, reviews_df):
         how='inner')
     return genres_reviews_df
 
+# Merges genre-movie data with country data using movie IDs
 def genres_countries_merge(genres_movies_df, countries_df):
     genres_countries_df = pd.merge(
         genres_movies_df,
@@ -114,6 +125,7 @@ def genres_countries_merge(genres_movies_df, countries_df):
         how='inner')
     return genres_countries_df
 
+# Merges language-movie data with reviews based on movie titles
 def languages_reviews_merge(lang_movies_df, reviews_df):
     languages_reviews_df = pd.merge(
         lang_movies_df,
@@ -123,6 +135,7 @@ def languages_reviews_merge(lang_movies_df, reviews_df):
         how='inner')
     return languages_reviews_df
 
+# Creates a pivot table of average review scores by genre and country, limited to top 20 countries
 def pivot_count_gen(genres_countries_df, reviews_df):
     # Selecting only the top 20 countries by number of films
     top_20_countries = genres_countries_df['country'].value_counts().nlargest(20).index
@@ -145,6 +158,7 @@ def pivot_count_gen(genres_countries_df, reviews_df):
     pivot_df = countries_grouped.pivot(index='country', columns='genre', values='normalized_score')
     return pivot_df
 
+# Combines Oscar and review data for top-rated and most-winning films and creates heatmaps
 def map_data_rev(oscar_df, reviews_df):
     oscar_wins = oscar_df[oscar_df['winner']].groupby('film').size().reset_index(name='wins')
     oscar_nominations = oscar_df.groupby('film').size().reset_index(name='nominations')
@@ -208,6 +222,7 @@ def map_data_rev(oscar_df, reviews_df):
                       )
     fig.show()
 
+# Merges movie duration with reviews and filters out very long films, then aggregates review stats
 def duration_merge(movies_df, reviews_df):
     movies_df = movies_df.copy()
     movies_df['minute'] = pd.to_numeric(movies_df['minute'], errors='coerce')
@@ -235,6 +250,7 @@ def duration_merge(movies_df, reviews_df):
     duration_grouped['original_title'] = duration_grouped['original_title'].str.title()
     return duration_grouped
 
+# Merges reviews with movie data to track average score and runtime trends over time
 def reviews_movies_merge(movies_df, reviews_df):
     movies_df = movies_df.dropna(subset=['date', 'rating', 'minute'])
     merged_df = pd.merge(
@@ -252,6 +268,7 @@ def reviews_movies_merge(movies_df, reviews_df):
 
     return agg_time_df
 
+# Creates violin plots of review score distribution across different genres
 def genres_reviews_violin(genres_reviews_df):
     unique_genres = sorted(genres_reviews_df['genre'].dropna().unique())
     first_half = unique_genres[:9]
@@ -293,6 +310,7 @@ def genres_reviews_violin(genres_reviews_df):
     plt.tight_layout()
     plt.show()
 
+# Creates a bar plot of average review scores per genre
 def genres_reviews_bar(genres_reviews_df):
     genre_avg_scores = genres_reviews_df.groupby('genre')['normalized_score'].mean().sort_values(ascending=False)
 
@@ -313,6 +331,7 @@ def genres_reviews_bar(genres_reviews_df):
     plt.tight_layout()
     plt.show()
 
+# Plots a line graph showing average review scores per genre over time
 def avg_score_genres(genres_reviews_df):
     temp_gen_rev_df = genres_reviews_df
     # Extract year from date
@@ -346,6 +365,7 @@ def avg_score_genres(genres_reviews_df):
     )
     fig.show()
 
+# Analyzes language trends among top-reviewed films over time and plots them
 def top_language_trend(languages_df, movies_df, reviews_df, num_lang=15, num_films=10000):
     lang_movies_df = language_movies_merge(languages_df, movies_df)
     lang_rev_df = languages_reviews_merge(lang_movies_df, reviews_df)
@@ -395,6 +415,7 @@ def top15_language_trend(languages_df,num_lang=15):
     lang_usage = filtered_df.groupby(['year', 'language']).size().reset_index(name='film_count')
     return lang_usage
 
+# Visualizes the top 15 directors by number of films using a bar-like lollipop chart
 def top15_director(crew_df):
     # Filter for the role 'Director'
     directors_df = crew_df[crew_df['role'].str.lower() == 'director']
