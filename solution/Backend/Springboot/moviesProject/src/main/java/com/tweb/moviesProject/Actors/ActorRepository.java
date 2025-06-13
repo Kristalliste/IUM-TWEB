@@ -22,8 +22,6 @@ public interface ActorRepository extends JpaRepository<Actor,Integer> {
             nativeQuery = true)
     Page<Actor> findByNameContainingIgnoreCase(@Param("nameStart") String nameStart, Pageable pageable);
 
-    @Query(value = "SELECT * FROM \"Actors\" ORDER BY random() LIMIT 1", nativeQuery = true)
-    Actor findRandomActor();
-
-
+    @Query(value = "SELECT DISTINCT m.name FROM \"Actors\" a JOIN \"Movies\" m ON a.movie_id = m.id WHERE a.name ILIKE :name ", nativeQuery = true)
+    List<String> findMovieNameByActorNameIgnoreCase(@Param("name") String name);
 }

@@ -1,21 +1,3 @@
-/* function filtraPersone() {
-    const prefix = document.getElementById("nomeInput").value;
-
-    fetch(`http://localhost:8080/api/actors/filterByName?prefix=${encodeURIComponent(prefix)}`)
-        .then(response => response.json())
-        .then(data => {
-            const lista = document.getElementById("listaPersone");
-            lista.innerHTML = ""; // Pulisce la lista
-
-            data.forEach(persona => {
-                const item = document.createElement("li");
-                item.textContent = persona.nome;
-                lista.appendChild(item);
-            });
-        })
-        .catch(error => console.error("Errore:", error));
-} */
-
 function filtraPersone() {
     const prefix = document.getElementById("nomeInput").value;
 
@@ -36,22 +18,8 @@ function filtraPersone() {
         });
 }
 
-document.getElementById('loadActorBtn').addEventListener('click', () => {
-    fetch('http://localhost:8080/api/actors/random')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Nessun attore trovato');
-            }
-            return response.json();
-        })
-        .then(actor => {
-            addActorToTable(actor);
-        })
-        .catch(err => {
-            alert(err.message);
-        });
-});
 
+//Sarà utile dopo
 function addActorToTable(actor) {
     const tbody = document.querySelector('#actorsTable tbody');
     const tr = document.createElement('tr');
@@ -118,4 +86,33 @@ function paginaPrecedente() {
         paginaCorrente--;
         caricaPagina();
     }
+}
+
+function getMovieTitles() {
+    const actorName = document.getElementById("nomeInputPagedforMovieName").value;
+
+    axios.get(`http://localhost:8080/api/actors/movieTitlesByActorName/${actorName}`)
+        .then(response => {
+            const lista = document.getElementById("listaFilm");
+            lista.innerHTML = "";
+
+            response.data.forEach(title => {
+                console.log(title);
+                const item = document.createElement("li");
+                item.textContent = `🎬 ${toCamelCase(title)}`;
+                lista.appendChild(item);
+            });
+        })
+        .catch(error => {
+            console.error("Errore:", error);
+            alert("Attore non trovato o nessun film associato.");
+        });
+}
+
+function toCamelCase(str) {
+    return str
+        .toLowerCase()
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
 }

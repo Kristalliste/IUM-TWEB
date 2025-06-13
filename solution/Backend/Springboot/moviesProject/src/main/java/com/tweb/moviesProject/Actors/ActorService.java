@@ -25,7 +25,7 @@ public class ActorService {
         return  actorRepository.findByNameContainingIgnoreCase(name, pageable);
    }
 
-    public Actor getRandomActor() {
-        return actorRepository.findRandomActor();
+    public List<String> findMovieNameByActorNameIgnoreCase(String name) {
+        return actorRepository.findMovieNameByActorNameIgnoreCase(name);
     }
 }

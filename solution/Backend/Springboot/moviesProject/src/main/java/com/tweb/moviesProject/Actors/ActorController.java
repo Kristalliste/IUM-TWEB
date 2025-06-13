@@ -21,15 +21,6 @@ public class ActorController {
         return actorService.findByNameContainingIgnoreCase(name);
     }
 
-    @GetMapping("/random")
-    public ResponseEntity<Actor> getRandomActor() {
-        Actor actor = actorService.getRandomActor();
-        if (actor != null) {
-            return ResponseEntity.ok(actor);
-        } else {
-            return ResponseEntity.noContent().build();
-        }
-    }
 
     @GetMapping("/paged")
     public ResponseEntity<Page<Actor>> getPagedActors(
@@ -42,5 +33,13 @@ public class ActorController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/movieTitlesByActorName/{name}")
+    public ResponseEntity<List<String>> getMovieTitlesByActorName(@PathVariable String name) {
+        List<String> movieTitles = actorService.findMovieNameByActorNameIgnoreCase(name);
+        if (movieTitles.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(movieTitles);
+    }
 }
 
