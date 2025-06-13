@@ -13,7 +13,11 @@ public class ActorService {
 
     public ActorService (ActorRepository actorRepository) {this.actorRepository = actorRepository;}
 
-    public List<Actor> findByName(String name) {
-        return actorRepository.findByNameStartingWith(name);
+    public List<Actor> findByNameContainingIgnoreCase(String name) {
+        return actorRepository.findByNameContainingIgnoreCase(name);
+    }
+
+    public Actor getRandomActor() {
+        return actorRepository.findRandomActor();
     }
 }

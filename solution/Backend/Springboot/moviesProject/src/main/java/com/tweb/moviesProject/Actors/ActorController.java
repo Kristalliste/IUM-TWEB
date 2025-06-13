@@ -1,10 +1,8 @@
 package com.tweb.moviesProject.Actors;
 
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -15,9 +13,21 @@ public class ActorController {
 
     public ActorController(ActorService actorService) {this.actorService = actorService;}
 
-    @GetMapping("/filterByName")
-    public List<Actor> findByName(@RequestParam String name) {
-        return actorService.findByName(name);
+    @GetMapping("/filterByName/{name}")
+    public List<Actor> findByNameContainingIgnoreCase(@PathVariable String name) {
+        return actorService.findByNameContainingIgnoreCase(name);
     }
+
+    @GetMapping("/random")
+    public ResponseEntity<Actor> getRandomActor() {
+        Actor actor = actorService.getRandomActor();
+        if (actor != null) {
+            return ResponseEntity.ok(actor);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+
 }
 
