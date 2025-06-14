@@ -57,3 +57,4 @@ def normalization(reviews_df):
 
     reviews_df = reviews_df[reviews_df['normalized_score'].between(0, 10)]
     return reviews_df
+
