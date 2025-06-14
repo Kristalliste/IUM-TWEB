@@ -1,3 +1,5 @@
 # Ignore the Data directory in the solution folder
 solution/Data/
 
+# Ignore the build output directory
+node_modules/

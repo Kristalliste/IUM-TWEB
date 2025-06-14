@@ -2,15 +2,15 @@
 
 // Import the necessary modules
 const express = require('express');        // Framework for creating web servers
-const http = require('http');                           // HTTP Server Creation Module (Used by Express)
+const http = require('http');                           // HTTP Server Creation Module (Used by express)
 const socketIo = require('socket.io');                  // Library for WebSocket, real-time communication
 const path = require('path');               // Module to manage file paths
 const cors = require('cors'); // Allows requests from other domains (Cross-Origin)
 
-// Create an Express Application
+// Create an express Application
 const app = express();
 
-// Create an HTTP server from Express (required to use with socket.io)
+// Create an HTTP server from express (required to use with socket.io)
 const server = http.createServer(app);
 
 // Initialize socket.io with the server, configuring CORS to accept connections from all domains
