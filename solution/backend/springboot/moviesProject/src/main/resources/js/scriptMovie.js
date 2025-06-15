@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function loadAllMovies(page){
-        showFilmLoader();
+        // showFilmLoader();
         const size = parseInt(document.getElementById("page-size").value);
 
         axios.get(`http://localhost:8080/api/movies/all/${page}/${size}`) // Cambia endpoint se necessario
@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Errore nella richiesta:", error);
             })
             .finally(() => {
-                hideFilmLoader();
+                // hideFilmLoader();
             });
     }
 
