@@ -10,11 +10,16 @@
     <h1>Cerca Film</h1>
     <div class="search-form">
         <select id="search-type">
-            <option value="TITLE">Titolo</option>
-            <option value="YEAR">Anno</option>
+            <option value="TITLE">Title</option>
+            <option value="YEAR">Year</option>
+            <option value="GENRE">Genre</option>
         </select>
 
+        <!-- Campo input testuale -->
         <input type="text" id="search-input" placeholder="Inserisci titolo o anno...">
+
+        <!-- Campo select dei generi, inizialmente nascosto -->
+        <select id="search-genre" style="display: none;"></select>
 
         <select id="page-size">
             <option value="10">10 per pagina</option>
