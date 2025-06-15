@@ -1,5 +1,6 @@
 package com.tweb.moviesProject.Movies;
 
+import com.tweb.moviesProject.Enums;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +20,7 @@ public class MovieController {
 
     @GetMapping("/search")
     public Page<Movie> searchMovies(
-            @RequestParam String type,
+            @RequestParam Enums.SearchType type, //enum with the types of search
             @RequestParam String query,
             @RequestParam int page,
             @RequestParam int size
@@ -27,8 +28,8 @@ public class MovieController {
         Pageable pageable = PageRequest.of(page, size);
 
         return switch (type) {
-            case "title" -> movieService.findByTitleIgnoreCase(query, pageable);
-            case "year" -> {
+            case TITLE -> movieService.findByTitleIgnoreCase(query, pageable);
+            case YEAR -> {
                 try {
                     yield movieService.findByYear(Integer.parseInt(query), pageable);
                 } catch (NumberFormatException e) {

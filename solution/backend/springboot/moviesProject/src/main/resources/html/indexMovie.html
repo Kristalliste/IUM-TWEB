@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cerca Film</title>
+    <link rel="stylesheet" href="../css/stylesMovie.css">
+</head>
+<body>
+    <div class="container">
+    <h1>Cerca Film</h1>
+    <div class="search-form">
+        <select id="search-type">
+            <option value="TITLE">Titolo</option>
+            <option value="YEAR">Anno</option>
+        </select>
+
+        <input type="text" id="search-input" placeholder="Inserisci titolo o anno...">
+
+        <select id="page-size">
+            <option value="10">10 per pagina</option>
+            <option value="25">25 per pagina</option>
+            <option value="50">50 per pagina</option>
+        </select>
+
+        <button onclick="searchMovies(0)">Cerca</button>
+    </div>
+    <div id="results"></div>
+    <div class="pagination" id="pagination"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../js/scriptMovie.js"></script>
+</body>
+</html>
