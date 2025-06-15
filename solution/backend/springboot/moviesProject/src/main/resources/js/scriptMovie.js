@@ -1,6 +1,7 @@
 
 
 function searchMovies(page) {
+    showFilmLoader();
     const type = document.getElementById("search-type").value;
     const query = document.getElementById("search-input").value;
     const size = parseInt(document.getElementById("page-size").value);
@@ -13,7 +14,11 @@ function searchMovies(page) {
         })
         .catch(error => {
             console.error("Errore nella richiesta:", error);
+        })
+        .finally(() => {
+            hideFilmLoader();
         });
+
 }
 
 
@@ -42,27 +47,65 @@ function setupPagination(totalPages, currentPage, size) {
     const pagination = document.getElementById("pagination");
     pagination.innerHTML = "";
 
-    // Pulsante "Indietro"
-    const prevButton = document.createElement("button");
-    prevButton.innerText = "← Indietro";
-    prevButton.disabled = currentPage === 0;
-    prevButton.onclick = () => searchMovies(currentPage - 1);
-    pagination.appendChild(prevButton);
-
-    // Pulsanti numerici (opzionali, puoi tenerne solo alcuni o rimuoverli)
-    for (let i = 0; i < totalPages; i++) {
+    const createButton = (text, disabled, onClick, isCurrent = false) => {
         const btn = document.createElement("button");
-        btn.innerText = i + 1;
-        btn.onclick = () => searchMovies(i);
-        if (i === currentPage) btn.disabled = true;
-        pagination.appendChild(btn);
+        btn.innerText = text;
+        btn.disabled = disabled;
+        if (onClick) btn.onclick = onClick;
+        if (isCurrent) btn.style.fontWeight = "bold";
+        return btn;
+    };
+
+    // ← Indietro
+    pagination.appendChild(
+        createButton("←", currentPage === 0, () => searchMovies(currentPage - 1))
+    );
+
+    const maxVisible = 5;
+    let start = Math.max(0, currentPage - 2);
+    let end = Math.min(totalPages - 1, currentPage + 2);
+
+    if (currentPage <= 2) {
+        end = Math.min(totalPages - 1, maxVisible - 1);
+    } else if (currentPage >= totalPages - 3) {
+        start = Math.max(0, totalPages - maxVisible);
     }
 
-    // Pulsante "Avanti"
-    const nextButton = document.createElement("button");
-    nextButton.innerText = "Avanti →";
-    nextButton.disabled = currentPage === totalPages - 1;
-    nextButton.onclick = () => searchMovies(currentPage + 1);
-    pagination.appendChild(nextButton);
+    // First page + ...
+    if (start > 0) {
+        pagination.appendChild(createButton("1", false, () => searchMovies(0)));
+        if (start > 1) {
+            const dots = document.createElement("span");
+            dots.innerText = "…";
+            dots.style.margin = "0 4px";
+            pagination.appendChild(dots);
+        }
+    }
+
+    // Middle buttons
+    for (let i = start; i <= end; i++) {
+        pagination.appendChild(
+            createButton(i + 1, false, () => searchMovies(i), i === currentPage)
+        );
+    }
+
+    // ... + Last page
+    if (end < totalPages - 1) {
+        if (end < totalPages - 2) {
+            const dots = document.createElement("span");
+            dots.innerText = "…";
+            dots.style.margin = "0 4px";
+            pagination.appendChild(dots);
+        }
+        pagination.appendChild(
+            createButton(totalPages, false, () => searchMovies(totalPages - 1))
+        );
+    }
+
+    // → Avanti
+    pagination.appendChild(
+        createButton("→", currentPage === totalPages - 1, () => searchMovies(currentPage + 1))
+    );
 }
+
 

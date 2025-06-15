@@ -1,3 +1,4 @@
+
 function filtraPersone() {
     const prefix = document.getElementById("nomeInput").value;
 
@@ -49,6 +50,7 @@ function cerca() {
 }
 
 function caricaPagina() {
+    showFilmLoader();
     axios.get("http://localhost:8080/api/actors/paged", {
         params: {
             name: nomeAttuale,
@@ -73,6 +75,9 @@ function caricaPagina() {
         })
         .catch(error => {
             console.error("Errore nella richiesta:", error);
+        })
+        .finally(() => {
+            hideFilmLoader();
         });
 }
 
