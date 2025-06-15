@@ -15,8 +15,8 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
             nativeQuery = true)
     Page<Movie> findByTitleIgnoreCase(@Param("title") String title, Pageable pageable);
 
-    @Query(value = "SELECT * FROM \"Movies\" m WHERE m.date = :year || '%'",
-            countQuery = "SELECT count(*) FROM \"Movies\" m WHERE m.date = :title || '%'",
+    @Query(value = "SELECT * FROM \"Movies\" m WHERE EXTRACT(YEAR FROM m.date) = :year",
+            countQuery = "SELECT count(*) FROM \"Movies\" m WHERE EXTRACT(YEAR FROM m.date) = :year",
             nativeQuery = true)
     Page<Movie> findByYear(@Param("year") int year, Pageable pageable);
 }
