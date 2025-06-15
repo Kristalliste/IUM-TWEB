@@ -17,24 +17,44 @@ public class MovieController {
     public MovieController(MovieService movieService) {this.movieService = movieService;}
 
     @GetMapping("/search/{type}/{query}/{page}/{size}")
-    public ResponseEntity<Page<Movie>> searchMovies(
+    public ResponseEntity<Page<MovieDTO>> searchMovies(
             @PathVariable Enums.SearchType type, //enum with the types of search
             @PathVariable String query,
             @PathVariable int page,
             @PathVariable int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
+        Page<Movie> resultPage;
 
-        return switch (type) {
-            case TITLE -> movieService.findByTitleIgnoreCase(query, pageable);
+        switch (type) {
+            case TITLE -> resultPage = movieService.findByTitleIgnoreCase(query, pageable);
             case YEAR -> {
                 try {
-                     movieService.findByYear(Integer.parseInt(query), pageable);
+                    resultPage = movieService.findByYear(Integer.parseInt(query), pageable);
                 } catch (NumberFormatException e) {
-                    yield Page.empty(); // gestisce input non numerico
+                    return ResponseEntity.badRequest().build();
                 }
             }
-            default -> Page.empty();
-        };
+            default -> {
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
+        if (resultPage.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        // Mappa Movie -> MovieDTO
+        Page<MovieDTO> dtoPage = resultPage.map(movie -> new MovieDTO(
+                movie.getMovieId(),
+                movie.getTitle(),
+                movie.getDate(),
+                movie.getTagline(),
+                movie.getDescription(),
+                movie.getMinute(),
+                movie.getRating()
+        ));
+
+        return ResponseEntity.ok(dtoPage);
     }
 }

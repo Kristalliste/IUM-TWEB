@@ -41,4 +41,34 @@ public class Movie {
         this.rating = rating;
     }
 
+    // Getters e setters
+
+    public Integer getMovieId() {
+        return movieId;
+    }
+
+    public String getTitle() {
+        return name;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public String getTagline() {
+        return tagline;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Float getMinute() {
+        return minute;
+    }
+
+    public Float getRating() {
+        return rating;
+    }
+
 }
