@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class MovieService {
 
@@ -21,5 +23,17 @@ public class MovieService {
 
     public Page<Movie> findByYear( Integer year, Pageable pageable) {
         return movieRepository.findByYear(year, pageable);
+    }
+
+    public Page<Movie> findByGenreIgnoreCase(String genre, Pageable pageable) {
+        return movieRepository.findByGenreIgnoreCase(genre, pageable);
+    }
+
+    public List<String> getAllGenres() {
+        return movieRepository.findDistinctGenres();
+    }
+
+    public Page<Movie> getAllMovies(Pageable pageable) {
+        return movieRepository.findAllMovies(pageable);
     }
 }

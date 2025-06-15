@@ -4,6 +4,7 @@ public class Enums {
 
     public enum SearchType {
         TITLE,
-        YEAR
+        YEAR,
+        GENRE
     }
 }

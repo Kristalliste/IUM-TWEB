@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/movies")
 public class MovieController {
@@ -35,6 +37,8 @@ public class MovieController {
                     return ResponseEntity.badRequest().build();
                 }
             }
+            case GENRE -> resultPage = movieService.findByGenreIgnoreCase(query, pageable);
+
             default -> {
                 return ResponseEntity.badRequest().build();
             }
@@ -56,5 +60,32 @@ public class MovieController {
         ));
 
         return ResponseEntity.ok(dtoPage);
+    }
+
+    @GetMapping("/genres")
+    public ResponseEntity<List<String>> getGenres() {
+        List<String> genres = movieService.getAllGenres();
+        return genres.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(genres);
+    }
+
+    @GetMapping("/all/{page}/{size}")
+    public ResponseEntity<Page<MovieDTO>> getMovies(
+            @PathVariable int page,
+            @PathVariable int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Movie> moviePage = movieService.getAllMovies(pageable);
+
+        // Mappa Movie -> MovieDTO
+        Page<MovieDTO> movies = moviePage.map(movie -> new MovieDTO(
+                movie.getMovieId(),
+                movie.getTitle(),
+                movie.getDate(),
+                movie.getTagline(),
+                movie.getDescription(),
+                movie.getMinute(),
+                movie.getRating()
+        ));
+        return ResponseEntity.ok(movies);
     }
 }
