@@ -3,14 +3,19 @@
 function searchMovies(page) {
     showFilmLoader();
     const type = document.getElementById("search-type").value;
-    const query = document.getElementById("search-input").value;
+    let query = document.getElementById("search-input").value;
+    console.log(type);
+    if(type === "GENRE"){
+        query = document.getElementById("search-genre").value;
+    }
+
     const size = parseInt(document.getElementById("page-size").value);
 
     axios.get(`http://localhost:8080/api/movies/search/${type}/${encodeURIComponent(query)}/${page}/${size}`)
         .then(response => {
             console.log(response.data.content);
             displayResults(response.data.content);
-            setupPagination(response.data.totalPages, page, size);
+            setupPagination(response.data.totalPages, page, size, searchMovies);
         })
         .catch(error => {
             console.error("Errore nella richiesta:", error);
@@ -43,7 +48,7 @@ function displayResults(movies) {
     });
 }
 
-function setupPagination(totalPages, currentPage, size) {
+function setupPagination(totalPages, currentPage, size, onPageChange) {
     const pagination = document.getElementById("pagination");
     pagination.innerHTML = "";
 
@@ -58,7 +63,7 @@ function setupPagination(totalPages, currentPage, size) {
 
     // ← Indietro
     pagination.appendChild(
-        createButton("←", currentPage === 0, () => searchMovies(currentPage - 1))
+        createButton("←", currentPage === 0, () => onPageChange(currentPage - 1))
     );
 
     const maxVisible = 5;
@@ -73,7 +78,7 @@ function setupPagination(totalPages, currentPage, size) {
 
     // First page + ...
     if (start > 0) {
-        pagination.appendChild(createButton("1", false, () => searchMovies(0)));
+        pagination.appendChild(createButton("1", false, () => onPageChange(0)));
         if (start > 1) {
             const dots = document.createElement("span");
             dots.innerText = "…";
@@ -85,7 +90,7 @@ function setupPagination(totalPages, currentPage, size) {
     // Middle buttons
     for (let i = start; i <= end; i++) {
         pagination.appendChild(
-            createButton(i + 1, false, () => searchMovies(i), i === currentPage)
+            createButton(i + 1, false, () => onPageChange(i), i === currentPage)
         );
     }
 
@@ -98,14 +103,81 @@ function setupPagination(totalPages, currentPage, size) {
             pagination.appendChild(dots);
         }
         pagination.appendChild(
-            createButton(totalPages, false, () => searchMovies(totalPages - 1))
+            createButton(totalPages, false, () => onPageChange(totalPages - 1))
         );
     }
 
     // → Avanti
     pagination.appendChild(
-        createButton("→", currentPage === totalPages - 1, () => searchMovies(currentPage + 1))
+        createButton("→", currentPage === totalPages - 1, () => onPageChange(currentPage + 1))
     );
 }
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const searchType = document.getElementById("search-type");
+    const searchInput = document.getElementById("search-input");
+    const searchGenre = document.getElementById("search-genre");
+
+    let genresList = []; // Array per salvare i generi
+
+    // Carica i generi una sola volta al caricamento della pagina
+    function loadGenres() {
+        axios.get("http://localhost:8080/api/movies/genres") // Cambia endpoint se necessario
+            .then(response => {
+                genresList = response.data || []; // Salva i generi nell'array
+            })
+            .catch(error => {
+                console.error("Errore caricamento generi:", error);
+            });
+    }
+
+    function loadAllMovies(page){
+        showFilmLoader();
+        const size = parseInt(document.getElementById("page-size").value);
+
+        axios.get(`http://localhost:8080/api/movies/all/${page}/${size}`) // Cambia endpoint se necessario
+            .then(response => {
+                displayResults(response.data.content);
+                setupPagination(response.data.totalPages, page, size, loadAllMovies);
+            })
+            .catch(error => {
+                console.error("Errore nella richiesta:", error);
+            })
+            .finally(() => {
+                hideFilmLoader();
+            });
+    }
+
+    // Popola il menu a tendina usando l'array genresList
+    function populateGenreDropdown() {
+        searchGenre.innerHTML = "";
+        genresList.forEach(genre => {
+            const option = document.createElement("option");
+            option.value = genre;
+            option.textContent = genre;
+            searchGenre.appendChild(option);
+        });
+    }
+
+    // Event listener per cambio tipo di ricerca
+    searchType.addEventListener("change", () => {
+        const type = searchType.value;
+        if (type === "GENRE") {
+            searchInput.style.display = "none";
+            searchGenre.style.display = "inline-block";
+            populateGenreDropdown(); // Usa l'array già caricato
+        } else {
+            searchGenre.style.display = "none";
+            searchInput.style.display = "inline-block";
+        }
+    });
+
+    // Carica i generi all'avvio della pagina
+    loadGenres();
+    loadAllMovies(0);
+});
+
 
 
