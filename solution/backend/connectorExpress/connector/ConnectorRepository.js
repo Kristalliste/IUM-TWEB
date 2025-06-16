@@ -3,7 +3,7 @@ const MONGO_API = process.env.MONGO_SERVER_URL;
 const SPRING_API = process.env.SPRING_SERVER_URL;
 
 //temporary queries
-//
+
 const fetchAllReviews = async () => {
     try {
         const response = await axios.get(MONGO_API);
