@@ -48,16 +48,21 @@ public class MovieController {
             return ResponseEntity.noContent().build();
         }
 
-        // Mappa Movie -> MovieDTO
-        Page<MovieDTO> dtoPage = resultPage.map(movie -> new MovieDTO(
-                movie.getMovieId(),
-                movie.getTitle(),
-                movie.getDate(),
-                movie.getTagline(),
-                movie.getDescription(),
-                movie.getMinute(),
-                movie.getRating()
-        ));
+        Page<MovieDTO> dtoPage;
+        switch (type) {
+            case TITLE -> dtoPage = movieService.findByTitleIgnoreCaseDTO(query, pageable);
+            case YEAR -> {
+                try {
+                    dtoPage = movieService.findByYearDTO(Integer.parseInt(query), pageable);
+                } catch (NumberFormatException e) {
+                    return ResponseEntity.badRequest().build();
+                }
+            }
+            case GENRE -> dtoPage = movieService.findByGenreIgnoreCaseDTO(query, pageable);
+            default -> {
+                return ResponseEntity.badRequest().build();
+            }
+        }
 
         return ResponseEntity.ok(dtoPage);
     }
@@ -74,18 +79,7 @@ public class MovieController {
             @PathVariable int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Movie> moviePage = movieService.getAllMovies(pageable);
-
-        // Mappa Movie -> MovieDTO
-        Page<MovieDTO> movies = moviePage.map(movie -> new MovieDTO(
-                movie.getMovieId(),
-                movie.getTitle(),
-                movie.getDate(),
-                movie.getTagline(),
-                movie.getDescription(),
-                movie.getMinute(),
-                movie.getRating()
-        ));
+        Page<MovieDTO> movies = movieService.getAllMoviesDTO(pageable);
         return ResponseEntity.ok(movies);
     }
 }
