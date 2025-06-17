@@ -97,4 +97,13 @@ public class MovieService {
     public Page<MovieDTO> getAllMoviesDTO(Pageable pageable) {
         return convertToDTOPage(movieRepository.findAllMovies(pageable));
     }
+
+    public String getDescriptionById(Integer movieId) {
+        return movieRepository.findDescriptionByMovieId(movieId);
+    }
+
+    public Integer getYearById(Integer movieId) {
+        return movieRepository.findYearByMovieId(movieId);
+    }
+
 }

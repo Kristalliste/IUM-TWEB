@@ -34,7 +34,8 @@ public class Movie {
 
     public Movie() {}
 
-    public Movie( String name, Date date, String tagline, String description, Float minute, Float rating) {
+    public Movie( Integer movieId, String name, Date date, String tagline, String description, Float minute, Float rating) {
+        this.movieId = movieId;
         this.name = name;
         this.date = date;
         this.tagline = tagline;
@@ -50,7 +51,7 @@ public class Movie {
     public List<Language> getLanguages() { return languages; }
     public void setLanguages(List<Language> languages) { this.languages = languages; }
 
-    // Getters e setters
+    // Getters
 
     public Integer getMovieId() {
         return movieId;

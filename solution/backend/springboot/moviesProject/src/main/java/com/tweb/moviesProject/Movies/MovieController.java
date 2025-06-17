@@ -82,4 +82,15 @@ public class MovieController {
         Page<MovieDTO> movies = movieService.getAllMoviesDTO(pageable);
         return ResponseEntity.ok(movies);
     }
+
+    @GetMapping("/{id}/description")
+    public ResponseEntity<String> getDescription(@PathVariable Integer id) {
+        return ResponseEntity.ok(movieService.getDescriptionById(id));
+    }
+
+    @GetMapping("/{id}/year")
+    public ResponseEntity<Integer> getYear(@PathVariable Integer id) {
+        return ResponseEntity.ok(movieService.getYearById(id));
+    }
+
 }

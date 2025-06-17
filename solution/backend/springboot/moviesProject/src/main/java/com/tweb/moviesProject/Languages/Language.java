@@ -10,35 +10,71 @@ public class Language {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "language_id")
-    private Long id;
+    private Integer languageId;
 
-    @Column(name = "language")
+    @Column(name = "language", nullable = false)
     private String language;
 
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
     private String type;
 
-    @Column(name = "movie_id")
-    private Long movieId;
+    // Foreign key column
+    @Column(name = "movie_id", nullable = false)
+    private Integer movieId;
 
-    // Since many instances of movies are mapped to one instance of language
-    @ManyToOne
+    // Many languages belong to one movie
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id", insertable = false, updatable = false)
     private Movie movie;
 
+    // Default constructor for JPA
+    public Language() {}
+
+    public Language(Integer languageId, String language, String type, Integer movieId) {
+        this.languageId = languageId;
+        this.language = language;
+        this.type = type;
+        this.movieId = movieId;
+    }
+
     // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Integer getLanguageId() {
+        return languageId;
+    }
 
-    public String getLanguage() { return language; }
-    public void setLanguage(String language) { this.language = language; }
+    public void setLanguageId(Integer languageId) {
+        this.languageId = languageId;
+    }
 
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
+    public String getLanguage() {
+        return language;
+    }
 
-    public Long getMovieId() { return movieId; }
-    public void setMovieId(Long movieId) { this.movieId = movieId; }
+    public void setLanguage(String language) {
+        this.language = language;
+    }
 
-    public Movie getMovie() { return movie; }
-    public void setMovie(Movie movie) { this.movie = movie; }
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Integer getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(Integer movieId) {
+        this.movieId = movieId;
+    }
+
+    public Movie getMovie() {
+        return movie;
+    }
+
+    public void setMovie(Movie movie) {
+        this.movie = movie;
+    }
 }
