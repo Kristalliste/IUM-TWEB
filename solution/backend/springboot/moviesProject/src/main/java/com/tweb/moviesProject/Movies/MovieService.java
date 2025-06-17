@@ -2,6 +2,7 @@ package com.tweb.moviesProject.Movies;
 
 import com.tweb.moviesProject.Actors.ActorService;
 import com.tweb.moviesProject.Posters.PosterService;
+import com.tweb.moviesProject.Genres.GenreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,11 +18,15 @@ public class MovieService {
 
     private MovieRepository  movieRepository;
     private final PosterService posterService; // Nuovo servizio
+    private final GenreService genreService; // Nuovo servizio
 
     @Autowired
-    public MovieService(MovieRepository movieRepository, PosterService posterService) {
+    public MovieService(MovieRepository movieRepository,
+                        PosterService posterService,
+                        GenreService genreService) {
         this.movieRepository = movieRepository;
         this.posterService = posterService;
+        this.genreService = genreService;
     }
 
     public Page<Movie> findByTitleIgnoreCase(String title, Pageable pageable) {
@@ -54,6 +59,13 @@ public class MovieService {
 
         // Recupera i poster
         Map<Integer, String> posters = posterService.getPostersForMovies(movieIds);
+        Map<Integer, List<String>> genresMap = new HashMap<>();
+
+        // Recupera i generi per tutti i film
+        for (Integer movieId : movieIds) {
+            genresMap.put(movieId, genreService.getGenreNamesByMovieId(movieId));
+        }
+
         System.out.println("Posters trovati: " + posters.size());
 
         // Converti in DTO con poster
@@ -65,7 +77,8 @@ public class MovieService {
                 movie.getDescription(),
                 movie.getMinute(),
                 movie.getRating(),
-                posters.getOrDefault(movie.getMovieId(), "default-poster.jpg") // Poster di default
+                posters.getOrDefault(movie.getMovieId(), "default-poster.jpg"), // Poster di default
+                genresMap.getOrDefault(movie.getMovieId(), List.of())
         ));
     }
 

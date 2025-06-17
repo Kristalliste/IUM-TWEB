@@ -1,6 +1,7 @@
 package com.tweb.moviesProject.Movies;
 
 import java.util.Date;
+import java.util.List;
 
 public class MovieDTO {
 
@@ -12,11 +13,13 @@ public class MovieDTO {
     private Float minute;
     private Float rating;
     private String link; // Nuovo campo per il poster
+    private List<String> genres; // Nuovo campo per i generi
 
     public MovieDTO() {}
 
     public MovieDTO(Integer movieId, String name, Date date, String tagline,
-                    String description, Float minute, Float rating, String link) {
+                    String description, Float minute, Float rating, String link,
+                    List<String> genres) {
         this.movieId = movieId;
         this.name = name;
         this.date = date;
@@ -25,6 +28,7 @@ public class MovieDTO {
         this.minute = minute;
         this.rating = rating;
         this.link = link;
+        this.genres = genres;
     }
 
     // Getters e setters
@@ -59,4 +63,6 @@ public class MovieDTO {
 
     public String getLink() { return link; }
     public void setLink(String link) {this.link = link;}
+
+    public List<String> getGenres() { return genres;}
 }

@@ -38,6 +38,14 @@ function displayResults(movies) {
         rating.textContent = "★ " + (movie.rating || "-");
         rating.className = "movie-rating";
 
+        // Aggiungi i generi (se disponibili)
+        if (movie.genres && movie.genres.length > 0) {
+            const genres = document.createElement("p");
+            genres.className = "movie-genres";
+            genres.textContent = movie.genres.join(", ");
+            infoDiv.appendChild(genres);
+        }
+
         // Aggiungi elementi alla card
         infoDiv.appendChild(title);
         infoDiv.appendChild(year);
