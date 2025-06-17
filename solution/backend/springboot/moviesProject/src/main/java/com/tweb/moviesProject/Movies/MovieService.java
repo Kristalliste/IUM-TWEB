@@ -72,8 +72,7 @@ public class MovieService {
             genresMap.put(movieId, genreService.getGenreNamesByMovieId(movieId));
             languagesMap.put(movieId, languageService.getLanguagesByMovieId(movieId)
                     .stream().map(Language::getLanguage).distinct().toList());
-            actorsMap.put(movieId, actorService.findByMovieId(movieId)
-                    .stream().map(Actor::getName).toList());
+            actorsMap.put(movieId, actorService.getActorNamesByMovieId(movieId);
         }
 
         // Converts in DTO
@@ -114,8 +113,7 @@ public class MovieService {
 
         String posterUrl = posterService.getPosterForMovie(movieId);
         List<String> genres = genreService.getGenreNamesByMovieId(movieId);
-        List<String> actors = actorService.findByMovieId(movieId)
-                .stream().map(Actor::getName).toList();
+        List<String> actors = actorService.getActorNamesByMovieId(movieId);
         List<String> languages = languageService.getLanguagesByMovieId(movieId)
                 .stream().map(Language::getLanguage).distinct().toList();
 
