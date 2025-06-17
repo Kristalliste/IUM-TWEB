@@ -27,14 +27,14 @@ public class Movie {
     private String description;
 
     @Column(name = "minute")
-    private Float minute;
+    private Double minute;
 
     @Column(name = "rating")
-    private Float rating;
+    private Double rating;
 
     public Movie() {}
 
-    public Movie( Integer movieId, String name, Date date, String tagline, String description, Float minute, Float rating) {
+    public Movie( Integer movieId, String name, Date date, String tagline, String description, Double minute, Double rating) {
         this.movieId = movieId;
         this.name = name;
         this.date = date;
@@ -57,7 +57,7 @@ public class Movie {
         return movieId;
     }
 
-    public String getTitle() {
+    public String getName() {
         return name;
     }
 
@@ -73,12 +73,10 @@ public class Movie {
         return description;
     }
 
-    public Float getMinute() {
+    public Double getMinute() {
         return minute;
     }
 
-    public Float getRating() {
-        return rating;
-    }
+    public Double getRating() { return rating; }
 
 }

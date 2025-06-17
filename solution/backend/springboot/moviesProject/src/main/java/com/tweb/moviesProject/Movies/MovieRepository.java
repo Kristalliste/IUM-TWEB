@@ -35,12 +35,4 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
             nativeQuery = true)
     Page<Movie> findAllMovies(Pageable pageable);
 
-    // Get description by movie ID
-    @Query(value = "SELECT m.description FROM \"Movies\" m WHERE m.id = :movieId", nativeQuery = true)
-    String findDescriptionByMovieId(@Param("movieId") Integer movieId);
-
-    // Get year (from date) by movie ID
-    @Query(value = "SELECT EXTRACT(YEAR FROM m.date) FROM \"Movies\" m WHERE m.id = :movieId", nativeQuery = true)
-    Integer findYearByMovieId(@Param("movieId") Integer movieId);
-
 }

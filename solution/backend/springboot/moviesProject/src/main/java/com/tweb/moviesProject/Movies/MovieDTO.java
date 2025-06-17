@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;
 import java.util.List;
 
-@Schema(description = "Data Transfer Object for Movie details")
+@Schema(description = "Data Transfer Object for movie details")
 public class MovieDTO {
 
     @Schema(description = "Unique identifier of the movie", example = "1")
@@ -17,85 +17,114 @@ public class MovieDTO {
     @Schema(description = "Release date of the movie", example = "1994-09-23")
     private Date date;
 
-    @Schema(description = "Tagline of the movie", example = "Fear can hold you prisoner. Hope can set you free.")
-    private String tagline;
+    /*@Schema(description = "Tagline of the movie", example = "Fear can hold you prisoner. Hope can set you free.")
+    private String tagline;*/
 
     @Schema(description = "Detailed description of the movie",
-            example = "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.")
+            example = "Two imprisoned men bond over a number of years...")
     private String description;
 
-    @Schema(description = "Duration in minutes", example = "142")
-    private Float minute;
+    @Schema(description = "Duration in minutes", example = "142.0")
+    private Double minute;
 
-    @Schema(description = "Average rating", example = "9.3")
-    private Float rating;
+    /*@Schema(description = "Average rating", example = "9.3")
+    private Double rating;*/
 
     @Schema(description = "URL to the movie poster image",
-            example = "https://example.com/posters/shawshank-redemption.jpg")
+            example = "https://example.com/posters/shawshank.jpg")
     private String link; // for posters
 
     @Schema(description = "List of genres", example = "[\"Drama\", \"Crime\"]")
     private List<String> genres;
 
-    @Schema(description = "List of actors who starred in the movie",
-            example = "[\"Tim Robbins\", \"Morgan Freeman\"]")
+    @Schema(description = "List of actor names", example = "[\"Tim Robbins\", \"Morgan Freeman\"]")
     private List<String> actors;
 
-    @Schema(description = "Language of the movie", example = "English")
-    private String language;
-    // Constructor
+    @Schema(description = "All spoken languages for the movie", example = "[\"English\", \"French\"]")
+    private List<String> languages;
+
+    // Constructors
     public MovieDTO() {}
 
-    public MovieDTO(Integer movieId, String name, Date date, String tagline,
-                    String description, Float minute, Float rating, String link,
-                    List<String> genres, List<String> actors, String language) {
+    public MovieDTO(Integer movieId, String name, Date date,/*String tagline,*/
+                    String description, Double minute, /*Double rating,*/ String link,
+                    List<String> genres, List<String> actors, List<String> languages) {
         this.movieId = movieId;
         this.name = name;
         this.date = date;
-        this.tagline = tagline;
+        //this.tagline = tagline;
         this.description = description;
         this.minute = minute;
-        this.rating = rating;
+        //this.rating = rating;
         this.link = link;
         this.genres = genres;
         this.actors = actors;
-        this.language = language;
+        this.languages = languages;
     }
 
-    // Getters and setters
-
+    // Getters and Setters
     public Integer getMovieId() {
         return movieId;
     }
+    public void setMovieId(Integer movieId) {
+        this.movieId = movieId;
+    }
 
-    public String getTitle() {
+    public String getName() {
         return name;
+    }
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Date getDate() {
         return date;
     }
-
+    public void setDate(Date date) {
+        this.date = date;
+    }
+/*
     public String getTagline() {
         return tagline;
     }
+    public void setTagline(String tagline) {
+        this.tagline = tagline;
+    }*/
 
     public String getDescription() {
         return description;
     }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public Float getMinute() {
+    public Double getMinute() {
         return minute;
     }
-
-    public Float getRating() {
+    public void setMinute(Double minute) {
+        this.minute = minute;
+    }
+/*
+    public Double getRating() {
         return rating;
     }
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }*/
 
-    public String getLink() { return link; }
-    public void setLink(String link) {this.link = link;}
+    public String getLink() {
+        return link;
+    }
+    public void setLink(String link) {
+        this.link = link;
+    }
 
-    public List<String> getGenres() { return genres;}
+    public List<String> getGenres() {
+        return genres;
+    }
+    public void setGenres(List<String> genres) {
+        this.genres = genres;
+    }
 
     public List<String> getActors() {
         return actors;
@@ -104,10 +133,10 @@ public class MovieDTO {
         this.actors = actors;
     }
 
-    public String getLanguage() {
-        return language;
+    public List<String> getLanguages() {
+        return languages;
     }
-    public void setLanguage(String language) {
-        this.language = language;
+    public void setLanguages(List<String> languages) {
+        this.languages = languages;
     }
 }

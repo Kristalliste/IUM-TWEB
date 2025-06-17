@@ -1,39 +1,45 @@
 package com.tweb.moviesProject.Movies;
 
+import com.tweb.moviesProject.Actors.Actor;
 import com.tweb.moviesProject.Actors.ActorService;
-import com.tweb.moviesProject.Posters.PosterService;
 import com.tweb.moviesProject.Genres.GenreService;
+import com.tweb.moviesProject.Languages.Language;
+import com.tweb.moviesProject.Languages.LanguageService;
+import com.tweb.moviesProject.Posters.PosterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class MovieService {
 
-    private MovieRepository  movieRepository;
-    private final PosterService posterService; // Nuovo servizio
-    private final GenreService genreService; // Nuovo servizio
+    private final MovieRepository movieRepository;
+    private final PosterService posterService;
+    private final GenreService genreService;
+    private final ActorService actorService;
+    private final LanguageService languageService;
 
     @Autowired
     public MovieService(MovieRepository movieRepository,
                         PosterService posterService,
-                        GenreService genreService) {
+                        GenreService genreService,
+                        ActorService actorService,
+                        LanguageService languageService) {
         this.movieRepository = movieRepository;
         this.posterService = posterService;
         this.genreService = genreService;
+        this.actorService = actorService;
+        this.languageService = languageService;
     }
 
     public Page<Movie> findByTitleIgnoreCase(String title, Pageable pageable) {
         return movieRepository.findByTitleIgnoreCase(title, pageable);
     }
 
-    public Page<Movie> findByYear( Integer year, Pageable pageable) {
+    public Page<Movie> findByYear(Integer year, Pageable pageable) {
         return movieRepository.findByYear(year, pageable);
     }
 
@@ -50,35 +56,39 @@ public class MovieService {
     }
 
     private Page<MovieDTO> convertToDTOPage(Page<Movie> moviePage) {
-        // Estrai gli ID dei film
+        // Extract movie IDs
         List<Integer> movieIds = moviePage.getContent().stream()
                 .map(Movie::getMovieId)
                 .toList();
 
-        System.out.println("Movie IDs: " + movieIds);
-
-        // Recupera i poster
+        // Gets posters
         Map<Integer, String> posters = posterService.getPostersForMovies(movieIds);
         Map<Integer, List<String>> genresMap = new HashMap<>();
+        Map<Integer, List<String>> languagesMap = new HashMap<>();
+        Map<Integer, List<String>> actorsMap = new HashMap<>();
 
-        // Recupera i generi per tutti i film
+        // Gets genres for all movies
         for (Integer movieId : movieIds) {
             genresMap.put(movieId, genreService.getGenreNamesByMovieId(movieId));
+            languagesMap.put(movieId, languageService.getLanguagesByMovieId(movieId)
+                    .stream().map(Language::getLanguage).distinct().toList());
+            actorsMap.put(movieId, actorService.findByMovieId(movieId)
+                    .stream().map(Actor::getName).toList());
         }
 
-        System.out.println("Posters trovati: " + posters.size());
-
-        // Converti in DTO con poster
+        // Converts in DTO
         return moviePage.map(movie -> new MovieDTO(
                 movie.getMovieId(),
-                movie.getTitle(),
+                movie.getName(),
                 movie.getDate(),
-                movie.getTagline(),
+               // movie.getTagline(),
                 movie.getDescription(),
                 movie.getMinute(),
-                movie.getRating(),
-                posters.getOrDefault(movie.getMovieId(), "default-poster.jpg"), // Poster di default
-                genresMap.getOrDefault(movie.getMovieId(), List.of())
+                // movie.getRating(),
+                posters.getOrDefault(movie.getMovieId(), "default-poster.jpg"),
+                genresMap.getOrDefault(movie.getMovieId(), List.of()),
+                actorsMap.getOrDefault(movie.getMovieId(), List.of()),
+                languagesMap.getOrDefault(movie.getMovieId(), List.of())
         ));
     }
 
@@ -98,12 +108,29 @@ public class MovieService {
         return convertToDTOPage(movieRepository.findAllMovies(pageable));
     }
 
-    public String getDescriptionById(Integer movieId) {
-        return movieRepository.findDescriptionByMovieId(movieId);
-    }
+    public MovieDTO getMovieDetails(Integer movieId) {
+        Movie movie = movieRepository.findById(movieId).orElseThrow(() ->
+                new NoSuchElementException("Movie with ID " + movieId + " not found"));
 
-    public Integer getYearById(Integer movieId) {
-        return movieRepository.findYearByMovieId(movieId);
-    }
+        String posterUrl = posterService.getPosterForMovie(movieId);
+        List<String> genres = genreService.getGenreNamesByMovieId(movieId);
+        List<String> actors = actorService.findByMovieId(movieId)
+                .stream().map(Actor::getName).toList();
+        List<String> languages = languageService.getLanguagesByMovieId(movieId)
+                .stream().map(Language::getLanguage).distinct().toList();
 
+        return new MovieDTO(
+                movie.getMovieId(),
+                movie.getName(),
+                movie.getDate(),
+                // movie.getTagline(),
+                movie.getDescription(),
+                movie.getMinute(),
+                // movie.getRating()
+                posterUrl != null ? posterUrl : "default-poster.jpg",
+                genres,
+                actors,
+                languages
+        );
+    }
 }

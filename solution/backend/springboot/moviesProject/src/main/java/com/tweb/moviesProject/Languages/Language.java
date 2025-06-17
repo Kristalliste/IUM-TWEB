@@ -2,79 +2,41 @@ package com.tweb.moviesProject.Languages;
 
 import com.tweb.moviesProject.Movies.Movie;
 import jakarta.persistence.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @Table(name = "\"Languages\"")
+@Schema(description = "Language entity representing the language(s) of a movie")
 public class Language {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "language_id")
+    @Schema(description = "Unique ID of the language", example = "1")
     private Integer languageId;
 
-    @Column(name = "language", nullable = false)
+    @Column(name = "language")
+    @Schema(description = "Language name", example = "English")
     private String language;
 
-    @Column(name = "type", nullable = false)
+    @Column(name = "type")
+    @Schema(description = "Type of language (e.g., original, dubbed)", example = "original")
     private String type;
 
-    // Foreign key column
-    @Column(name = "movie_id", nullable = false)
+    @Column(name = "movie_id")
+    @Schema(description = "ID of the movie this language is associated with", example = "101")
     private Integer movieId;
 
-    // Many languages belong to one movie
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "movie_id", insertable = false, updatable = false)
-    private Movie movie;
+    // Getters and Setters
+    public Integer getLanguageId() { return languageId; }
+    public void setLanguageId(Integer languageId) { this.languageId = languageId; }
 
-    // Default constructor for JPA
-    public Language() {}
+    public String getLanguage() { return language; }
+    public void setLanguage(String language) { this.language = language; }
 
-    public Language(Integer languageId, String language, String type, Integer movieId) {
-        this.languageId = languageId;
-        this.language = language;
-        this.type = type;
-        this.movieId = movieId;
-    }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 
-    // Getters and setters
-    public Integer getLanguageId() {
-        return languageId;
-    }
-
-    public void setLanguageId(Integer languageId) {
-        this.languageId = languageId;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Integer getMovieId() {
-        return movieId;
-    }
-
-    public void setMovieId(Integer movieId) {
-        this.movieId = movieId;
-    }
-
-    public Movie getMovie() {
-        return movie;
-    }
-
-    public void setMovie(Movie movie) {
-        this.movie = movie;
-    }
+    public Integer getMovieId() { return movieId; }
+    public void setMovieId(Integer movieId) { this.movieId = movieId; }
 }
