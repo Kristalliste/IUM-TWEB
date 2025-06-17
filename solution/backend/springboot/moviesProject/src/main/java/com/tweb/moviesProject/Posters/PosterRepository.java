@@ -10,9 +10,7 @@ import java.util.List;
 @Repository
 public interface PosterRepository extends JpaRepository<Poster, Integer> {
 
-    @Query(value = "SELECT link FROM \"Posters\" WHERE movie_id = :movieId", nativeQuery = true)
-    List<String> findLinksByMovieId(@Param("movieId") Integer movieId);
+    @Query(value = "SELECT link FROM \"Posters\" WHERE movie_id = :movieId LIMIT 1", nativeQuery = true)
+    String findPosterLinkByMovieId(@Param("movieId") Integer movieId);
 
-    @Query(value = "SELECT movie_id, link FROM \"Posters\" WHERE movie_id IN :movieIds", nativeQuery = true)
-    List<Object[]> findLinksByMovieIds(@Param("movieIds") List<Integer> movieIds);
-}
+    }

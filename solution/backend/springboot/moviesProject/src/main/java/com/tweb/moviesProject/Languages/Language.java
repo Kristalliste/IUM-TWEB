@@ -2,33 +2,34 @@ package com.tweb.moviesProject.Languages;
 
 import com.tweb.moviesProject.Movies.Movie;
 import jakarta.persistence.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @Table(name = "\"Languages\"")
+@Schema(description = "Language entity representing the language(s) of a movie")
 public class Language {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "language_id")
-    private Long id;
+    @Schema(description = "Unique ID of the language", example = "1")
+    private Integer languageId;
 
     @Column(name = "language")
+    @Schema(description = "Language name", example = "English")
     private String language;
 
     @Column(name = "type")
+    @Schema(description = "Type of language (e.g., original, dubbed)", example = "original")
     private String type;
 
     @Column(name = "movie_id")
-    private Long movieId;
+    @Schema(description = "ID of the movie this language is associated with", example = "101")
+    private Integer movieId;
 
-    // Since many instances of movies are mapped to one instance of language
-    @ManyToOne
-    @JoinColumn(name = "movie_id", insertable = false, updatable = false)
-    private Movie movie;
-
-    // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Getters and Setters
+    public Integer getLanguageId() { return languageId; }
+    public void setLanguageId(Integer languageId) { this.languageId = languageId; }
 
     public String getLanguage() { return language; }
     public void setLanguage(String language) { this.language = language; }
@@ -36,9 +37,6 @@ public class Language {
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
 
-    public Long getMovieId() { return movieId; }
-    public void setMovieId(Long movieId) { this.movieId = movieId; }
-
-    public Movie getMovie() { return movie; }
-    public void setMovie(Movie movie) { this.movie = movie; }
+    public Integer getMovieId() { return movieId; }
+    public void setMovieId(Integer movieId) { this.movieId = movieId; }
 }

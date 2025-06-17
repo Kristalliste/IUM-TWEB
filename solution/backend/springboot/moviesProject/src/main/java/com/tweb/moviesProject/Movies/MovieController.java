@@ -1,85 +1,61 @@
 package com.tweb.moviesProject.Movies;
 
-import com.tweb.moviesProject.Enums;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
+@Tag(name = "Movies API", description = "Endpoints for managing movies")
 @RestController
 @RequestMapping("/api/movies")
 public class MovieController {
 
     private final MovieService movieService;
 
-    public MovieController(MovieService movieService) {this.movieService = movieService;}
-
-    @GetMapping("/search/{type}/{query}/{page}/{size}")
-    public ResponseEntity<Page<MovieDTO>> searchMovies(
-            @PathVariable Enums.SearchType type, //enum with the types of search
-            @PathVariable String query,
-            @PathVariable int page,
-            @PathVariable int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Movie> resultPage;
-
-        switch (type) {
-            case TITLE -> resultPage = movieService.findByTitleIgnoreCase(query, pageable);
-            case YEAR -> {
-                try {
-                    resultPage = movieService.findByYear(Integer.parseInt(query), pageable);
-                } catch (NumberFormatException e) {
-                    return ResponseEntity.badRequest().build();
-                }
-            }
-            case GENRE -> resultPage = movieService.findByGenreIgnoreCase(query, pageable);
-
-            default -> {
-                return ResponseEntity.badRequest().build();
-            }
-        }
-
-        if (resultPage.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
-        Page<MovieDTO> dtoPage;
-        switch (type) {
-            case TITLE -> dtoPage = movieService.findByTitleIgnoreCaseDTO(query, pageable);
-            case YEAR -> {
-                try {
-                    dtoPage = movieService.findByYearDTO(Integer.parseInt(query), pageable);
-                } catch (NumberFormatException e) {
-                    return ResponseEntity.badRequest().build();
-                }
-            }
-            case GENRE -> dtoPage = movieService.findByGenreIgnoreCaseDTO(query, pageable);
-            default -> {
-                return ResponseEntity.badRequest().build();
-            }
-        }
-
-        return ResponseEntity.ok(dtoPage);
+    @Autowired
+    public MovieController(MovieService movieService) {
+        this.movieService = movieService;
     }
 
-    @GetMapping("/genres")
-    public ResponseEntity<List<String>> getGenres() {
-        List<String> genres = movieService.getAllGenres();
-        return genres.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(genres);
+    @Operation(summary = "Get paginated movies by title (case insensitive)")
+    @GetMapping("/search/title")
+    public ResponseEntity<Page<MovieDTO>> getMoviesByTitle(@RequestParam String title, Pageable pageable) {
+        Page<MovieDTO> movies = movieService.findByTitleIgnoreCaseDTO(title, pageable);
+        return ResponseEntity.ok(movies);
     }
 
-    @GetMapping("/all/{page}/{size}")
-    public ResponseEntity<Page<MovieDTO>> getMovies(
-            @PathVariable int page,
-            @PathVariable int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
+    @Operation(summary = "Get paginated movies by release year")
+    @GetMapping("/search/year")
+    public ResponseEntity<Page<MovieDTO>> getMoviesByYear(@RequestParam Integer year, Pageable pageable) {
+        Page<MovieDTO> movies = movieService.findByYearDTO(year, pageable);
+        return ResponseEntity.ok(movies);
+    }
+
+    @Operation(summary = "Get paginated movies by genre")
+    @GetMapping("/search/genre")
+    public ResponseEntity<Page<MovieDTO>> getMoviesByGenre(@RequestParam String genre, Pageable pageable) {
+        Page<MovieDTO> movies = movieService.findByGenreIgnoreCaseDTO(genre, pageable);
+        return ResponseEntity.ok(movies);
+    }
+
+    @Operation(summary = "Get paginated list of all movies")
+    @GetMapping
+    public ResponseEntity<Page<MovieDTO>> getAllMovies(Pageable pageable) {
         Page<MovieDTO> movies = movieService.getAllMoviesDTO(pageable);
         return ResponseEntity.ok(movies);
     }
+
+    @Operation(summary = "Get detailed movie information by ID")
+    @GetMapping("/{id}")
+    public ResponseEntity<MovieDTO> getMovieDetails(@PathVariable("id") Integer movieId) {
+        MovieDTO movieDetails = movieService.getMovieDetails(movieId);
+        if (movieDetails == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(movieDetails);
+    }
+
 }
