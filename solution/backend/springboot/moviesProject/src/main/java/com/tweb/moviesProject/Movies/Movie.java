@@ -1,8 +1,10 @@
 package com.tweb.moviesProject.Movies;
 
+import com.tweb.moviesProject.Languages.Language;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name="Movies")
@@ -40,6 +42,13 @@ public class Movie {
         this.minute = minute;
         this.rating = rating;
     }
+
+    // Since many instances of languages are mapped to one instance of movie
+    @OneToMany(mappedBy = "movie")
+    private List<Language> languages;
+
+    public List<Language> getLanguages() { return languages; }
+    public void setLanguages(List<Language> languages) { this.languages = languages; }
 
     // Getters e setters
 
