@@ -1,0 +1,18 @@
+package com.tweb.moviesProject.Posters;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface PosterRepository extends JpaRepository<Poster, Integer> {
+
+    @Query(value = "SELECT link FROM \"Posters\" WHERE movie_id = :movieId", nativeQuery = true)
+    List<String> findLinksByMovieId(@Param("movieId") Integer movieId);
+
+    @Query(value = "SELECT movie_id, link FROM \"Posters\" WHERE movie_id IN :movieIds", nativeQuery = true)
+    List<Object[]> findLinksByMovieIds(@Param("movieIds") List<Integer> movieIds);
+}

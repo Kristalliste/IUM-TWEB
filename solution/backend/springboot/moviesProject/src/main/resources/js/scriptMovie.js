@@ -1,32 +1,4 @@
-
-
-function searchMovies(page) {
-    showFilmLoader();
-    const type = document.getElementById("search-type").value;
-    let query = document.getElementById("search-input").value;
-    console.log(type);
-    if(type === "GENRE"){
-        query = document.getElementById("search-genre").value;
-    }
-
-    const size = parseInt(document.getElementById("page-size").value);
-
-    axios.get(`http://localhost:8080/api/movies/search/${type}/${encodeURIComponent(query)}/${page}/${size}`)
-        .then(response => {
-            console.log(response.data.content);
-            displayResults(response.data.content);
-            setupPagination(response.data.totalPages, page, size, searchMovies);
-        })
-        .catch(error => {
-            console.error("Errore nella richiesta:", error);
-        })
-        .finally(() => {
-            hideFilmLoader();
-        });
-
-}
-
-
+// Aggiungi questa funzione per creare le card dei film con poster
 function displayResults(movies) {
     const results = document.getElementById("results");
     results.innerHTML = "";
@@ -36,16 +8,79 @@ function displayResults(movies) {
         return;
     }
 
+    // Crea un contenitore a griglia
+    const gridContainer = document.createElement("div");
+    gridContainer.className = "movies-grid";
+    results.appendChild(gridContainer);
+
     movies.forEach(movie => {
-        const div = document.createElement("div");
-        div.className = "movie";
+        const movieCard = document.createElement("div");
+        movieCard.className = "movie-card";
 
-        const newDate = new Date(movie.date);
+        // Poster
+        const poster = document.createElement("img");
+        poster.className = "movie-poster";
+        poster.src = movie.link || 'default-poster.jpg'; // Immagine di default
+        poster.alt = movie.title + ' poster';
 
-        //(movie.rating == null ? "-": movie.rating) -> ternary operator = condiiton ? ifTrueExpression : ifFalseExpression
-        div.innerText = movie.title + " " + newDate.getFullYear() + " " + movie.minute + " " +  (movie.rating == null ? "-": movie.rating);
-        results.appendChild(div);
+        // Info film
+        const infoDiv = document.createElement("div");
+        infoDiv.className = "movie-info";
+
+        const title = document.createElement("h3");
+        title.textContent = movie.title;
+
+        const year = document.createElement("p");
+        const movieDate = new Date(movie.date);
+        year.textContent = movieDate.getFullYear();
+
+        const rating = document.createElement("p");
+        rating.textContent = "★ " + (movie.rating || "-");
+        rating.className = "movie-rating";
+
+        // Aggiungi i generi (se disponibili)
+        if (movie.genres && movie.genres.length > 0) {
+            const genres = document.createElement("p");
+            genres.className = "movie-genres";
+            genres.textContent = movie.genres.join(", ");
+            infoDiv.appendChild(genres);
+        }
+
+        // Aggiungi elementi alla card
+        infoDiv.appendChild(title);
+        infoDiv.appendChild(year);
+        infoDiv.appendChild(rating);
+
+        movieCard.appendChild(poster);
+        movieCard.appendChild(infoDiv);
+        gridContainer.appendChild(movieCard);
     });
+}
+
+function searchMovies(page) {
+    showFilmLoader();
+    const type = document.getElementById("search-type").value;
+    let query = document.getElementById("search-input").value;
+
+    if(type === "GENRE"){
+        query = document.getElementById("search-genre").value;
+    }
+
+    const size = parseInt(document.getElementById("page-size").value);
+
+    axios.get(`http://localhost:8080/api/movies/search/${type}/${encodeURIComponent(query)}/${page}/${size}`)
+        .then(response => {
+            displayResults(response.data.content);
+            setupPagination(response.data.totalPages, page, size, searchMovies);
+        })
+        .catch(error => {
+            console.error("Errore nella richiesta:", error);
+            document.getElementById("results").innerHTML = "<p>Errore nel caricamento dei dati</p>";
+        })
+        .finally(() => {
+            hideFilmLoader();
+        });
+
 }
 
 function setupPagination(totalPages, currentPage, size, onPageChange) {
@@ -145,9 +180,6 @@ document.addEventListener("DOMContentLoaded", () => {
             .catch(error => {
                 console.error("Errore nella richiesta:", error);
             })
-            .finally(() => {
-                // hideFilmLoader();
-            });
     }
 
     // Popola il menu a tendina usando l'array genresList
