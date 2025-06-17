@@ -1,6 +1,5 @@
 package com.tweb.moviesProject.Movies;
 
-import com.tweb.moviesProject.Actors.Actor;
 import com.tweb.moviesProject.Actors.ActorService;
 import com.tweb.moviesProject.Genres.GenreService;
 import com.tweb.moviesProject.Languages.Language;
@@ -61,18 +60,19 @@ public class MovieService {
                 .map(Movie::getMovieId)
                 .toList();
 
-        // Gets posters
-        Map<Integer, String> posters = posterService.getPostersForMovies(movieIds);
+        // Gets posters - no exception thrown, defaults handled inside PosterService
+        Map<Integer, String> posters = posterService.getPostersByMovieIds(movieIds);
+
         Map<Integer, List<String>> genresMap = new HashMap<>();
         Map<Integer, List<String>> languagesMap = new HashMap<>();
         Map<Integer, List<String>> actorsMap = new HashMap<>();
 
-        // Gets genres for all movies
+        // Gets genres, languages, actors for all movies
         for (Integer movieId : movieIds) {
             genresMap.put(movieId, genreService.getGenreNamesByMovieId(movieId));
             languagesMap.put(movieId, languageService.getLanguagesByMovieId(movieId)
                     .stream().map(Language::getLanguage).distinct().toList());
-            actorsMap.put(movieId, actorService.getActorNamesByMovieId(movieId);
+            actorsMap.put(movieId, actorService.getActorNamesByMovieId(movieId));
         }
 
         // Converts in DTO
@@ -80,7 +80,7 @@ public class MovieService {
                 movie.getMovieId(),
                 movie.getName(),
                 movie.getDate(),
-               // movie.getTagline(),
+                // movie.getTagline(),
                 movie.getDescription(),
                 movie.getMinute(),
                 // movie.getRating(),
@@ -111,7 +111,7 @@ public class MovieService {
         Movie movie = movieRepository.findById(movieId).orElseThrow(() ->
                 new NoSuchElementException("Movie with ID " + movieId + " not found"));
 
-        String posterUrl = posterService.getPosterForMovie(movieId);
+        String posterUrl = posterService.getPosterByMovieId(movieId); // also no exception thrown here
         List<String> genres = genreService.getGenreNamesByMovieId(movieId);
         List<String> actors = actorService.getActorNamesByMovieId(movieId);
         List<String> languages = languageService.getLanguagesByMovieId(movieId)
