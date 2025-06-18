@@ -43,12 +43,16 @@ public class MovieDTO {
     @Schema(description = "All spoken languages for the movie", example = "[\"English\", \"French\"]")
     private List<String> languages;
 
+    @Schema(description = "Indicates if the movie has any Oscar nominations or wins", example = "true")
+    private Boolean hasOscar;
+
     // Constructors
     public MovieDTO() {}
 
     public MovieDTO(Integer movieId, String name, Date date,/*String tagline,*/
                     String description, Double minute, /*Double rating,*/ String link,
-                    List<String> genres, List<String> actors, List<String> languages) {
+                    List<String> genres, List<String> actors, List<String> languages,
+                    Boolean hasOscar) {
         this.movieId = movieId;
         this.name = name;
         this.date = date;
@@ -60,6 +64,7 @@ public class MovieDTO {
         this.genres = genres;
         this.actors = actors;
         this.languages = languages;
+        this.hasOscar = hasOscar;
     }
 
     // Getters and Setters
@@ -139,4 +144,7 @@ public class MovieDTO {
     public void setLanguages(List<String> languages) {
         this.languages = languages;
     }
+
+    public Boolean getHasOscar() { return hasOscar; }
+    public void setHasOscar(Boolean hasOscar) { this.hasOscar = hasOscar; }
 }
