@@ -1,8 +1,9 @@
+// IUM-TWEB/solution/frontend/client_server/views.js
 import { escapeHTML } from './utils.js';
-import { renderUsernamePrompt, renderChatInterface } from './chat.js';
+import { renderUsernamePrompt } from './chat.js';
 import { fetchMovieDetails } from './api.js';
 
-// Funzione per formattare i dati del backend nel formato frontend
+// Update formatMovieDetails function
 function formatMovieDetails(movieData) {
     return {
         id: movieData.id || movieData.movieId,
@@ -26,6 +27,7 @@ export function showMainView(mainView, detailView) {
     detailView.innerHTML = '';
 }
 
+// SINGOLA DICHIARAZIONE DI showDetailView (rimossa la duplicata)
 export async function showDetailView(movieId, mainView, detailView) {
     // Mostra la vista dettaglio con indicatori di caricamento
     mainView.style.display = 'none';

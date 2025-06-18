@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Tag(name = "Movie Service", description = "Service layer for movie data and DTO conversion")
@@ -53,6 +54,11 @@ public class MovieService {
         return movieRepository.findByGenreIgnoreCase(genre, pageable);
     }
 
+    // Batch method to get posters by movie IDs
+    public Map<Integer, String> getPostersByMovieIds(List<Integer> movieIds) {
+        return posterService.getPostersByMovieIds(movieIds);
+    }
+
     public List<String> getAllGenres() {
         return movieRepository.findDistinctGenres();
     }
@@ -64,48 +70,41 @@ public class MovieService {
     /**
      * Converts a Page of Movie entities to a Page of MovieDTOs
      */
+    // Optimize DTO conversion
     private Page<MovieDTO> convertToDTOPage(Page<Movie> moviePage) {
-        // Extract movie IDs
+        // Get all movie IDs
         List<Integer> movieIds = moviePage.getContent().stream()
                 .map(Movie::getMovieId)
-                .toList();
+                .collect(Collectors.toList());
 
-        // Extract movie names for hasOscsr
+        // Batch fetch all related data
+        Map<Integer, String> posters = getPostersByMovieIds(movieIds);
+        Map<Integer, List<String>> genresMap = genreService.getGenreNamesByMovieIds(movieIds);
+        Map<Integer, List<String>> actorsMap = actorService.getActorNamesByMovieIds(movieIds);
+        Map<Integer, List<String>> languagesMap = languageService.getLanguageNamesByMovieIds(movieIds);
+
+        // Get movie names for Oscar check
         List<String> movieNames = moviePage.getContent().stream()
                 .map(Movie::getName)
-                .toList();
-
-        // Gets posters - no exception thrown, defaults handled inside PosterService
-        Map<Integer, String> posters = posterService.getPostersByMovieIds(movieIds);
-        Map<Integer, List<String>> genresMap = new HashMap<>();
-        Map<Integer, List<String>> languagesMap = new HashMap<>();
-        Map<Integer, List<String>> actorsMap = new HashMap<>();
-
-        // Gets genres, languages, actors for all movies
-        for (Integer movieId : movieIds) {
-            genresMap.put(movieId, genreService.getGenreNamesByMovieId(movieId));
-            languagesMap.put(movieId, languageService.getLanguagesByMovieId(movieId)
-                    .stream().map(Language::getLanguage).distinct().toList());
-            actorsMap.put(movieId, actorService.getActorNamesByMovieId(movieId));
-        }
-
-        // Batch method
+                .collect(Collectors.toList());
         Map<String, Boolean> oscarMap = oscarAwardService.hasOscarBatch(movieNames);
 
-        // Converts in DTO
-        return moviePage.map(movie -> new MovieDTO(
-                movie.getMovieId(),
-                movie.getName(),
-                movie.getDate(),
-                movie.getDescription(),
-                movie.getMinute(),
-                movie.getRating(), // <-- Aggiungi questa linea
-                posters.getOrDefault(movie.getMovieId(), "default-poster.jpg"),
-                genresMap.getOrDefault(movie.getMovieId(), List.of()),
-                actorsMap.getOrDefault(movie.getMovieId(), List.of()),
-                languagesMap.getOrDefault(movie.getMovieId(), List.of()),
-                oscarMap.getOrDefault(movie.getName(), false)
-        ));
+        return moviePage.map(movie -> {
+            Integer movieId = movie.getMovieId();
+            return new MovieDTO(
+                    movieId,
+                    movie.getName(),
+                    movie.getDate(),
+                    movie.getDescription(),
+                    movie.getMinute(),
+                    movie.getRating(),
+                    posters.getOrDefault(movieId, "default-poster.jpg"),
+                    genresMap.getOrDefault(movieId, Collections.emptyList()),
+                    actorsMap.getOrDefault(movieId, Collections.emptyList()),
+                    languagesMap.getOrDefault(movieId, Collections.emptyList()),
+                    oscarMap.getOrDefault(movie.getName(), false)
+            );
+        });
     }
 
     public Page<MovieDTO> findByTitleIgnoreCaseDTO(String title, Pageable pageable) {

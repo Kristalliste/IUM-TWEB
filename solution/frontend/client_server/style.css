@@ -606,3 +606,41 @@ footer {
     grid-column: 1 / -1;
     font-size: 1.2em;
 }
+
+/* Add loader styles */
+.loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(245, 197, 24, 0.3);
+    border-radius: 50%;
+    border-top-color: #f5c518;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Improve error display */
+.error {
+    color: #ff4d4d;
+    text-align: center;
+    padding: 20px;
+    background: rgba(255, 77, 77, 0.1);
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.error i {
+    font-size: 2em;
+    margin-bottom: 10px;
+    display: block;
+}

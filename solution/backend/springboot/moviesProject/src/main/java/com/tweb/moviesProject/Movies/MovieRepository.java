@@ -1,5 +1,6 @@
 package com.tweb.moviesProject.Movies;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,9 +31,10 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
     @Query(value = "SELECT DISTINCT g.genre FROM \"Genres\" g", nativeQuery = true)
     List<String> findDistinctGenres();
 
+    // Add caching annotation to the single findAllMovies method
+    @Cacheable("moviesCache")
     @Query(value = "SELECT * FROM \"Movies\"",
             countQuery = "SELECT count(*) FROM \"Movies\" ",
             nativeQuery = true)
     Page<Movie> findAllMovies(Pageable pageable);
-
 }

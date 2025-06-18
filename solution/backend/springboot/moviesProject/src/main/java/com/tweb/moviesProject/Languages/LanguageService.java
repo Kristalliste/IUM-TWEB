@@ -1,33 +1,40 @@
 package com.tweb.moviesProject.Languages;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-/**
- * Service layer for managing language-related business logic.
- */
 @Service
 public class LanguageService {
 
     private final LanguageRepository languageRepository;
 
-    /**
-     * Constructs a LanguageService with the given repository.
-     */
+    @Autowired
     public LanguageService(LanguageRepository languageRepository) {
         this.languageRepository = languageRepository;
     }
 
-    /**
-     * Retrieves a list of languages associated with a specific movie ID.
-     * Returns an empty list if no languages are found.
-     */
+    // Add this new method
+    public Map<Integer, List<String>> getLanguageNamesByMovieIds(List<Integer> movieIds) {
+        if (movieIds == null || movieIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        Map<Integer, List<String>> result = new HashMap<>();
+        for (Integer movieId : movieIds) {
+            result.put(movieId, languageRepository.findLanguageNamesByMovieId(movieId));
+        }
+        return result;
+    }
+
+    // Existing methods remain unchanged
     public List<Language> getLanguagesByMovieId(Integer movieId) {
         List<Language> languages = languageRepository.findByMovieId(movieId);
         if (languages.isEmpty()) {
-            // return empty list instead of throwing exception
             return Collections.emptyList();
         }
         return languages;

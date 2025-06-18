@@ -1,6 +1,5 @@
 package com.tweb.moviesProject.Actors;
 
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,11 +10,15 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ActorRepository extends JpaRepository<Actor,Integer> {
+public interface ActorRepository extends JpaRepository<Actor, Integer> {
 
+    // Single method for finding actor names by movie ID
+    @Query(value = "SELECT a.name FROM \"Actors\" a WHERE a.movie_id = :movieId", nativeQuery = true)
+    List<String> findActorNamesByMovieId(@Param("movieId") Integer movieId);
+
+    // Existing methods remain unchanged
     @Query(value = "SELECT * FROM \"Actors\" a WHERE a.name  ILIKE '%' || :nameStart || '%' LIMIT 1 ", nativeQuery = true)
     List<Actor> findByNameContainingIgnoreCase(@Param("nameStart") String name);
-
 
     @Query(value = "SELECT DISTINCT ON (a.name) * FROM \"Actors\" a WHERE a.name ILIKE '%' || :nameStart || '%'",
             countQuery = "SELECT count(*) FROM \"Actors\" a WHERE a.name ILIKE '%' || :nameStart || '%'",
@@ -27,9 +30,4 @@ public interface ActorRepository extends JpaRepository<Actor,Integer> {
 
     @Query(value = "SELECT * FROM \"Actors\" a WHERE a.actor_id = :id", nativeQuery = true)
     Actor findActorById(@Param("id") Integer id);
-
-    // Gets all actor names for a specific movie
-    @Query(value = "SELECT a.name FROM \"Actors\" a WHERE a.movie_id = :movieId", nativeQuery = true)
-    List<String> findActorNamesByMovieId(@Param("movieId") Integer movieId);
-
 }

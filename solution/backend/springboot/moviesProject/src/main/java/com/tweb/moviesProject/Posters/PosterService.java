@@ -32,11 +32,7 @@ public class PosterService {
 
         for (Integer movieId : movieIds) {
             String link = posterRepository.findPosterLinkByMovieId(movieId);
-            if (link == null || link.isEmpty()) {
-                // Default poster URL
-                link = "default-poster.jpg";
-            }
-            postersMap.put(movieId, link);
+            postersMap.put(movieId, (link != null && !link.isEmpty()) ? link : "default-poster.jpg");
         }
 
         return postersMap;

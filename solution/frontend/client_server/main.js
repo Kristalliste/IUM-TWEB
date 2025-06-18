@@ -1,3 +1,5 @@
+// IUM-TWEB/solution/frontend/client_server/main.js
+import { debounce } from './utils.js';
 import { fetchMovies, fetchMovieDetails } from './api.js';
 import { showMainView, showDetailView, renderMovies } from './views.js';
 import { displayMoviePage, renderPagination } from './pagination.js';
@@ -25,50 +27,32 @@ const API_BASE_URL = 'http://localhost:4000/api';
 
 function formatMovieData(movie) {
     return {
-        id: movie.movieId,
-        title: movie.name,
-        year: new Date(movie.date).getFullYear(),
-        posterUrl: movie.link || 'https://via.placeholder.com/300x450?text=No+Image',
+        id: movie.id,
+        title: movie.title,
+        year: movie.year,
+        // CORRETTO: usa posterUrl invece di posterUrl
+        posterUrl: movie.posterUrl || 'https://via.placeholder.com/300x450?text=No+Image',
         description: movie.description,
-        rating: movie.rating || 0.0, // Usa il rating dal backend
+        rating: movie.rating || 0.0,
         actors: movie.actors || [],
-        genres: movie.genres || [],
-        reviews: [] // Non necessario per la lista principale
+        genres: movie.genres || []
     };
 }
 
-// Funzione per ottenere i film dal backend
 async function loadMovies() {
     try {
         const response = await fetch(`${API_BASE_URL}/movies`);
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
         const data = await response.json();
-        return data.map(movie => ({
-            id: movie.movieId,
-            title: movie.name,
-            year: new Date(movie.date).getFullYear(),
-            posterUrl: movie.link || 'https://via.placeholder.com/300x450?text=No+Image',
-            description: movie.description,
-            rating: movie.rating || 0.0,
-            actors: movie.actors || [],
-            genres: movie.genres || []
-        }));
+        return data.map(movie => formatMovieData(movie));
     } catch (error) {
         console.error('Errore nel caricamento dei film:', error);
-        mainTitle.textContent = 'Errore nel caricamento dei film';
-        movieGrid.innerHTML = `
-            <p class="error" style="grid-column: 1 / -1;">
-                Impossibile caricare i film: ${error.message}
-            </p>
-        `;
         return [];
     }
 }
 
+// FUNZIONE AGGIUNTA: setActiveLink
 function setActiveLink(activeLink) {
     navLinks.forEach(link => link.classList.remove('active'));
     if (activeLink) {
@@ -92,31 +76,26 @@ topRatedLink.addEventListener('click', async (e) => {
     displayMoviePage(topRatedMovies, paginationContainer, movieGrid, currentPage, mainView, detailView);
 });
 
-searchInput.addEventListener('input', async (e) => {
+searchInput.addEventListener('input', debounce(async (e) => {
     showMainView(mainView, detailView);
     setActiveLink(null);
 
-    if (allMovies.length === 0) {
-        allMovies = await loadMovies();
-    }
+    if (allMovies.length === 0) allMovies = await loadMovies();
 
     const searchTerm = e.target.value.toLowerCase().trim();
-
     if (searchTerm) {
         mainTitle.textContent = `Risultati per: "${searchTerm}"`;
         const filteredMovies = allMovies.filter(movie =>
             movie.title.toLowerCase().includes(searchTerm) ||
             movie.year.toString().includes(searchTerm)
         );
-        currentPage = 1;
-        displayMoviePage(filteredMovies, paginationContainer, movieGrid, currentPage, mainView, detailView);
+        displayMoviePage(filteredMovies, paginationContainer, movieGrid, 1, mainView, detailView);
     } else {
         const recentMovies = [...allMovies].sort((a, b) => b.year - a.year);
         mainTitle.textContent = 'Film più recenti';
-        currentPage = 1;
-        displayMoviePage(recentMovies, paginationContainer, movieGrid, currentPage, mainView, detailView);
+        displayMoviePage(recentMovies, paginationContainer, movieGrid, 1, mainView, detailView);
     }
-});
+}, 300));
 
 logo.addEventListener('click', async () => {
     searchInput.value = '';
@@ -133,7 +112,6 @@ logo.addEventListener('click', async () => {
     displayMoviePage(recentMovies, paginationContainer, movieGrid, currentPage, mainView, detailView);
 });
 
-// Advanced search event handler
 advancedSearchLink.addEventListener('click', (e) => {
     e.preventDefault();
     showMainView(mainView, detailView);
@@ -153,13 +131,10 @@ advancedSearchLink.addEventListener('click', (e) => {
 
 // Initial render
 async function init() {
-    // Carica indicatori di caricamento
     movieGrid.innerHTML = '<p class="loading">Caricamento film in corso...</p>';
 
-    // Carica i film dal backend
-    const recentMovies = await loadMovies();
+    allMovies = await loadMovies();
 
-    // Popola i generi
     populateGenres(
         allMovies,
         mainView,
@@ -174,8 +149,10 @@ async function init() {
         movieGrid
     );
 
-    // Mostra la vista principale
     showMainView(mainView, detailView);
+    const recentMovies = [...allMovies].sort((a, b) => b.year - a.year);
+    mainTitle.textContent = 'Film più recenti';
+    setActiveLink(null);  // Nessun link attivo inizialmente
     displayMoviePage(recentMovies, paginationContainer, movieGrid, currentPage, mainView, detailView);
 }
 
