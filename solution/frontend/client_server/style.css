@@ -612,8 +612,6 @@ footer {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    /*width: 350px;*/
-    /*height: 550px;*/
     background-color: #111;
     border: 1px solid #333;
     border-radius: 12px;
@@ -621,30 +619,18 @@ footer {
     display: flex;
     flex-direction: column;
     z-index: 1000;
-
-        resize: both;
-        overflow: auto;
-        min-width: 350px;
-        min-height: 550px;
-        max-width: 500vw;
-        max-height: 800vh;
-
+    width: 400px;
+    height: 520px;
+    /*resize: both;
+    overflow: auto;
+    min-width: 350px;
+    min-height: 550px;
+    max-width: 500vw;
+    max-height: 800vh;*/
 }
 
 .floating-chat.hidden {
     display: none;
-}
-
-.floating-chat::after {
-    content: '';
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-    width: 15px;
-    height: 15px;
-    background: linear-gradient(45deg, #333 25%, transparent 25%, transparent 50%, #333 50%, #333 75%, transparent 75%);
-    background-size: 6px 6px;
-    cursor: se-resize;
 }
 
 .chat-header {
