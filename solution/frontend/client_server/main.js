@@ -12,6 +12,7 @@ const logo = document.querySelector('.logo');
 const paginationContainer = document.getElementById('pagination-container');
 const mainTitle = document.getElementById('main-title');
 const topRatedLink = document.getElementById('top-rated-link');
+const advancedSearchLink = document.getElementById('advanced-search-link');
 const navLinks = document.querySelectorAll('.main-nav ul > li > a');
 const genresLink = document.getElementById('genres-link');
 
@@ -71,6 +72,27 @@ logo.addEventListener('click', () => {
     mainTitle.textContent = 'Film più recenti';
     setActiveLink(null);
     displayMoviePage(recentMovies, paginationContainer, movieGrid, currentPage, mainView, detailView);
+});
+
+// Advanced search event handler
+advancedSearchLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    const mainView = document.querySelector('main');
+    const detailView = document.getElementById('movie-detail-view');
+    showMainView(mainView, detailView);
+    searchInput.value = '';
+    mainTitle.textContent = 'Ricerca Avanzata';
+    setActiveLink(advancedSearchLink);
+
+    // Placeholder for advanced search functionality
+    movieGrid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+            <h3>Funzionalità Ricerca Avanzata</h3>
+            <p>Questa funzionalità sarà implementata prossimamente!</p>
+            <p>Potrai cercare film per anno, genere, rating e altro.</p>
+        </div>
+    `;
+    paginationContainer.innerHTML = '';
 });
 
 // Initial render

@@ -1,3 +1,5 @@
+import { showMainView } from './views.js';
+
 export function populateGenres(movies, mainView, detailView, searchInput, currentPage, mainTitle, genresLink, setActiveLink, displayMoviePage, paginationContainer, movieGrid) {
     const genresDropdown = document.getElementById('genres-dropdown');
     const allGenres = [...new Set(movies.flatMap(m => m.genres || []))].sort();

@@ -26,7 +26,7 @@ header .container {
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 20px;
 }
 
 .logo {
@@ -61,6 +61,7 @@ header .container {
     font-weight: 500;
     transition: color 0.3s ease;
     padding: 5px 0;
+    white-space: nowrap;
 }
 
 .main-nav ul li a:hover,
@@ -101,8 +102,8 @@ header .container {
 }
 
 .dropdown-content a:hover {
-    background-color: #f5c518;
-    color: #121212;
+    background-color: #000;
+    color: #f5c518;
 }
 
 /* Custom scrollbar for description */
@@ -132,7 +133,6 @@ header .container {
 .dropdown-content::-webkit-scrollbar-thumb {
     background: #f5c518;
     border-radius: 4px;
-
 }
 
 .search-bar input {
