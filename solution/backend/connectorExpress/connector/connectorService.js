@@ -1,23 +1,39 @@
+import ConnectorRepository from './ConnectorRepository.js';
 
-const getAllReviews = async () => {
+const getAllReviews = async () => { /* ... */ };
+const getAllMovies = async () => { /* ... */ };
+
+const getMovieById = async (id) => {
     try {
-        return await ConnectorRepository.fetchAllReviews();
+        return await ConnectorRepository.fetchMovieById(id);
     } catch (error) {
-        console.error('Error in getAllReviews:', error);
+        console.error('Error in getMovieById:', error);
+        throw new Error('Failed to fetch movie');
+    }
+};
+
+const getReviewsByMovieId = async (movieId) => {
+    try {
+        return await ConnectorRepository.fetchReviewsByMovieId(movieId);
+    } catch (error) {
+        console.error('Error in getReviewsByMovieId:', error);
         throw new Error('Failed to fetch reviews');
     }
 };
 
-const getAllMovies = async () => {
+const getMovieWithReviews = async (movieId) => {
     try {
-        return await ConnectorRepository.fetchAllMovies();
+        return await ConnectorRepository.fetchMovieWithReviews(movieId);
     } catch (error) {
-        console.error('Error in getAllMovies:', error);
-        throw new Error('Failed to fetch movies');
+        console.error('Error in getMovieWithReviews:', error);
+        throw new Error('Failed to fetch movie with reviews');
     }
 };
 
-module.exports = {
+export default {
     getAllReviews,
-    getAllMovies
+    getAllMovies,
+    getMovieById,
+    getReviewsByMovieId,
+    getMovieWithReviews
 };

@@ -1,5 +1,5 @@
-const swaggerJsDoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
+import swaggerJsDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 
 const swaggerSetup = (app, basePath) => {
     const options = {
@@ -14,7 +14,7 @@ const swaggerSetup = (app, basePath) => {
                 { url: `http://localhost:${process.env.PORT || 4000}${basePath}` }
             ],
         },
-        apis: ['./connectorRoutes.js'],  // swagger comments path
+        apis: ['./connector/ConnectorController.js'],
     };
 
     const swaggerSpec = swaggerJsDoc(options);
@@ -22,4 +22,4 @@ const swaggerSetup = (app, basePath) => {
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 };
 
-module.exports = swaggerSetup;
+export default swaggerSetup;

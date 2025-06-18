@@ -88,40 +88,27 @@ router.delete('/:id', async (req, res, next) => {
 
 /**
  * @swagger
- * /reviews/{movieTitle}:
+ * /reviews/by-title/{movieTitle}:
  *   get:
  *     summary: Retrieve reviews by movie title
- *     description: Returns a list of reviews matching the given movie title (case-insensitive).
  *     parameters:
  *       - in: path
  *         name: movieTitle
  *         required: true
  *         schema:
  *           type: string
- *         description: Movie title to search for reviews.
  *     responses:
  *       200:
- *         description: A list of reviews for the specified movie title.
+ *         description: A list of reviews
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Review'
- *       404:
- *         description: No reviews found for the specified movie title.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: No reviews found for the specified movie title
- *       500:
- *         description: Internal server error.
  */
-router.get('/:movieTitle', async (req, res, next) => {
+
+router.get('/by-title/:movieTitle', async (req, res, next) => {
     try {
         const movieTitle = req.params.movieTitle;
         const reviews = await reviewsService.getReviewsByMovieTitle(movieTitle);
