@@ -1,7 +1,14 @@
 import ConnectorRepository from './ConnectorRepository.js';
 
 const getAllReviews = async () => { /* ... */ };
-const getAllMovies = async () => { /* ... */ };
+const getAllMovies = async () => {
+    try {
+        return await ConnectorRepository.fetchAllMovies();
+    } catch (error) {
+        console.error('Error in getAllMovies:', error);
+        throw new Error('Failed to fetch movies');
+    }
+};
 
 const getMovieById = async (id) => {
     try {

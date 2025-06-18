@@ -94,19 +94,18 @@ public class MovieService {
 
         // Converts in DTO
         return moviePage.map(movie -> new MovieDTO(
-                    movie.getMovieId(),
-                    movie.getName(),
-                    movie.getDate(),
-                    // movie.getTagline(),
-                    movie.getDescription(),
-                    movie.getMinute(),
-                    // movie.getRating(),
-                    posters.getOrDefault(movie.getMovieId(), "default-poster.jpg"),
-                    genresMap.getOrDefault(movie.getMovieId(), List.of()),
-                    actorsMap.getOrDefault(movie.getMovieId(), List.of()),
-                    languagesMap.getOrDefault(movie.getMovieId(), List.of()),
-                    oscarMap.getOrDefault(movie.getName(), false)
-            ));
+                movie.getMovieId(),
+                movie.getName(),
+                movie.getDate(),
+                movie.getDescription(),
+                movie.getMinute(),
+                movie.getRating(), // <-- Aggiungi questa linea
+                posters.getOrDefault(movie.getMovieId(), "default-poster.jpg"),
+                genresMap.getOrDefault(movie.getMovieId(), List.of()),
+                actorsMap.getOrDefault(movie.getMovieId(), List.of()),
+                languagesMap.getOrDefault(movie.getMovieId(), List.of()),
+                oscarMap.getOrDefault(movie.getName(), false)
+        ));
     }
 
     public Page<MovieDTO> findByTitleIgnoreCaseDTO(String title, Pageable pageable) {
@@ -132,6 +131,7 @@ public class MovieService {
         String posterUrl = posterService.getPosterByMovieId(movieId); // also no exception thrown here
         List<String> genres = genreService.getGenreNamesByMovieId(movieId);
         List<String> actors = actorService.getActorNamesByMovieId(movieId);
+        //List<Review> reviews = reviewRepository.findByMovieId(movieId);
         List<String> languages = languageService.getLanguagesByMovieId(movieId)
                 .stream().map(Language::getLanguage).distinct().toList();
 
@@ -144,12 +144,13 @@ public class MovieService {
                 // movie.getTagline(),
                 movie.getDescription(),
                 movie.getMinute(),
-                // movie.getRating()
+                movie.getRating(),
                 posterUrl != null ? posterUrl : "default-poster.jpg",
                 genres,
                 actors,
                 languages,
                 hasOscar
+                //reviews.stream().map(review ->new ReviewDTO(review.getUser(), review.getComment())).collect(Collectors.toList())
         );
     }
 }

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const MONGO_API = process.env.MONGO_SERVER_URL;
-const SPRING_API = process.env.SPRING_SERVER_URL;
+const MONGO_API = process.env.MONGO_SERVER_URL || 'http://localhost:3000';
+const SPRING_API = process.env.SPRING_SERVER_URL || 'http://localhost:8080/api';
 
 const fetchMovieById = async (id) => {
     try {
@@ -56,8 +56,26 @@ const fetchMovieWithReviews = async (movieId) => {
     }
 };
 
+const fetchAllMovies = async () => {
+    try {
+        const url = `${SPRING_API}/movies?size=1000`;
+        console.log(`Fetching movies from: ${url}`);
+
+        const response = await axios.get(url);
+        console.log(`Response status: ${response.status}`);
+        console.log(`Movies count: ${response.data.content.length}`);
+        console.log(`First movie rating: ${response.data.content[0]?.rating}`);
+
+        return response.data.content;
+    } catch (error) {
+        console.error('Error details:', error);
+        throw error;
+    }
+};
+
 export default {
     fetchMovieById,
     fetchReviewsByMovieId,
-    fetchMovieWithReviews
+    fetchMovieWithReviews,
+    fetchAllMovies
 };

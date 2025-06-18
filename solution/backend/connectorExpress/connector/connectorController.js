@@ -155,14 +155,6 @@ router.get('/movies', async (req, res, next) => {
  *       404:
  *         description: Movie not found
  */
-router.get('/movies/:id', async (req, res, next) => {
-    try {
-        const movie = await connectorService.getMovieById(req.params.id);
-        res.json(movie);
-    } catch (error) {
-        next(error);
-    }
-});
 
 /**
  * @swagger

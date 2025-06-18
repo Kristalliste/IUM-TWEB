@@ -592,3 +592,17 @@ footer {
         grid-template-columns: 1fr;
     }
 }
+
+.loading {
+    color: #f5c518;
+    text-align: center;
+    grid-column: 1 / -1;
+    font-size: 1.2em;
+}
+
+.error {
+    color: #ff4d4d;
+    text-align: center;
+    grid-column: 1 / -1;
+    font-size: 1.2em;
+}
