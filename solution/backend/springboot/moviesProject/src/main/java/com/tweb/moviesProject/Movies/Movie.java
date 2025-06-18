@@ -45,7 +45,8 @@ public class Movie {
     }
 
     // Since many instances of languages are mapped to one instance of movie
-    @OneToMany(mappedBy = "movie")
+    @OneToMany
+    @JoinColumn(name = "movie_id", referencedColumnName = "id") // connects Movie.id to Language.movie_id
     private List<Language> languages;
 
     public List<Language> getLanguages() { return languages; }
