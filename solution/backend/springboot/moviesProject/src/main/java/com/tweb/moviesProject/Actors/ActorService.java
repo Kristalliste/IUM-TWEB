@@ -30,6 +30,20 @@ public class ActorService {
     }
 
     public Actor findActorById(Integer id){
-        return actorRepository.findActorById(id);
+        Actor actor = actorRepository.findActorById(id);
+        if (actor == null) {
+            throw new ActorNotFoundException("Actor with ID " + id + " not found.");
+        }
+        return actor;
     }
+
+    public List<String> getActorNamesByMovieId(Integer movieId) {
+        List<String> names = actorRepository.findActorNamesByMovieId(movieId);
+        if (names.isEmpty()) {
+            throw new ActorNotFoundException("No actors found for movie " + movieId);
+        }
+        return names;
+    }
+
+
 }

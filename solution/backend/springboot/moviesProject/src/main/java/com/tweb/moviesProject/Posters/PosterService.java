@@ -2,7 +2,6 @@ package com.tweb.moviesProject.Posters;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,16 +16,28 @@ public class PosterService {
         this.posterRepository = posterRepository;
     }
 
-    public Map<Integer, String> getPostersForMovies(List<Integer> movieIds) {
-        List<Object[]> results = posterRepository.findLinksByMovieIds(movieIds);
+    public String getPosterByMovieId(Integer movieId) {
+        String link = posterRepository.findPosterLinkByMovieId(movieId);
+        if (link == null || link.isEmpty()) {
+            throw new PosterNotFoundException("Poster not found for movie with ID: " + movieId);
+        }
+        return link;
+    }
+
+    // Method to fetch posters in bulk
+    public Map<Integer, String> getPostersByMovieIds(List<Integer> movieIds) {
         Map<Integer, String> postersMap = new HashMap<>();
 
-        for (Object[] result : results) {
-            Integer movieId = (Integer) result[0];
-            String link = (String) result[1];
+        for (Integer movieId : movieIds) {
+            String link = posterRepository.findPosterLinkByMovieId(movieId);
+            if (link == null || link.isEmpty()) {
+                // Default poster URL
+                link = "default-poster.jpg";
+            }
             postersMap.put(movieId, link);
         }
 
         return postersMap;
     }
 }
+

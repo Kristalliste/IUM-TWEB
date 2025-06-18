@@ -1,8 +1,10 @@
 package com.tweb.moviesProject.Movies;
 
+import com.tweb.moviesProject.Languages.Language;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name="Movies")
@@ -25,14 +27,15 @@ public class Movie {
     private String description;
 
     @Column(name = "minute")
-    private Float minute;
+    private Double minute;
 
     @Column(name = "rating")
-    private Float rating;
+    private Double rating;
 
     public Movie() {}
 
-    public Movie( String name, Date date, String tagline, String description, Float minute, Float rating) {
+    public Movie( Integer movieId, String name, Date date, String tagline, String description, Double minute, Double rating) {
+        this.movieId = movieId;
         this.name = name;
         this.date = date;
         this.tagline = tagline;
@@ -41,13 +44,20 @@ public class Movie {
         this.rating = rating;
     }
 
-    // Getters e setters
+    // Since many instances of languages are mapped to one instance of movie
+    @OneToMany(mappedBy = "movie")
+    private List<Language> languages;
+
+    public List<Language> getLanguages() { return languages; }
+    public void setLanguages(List<Language> languages) { this.languages = languages; }
+
+    // Getters
 
     public Integer getMovieId() {
         return movieId;
     }
 
-    public String getTitle() {
+    public String getName() {
         return name;
     }
 
@@ -63,12 +73,10 @@ public class Movie {
         return description;
     }
 
-    public Float getMinute() {
+    public Double getMinute() {
         return minute;
     }
 
-    public Float getRating() {
-        return rating;
-    }
+    public Double getRating() { return rating; }
 
 }

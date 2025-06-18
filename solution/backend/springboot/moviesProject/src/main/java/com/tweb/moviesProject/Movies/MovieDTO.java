@@ -1,68 +1,142 @@
 package com.tweb.moviesProject.Movies;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.Date;
 import java.util.List;
 
+@Schema(description = "Data Transfer Object for movie details")
 public class MovieDTO {
 
+    @Schema(description = "Unique identifier of the movie", example = "1")
     private Integer movieId;
-    private String name;
-    private Date date;
-    private String tagline;
-    private String description;
-    private Float minute;
-    private Float rating;
-    private String link; // Nuovo campo per il poster
-    private List<String> genres; // Nuovo campo per i generi
 
+    @Schema(description = "Name of the movie", example = "The Shawshank Redemption")
+    private String name;
+
+    @Schema(description = "Release date of the movie", example = "1994-09-23")
+    private Date date;
+
+    /*@Schema(description = "Tagline of the movie", example = "Fear can hold you prisoner. Hope can set you free.")
+    private String tagline;*/
+
+    @Schema(description = "Detailed description of the movie",
+            example = "Two imprisoned men bond over a number of years...")
+    private String description;
+
+    @Schema(description = "Duration in minutes", example = "142.0")
+    private Double minute;
+
+    /*@Schema(description = "Average rating", example = "9.3")
+    private Double rating;*/
+
+    @Schema(description = "URL to the movie poster image",
+            example = "https://example.com/posters/shawshank.jpg")
+    private String link; // for posters
+
+    @Schema(description = "List of genres", example = "[\"Drama\", \"Crime\"]")
+    private List<String> genres;
+
+    @Schema(description = "List of actor names", example = "[\"Tim Robbins\", \"Morgan Freeman\"]")
+    private List<String> actors;
+
+    @Schema(description = "All spoken languages for the movie", example = "[\"English\", \"French\"]")
+    private List<String> languages;
+
+    // Constructors
     public MovieDTO() {}
 
-    public MovieDTO(Integer movieId, String name, Date date, String tagline,
-                    String description, Float minute, Float rating, String link,
-                    List<String> genres) {
+    public MovieDTO(Integer movieId, String name, Date date,/*String tagline,*/
+                    String description, Double minute, /*Double rating,*/ String link,
+                    List<String> genres, List<String> actors, List<String> languages) {
         this.movieId = movieId;
         this.name = name;
         this.date = date;
-        this.tagline = tagline;
+        //this.tagline = tagline;
         this.description = description;
         this.minute = minute;
-        this.rating = rating;
+        //this.rating = rating;
         this.link = link;
         this.genres = genres;
+        this.actors = actors;
+        this.languages = languages;
     }
 
-    // Getters e setters
-
+    // Getters and Setters
     public Integer getMovieId() {
         return movieId;
     }
+    public void setMovieId(Integer movieId) {
+        this.movieId = movieId;
+    }
 
-    public String getTitle() {
+    public String getName() {
         return name;
+    }
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Date getDate() {
         return date;
     }
-
+    public void setDate(Date date) {
+        this.date = date;
+    }
+/*
     public String getTagline() {
         return tagline;
     }
+    public void setTagline(String tagline) {
+        this.tagline = tagline;
+    }*/
 
     public String getDescription() {
         return description;
     }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public Float getMinute() {
+    public Double getMinute() {
         return minute;
     }
-
-    public Float getRating() {
+    public void setMinute(Double minute) {
+        this.minute = minute;
+    }
+/*
+    public Double getRating() {
         return rating;
     }
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }*/
 
-    public String getLink() { return link; }
-    public void setLink(String link) {this.link = link;}
+    public String getLink() {
+        return link;
+    }
+    public void setLink(String link) {
+        this.link = link;
+    }
 
-    public List<String> getGenres() { return genres;}
+    public List<String> getGenres() {
+        return genres;
+    }
+    public void setGenres(List<String> genres) {
+        this.genres = genres;
+    }
+
+    public List<String> getActors() {
+        return actors;
+    }
+    public void setActors(List<String> actors) {
+        this.actors = actors;
+    }
+
+    public List<String> getLanguages() {
+        return languages;
+    }
+    public void setLanguages(List<String> languages) {
+        this.languages = languages;
+    }
 }

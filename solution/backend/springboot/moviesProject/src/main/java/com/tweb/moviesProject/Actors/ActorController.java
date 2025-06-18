@@ -1,12 +1,11 @@
 package com.tweb.moviesProject.Actors;
 
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.http.HttpStatus;
 import java.util.List;
 
 @RestController
@@ -43,12 +42,24 @@ public class ActorController {
     }
 
     @GetMapping("/findActorById/{id}")
-    public ResponseEntity<Actor> findActorById(@PathVariable Integer id) {
-        Actor actorFound = actorService.findActorById(id);
-        if(actorFound == null){
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> findActorById(@PathVariable Integer id) {
+        try {
+            Actor actor = actorService.findActorById(id);
+            return ResponseEntity.ok(actor);
+        } catch (ActorNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
-        return ResponseEntity.ok(actorFound);
     }
+
+    @GetMapping("/namesByMovieId/{movieId}")
+    public ResponseEntity<?> getActorNamesByMovieId(@PathVariable Integer movieId) {
+        try {
+            List<String> names = actorService.getActorNamesByMovieId(movieId);
+            return ResponseEntity.ok(names);
+        } catch (ActorNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
 }
 

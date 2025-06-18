@@ -34,4 +34,5 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
             countQuery = "SELECT count(*) FROM \"Movies\" ",
             nativeQuery = true)
     Page<Movie> findAllMovies(Pageable pageable);
+
 }
