@@ -1,6 +1,5 @@
 package com.tweb.moviesProject.Languages;
 
-import com.tweb.moviesProject.Movies.Movie;
 import jakarta.persistence.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -24,7 +23,7 @@ public class Language {
     private String type;
 
     @Column(name = "movie_id")
-    @Schema(description = "ID of the movie this language is associated with", example = "101")
+    @Schema(description = "ID of the movie this language is associated with", example = "1000001")
     private Integer movieId;
 
     // Getters and Setters

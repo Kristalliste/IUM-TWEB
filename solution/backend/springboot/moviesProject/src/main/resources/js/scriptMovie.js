@@ -62,13 +62,20 @@ function searchMovies(page) {
     const type = document.getElementById("search-type").value;
     let query = document.getElementById("search-input").value;
 
-    if(type === "GENRE"){
-        query = document.getElementById("search-genre").value;
+    const size = parseInt(document.getElementById("page-size").value);
+    let url;
+
+    if (type === "TITLE") {
+        url = `http://localhost:8080/api/movies/search/title?title=${encodeURIComponent(query)}&page=${page}&size=${size}`;
+    } else if (type === "YEAR") {
+        url = `http://localhost:8080/api/movies/search/year?year=${encodeURIComponent(query)}&page=${page}&size=${size}`;
+    } else if (type === "GENRE") {
+        url = `http://localhost:8080/api/movies/search/genre?genre=${encodeURIComponent(query)}&page=${page}&size=${size}`;
     }
 
-    const size = parseInt(document.getElementById("page-size").value);
 
-    axios.get(`http://localhost:8080/api/movies/search/${type}/${encodeURIComponent(query)}/${page}/${size}`)
+    //axios.get(`http://localhost:8080/api/movies/search/${type}/${encodeURIComponent(query)}/${page}/${size}`)
+    axios.get(url)
         .then(response => {
             displayResults(response.data.content);
             setupPagination(response.data.totalPages, page, size, searchMovies);
@@ -172,7 +179,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // showFilmLoader();
         const size = parseInt(document.getElementById("page-size").value);
 
-        axios.get(`http://localhost:8080/api/movies/all/${page}/${size}`) // Cambia endpoint se necessario
+        //axios.get(`http://localhost:8080/api/movies/all/${page}/${size}`) // Cambia endpoint se necessario
+        axios.get(`http://localhost:8080/api/movies?page=${page}&size=${size}`)
             .then(response => {
                 displayResults(response.data.content);
                 setupPagination(response.data.totalPages, page, size, loadAllMovies);

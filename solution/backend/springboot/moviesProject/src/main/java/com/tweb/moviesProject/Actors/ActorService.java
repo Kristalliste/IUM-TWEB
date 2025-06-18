@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.querydsl.QPageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,7 +30,7 @@ public class ActorService {
         return actorRepository.findMovieNameByActorNameIgnoreCase(name);
     }
 
-    public Actor findActorById(Integer id){
+   /* public Actor findActorById(Integer id){
         Actor actor = actorRepository.findActorById(id);
         if (actor == null) {
             throw new ActorNotFoundException("Actor with ID " + id + " not found.");
@@ -43,7 +44,21 @@ public class ActorService {
             throw new ActorNotFoundException("No actors found for movie " + movieId);
         }
         return names;
-    }
+    }*/
 
+   public Actor findActorById(Integer id) {
+       Actor actor = actorRepository.findActorById(id);
+       return actor; // could be null if not found
+   }
+
+    public List<String> getActorNamesByMovieId(Integer movieId) {
+        List<String> names = actorRepository.findActorNamesByMovieId(movieId);
+        if (names == null) {
+            // In case the repo returns null, return empty list instead
+            return new ArrayList<>();
+        }
+        // Return the list, even if empty
+        return names;
+    }
 
 }

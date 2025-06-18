@@ -2,6 +2,7 @@ package com.tweb.moviesProject.Languages;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -16,7 +17,8 @@ public class LanguageService {
     public List<Language> getLanguagesByMovieId(Integer movieId) {
         List<Language> languages = languageRepository.findByMovieId(movieId);
         if (languages.isEmpty()) {
-            throw new LanguageNotFoundException(movieId);
+            // return empty list instead of throwing exception
+            return Collections.emptyList();
         }
         return languages;
     }
