@@ -7,5 +7,6 @@ export async function fetchMovies() {
 
 export async function fetchMovieDetails(movieId) {
     const response = await fetch(`${API_BASE_URL}/movies/${movieId}/full`);
+    if (!response.ok) throw new Error('Failed to fetch movie details');
     return await response.json();
 }

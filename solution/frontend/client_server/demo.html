@@ -3,15 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyMDb - Il tuo database di film</title>
+    <title>FilmTWEB - Il tuo database di film</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Bootstrap Icons CSS for Oscar Awards -->
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 </head>
 <body>
     <header>
         <div class="container">
-            <div class="logo">MyMDb</div>
+            <div class="logo">FilmTWEB</div>
             <nav class="main-nav">
                 <ul>
                     <li class="dropdown">
@@ -34,24 +39,46 @@
         <div class="container">
             <h2 id="main-title">Film più recenti</h2>
             <div id="movie-grid" class="movie-grid">
-                <!-- Le schede dei film verranno inserite qui dal JS -->
+                <!-- Movie cards will be inserted here by JS -->
             </div>
             <div id="pagination-container" class="pagination-container">
-                <!-- I controlli di paginazione verranno inseriti qui -->
+                <!-- Pagination controls will be inserted here -->
             </div>
         </div>
     </main>
 
     <div id="movie-detail-view" class="container">
-        <!-- I dettagli del film verranno inseriti qui dal JS -->
+        <!-- Film details will be inserted here -->
     </div>
 
     <footer>
         <div class="container">
-            <p>&copy; 2024 MyMDb. Realizzato con passione.</p>
+            <p>&copy; 2024 FilmTWEB. </p>
         </div>
     </footer>
 
-    <script type="module" src="main.js"></script>
+    <!-- Adding film modal (pop-up) and reference to dedicated view -->
+    <div id="movieModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <img id="detailPoster" src="" alt="Movie Poster" class="modal-poster" />
+                <div class="movie-details">
+                    <h2 id="detailTitle"></h2>
+                    <div class="detail-rating">
+                        <i class="fas fa-star icon-star"></i>
+                        <span id="detailRating"></span>
+                        <span id="detailOscarIcon" class="bi bi-award" title="Nominated to the Oscar Awards"></span>
+                    </div>
+                    <p id="detailDescription"></p>
+                    <a id="detailLink" href="#" class="details-link">View Full Details and Reviews</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js" type="module"></script>
+    <script src="modalHandler.js" type="module"></script>
+
 </body>
 </html>

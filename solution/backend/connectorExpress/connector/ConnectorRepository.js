@@ -7,6 +7,7 @@ const SPRING_API = process.env.SPRING_SERVER_URL || 'http://localhost:8080';
 // Create cache instance
 const cache = new NodeCache({ stdTTL: 300 });
 
+/**
 const fetchMovieById = async (id) => {
     try {
         const response = await axios.get(`${SPRING_API}/api/movies/${id}`, { timeout: 5000 });
@@ -19,6 +20,22 @@ const fetchMovieById = async (id) => {
         } else {
             throw new Error('Request setup error');
         }
+    }
+};*/
+
+const fetchMovieById = async (id) => {
+    try {
+        const response = await axios.get(`http://localhost:8080/api/movies/${id}`);
+        if (response.status !== 200) {
+            throw new Error(`Server responded with ${response.status}`);
+        }
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching movie ${id}:`, error.message);
+        if (error.response) {
+            console.error('Response data:', error.response.data);
+        }
+        throw error;
     }
 };
 

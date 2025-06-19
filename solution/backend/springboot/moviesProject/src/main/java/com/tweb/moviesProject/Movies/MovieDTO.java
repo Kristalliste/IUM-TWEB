@@ -3,6 +3,7 @@ package com.tweb.moviesProject.Movies;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 @Schema(description = "Data Transfer Object for movie details")
@@ -88,13 +89,19 @@ public class MovieDTO {
     public void setDate(Date date) {
         this.date = date;
     }
-/*
-    public String getTagline() {
-        return tagline;
+
+    // Convenience method to get only the year part of the date
+    public Integer getYear() {
+        if (this.date == null) { return null; }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(this.date);
+        return cal.get(Calendar.YEAR);
     }
-    public void setTagline(String tagline) {
-        this.tagline = tagline;
-    }*/
+
+    /**
+    public String getTagline() { return tagline; }
+    public void setTagline(String tagline) { this.tagline = tagline; }
+    */
 
     public String getDescription() {
         return description;

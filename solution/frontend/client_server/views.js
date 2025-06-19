@@ -1,9 +1,8 @@
-// IUM-TWEB/solution/frontend/client_server/views.js
 import { escapeHTML } from './utils.js';
 import { renderUsernamePrompt } from './chat.js';
 import { fetchMovieDetails } from './api.js';
 
-// Update formatMovieDetails function
+// Format movie details response to a consistent structure
 function formatMovieDetails(movieData) {
     return {
         id: movieData.id || movieData.movieId,
@@ -121,6 +120,27 @@ export async function showDetailView(movieId, mainView, detailView) {
             showMainView(mainView, detailView)
         );
     }
+
+/** DA RIVEDERE JAS
+    movieCard.addEventListener('click', async () => {
+        try {
+            const movieData = await fetchMovieDetails(movie.id);
+            const movie = formatMovieDetails(movieData);
+
+            document.getElementById("detailPoster").src = movie.posterUrl;
+            document.getElementById("detailTitle").textContent = movie.title;
+            document.getElementById("detailRating").textContent = movie.rating;
+            document.getElementById("detailYear").textContent = movie.year;
+            document.getElementById("detailGenre").textContent = movie.genres.join(', ');
+            document.getElementById("detailLanguage").textContent = movie.languages?.join(', ') ?? '';
+            document.getElementById("detailCast").textContent = movie.actors.join(', ');
+            document.getElementById("detailDescription").textContent = movie.description;
+
+            document.getElementById("movieModal").style.display = "block";
+        } catch (err) {
+            console.error("Failed to load movie detail:", err);
+        }
+    }); */
 }
 
 export function renderMovies(movieList, movieGrid, currentPage, mainView, detailView) {
@@ -142,6 +162,7 @@ export function renderMovies(movieList, movieGrid, currentPage, mainView, detail
     paginatedMovies.forEach(movie => {
         const movieCard = document.createElement('div');
         movieCard.classList.add('movie-card');
+        movieCard.dataset.movieId = movie.id; //addition for modals
 
         movieCard.innerHTML = `
       <div class="movie-poster-container">
@@ -159,9 +180,6 @@ export function renderMovies(movieList, movieGrid, currentPage, mainView, detail
       </div>
     `;
 
-        movieCard.addEventListener('click', () =>
-            showDetailView(movie.id, mainView, detailView)
-        );
 
         movieGrid.appendChild(movieCard);
     });

@@ -644,3 +644,106 @@ footer {
     margin-bottom: 10px;
     display: block;
 }
+
+/* Adding modal (pop-up) styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    overflow-y: auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.modal-content {
+    background-color: #1a1a1a;
+    margin: auto;
+    padding: 25px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 800px;
+    position: relative;
+    color: #fff;
+    border: 1px solid #333;
+    /* Center the modal vertically and horizontally */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.close {
+    color: #f5c518;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #fff;
+}
+
+.modal-header {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.modal-poster {
+    max-width: 300px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.movie-details {
+    flex: 1;
+}
+
+.movie-details h2 {
+    margin-top: 0;
+    color: #f5c518;
+    font-size: 2em;
+}
+
+.detail-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 15px 0;
+    color: #f5c518;
+    font-size: 1.2em;
+}
+
+.details-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #f5c518;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.details-link:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+/* For smaller screens where modal might be taller than viewport */
+@media (max-height: 700px) {
+    .modal {
+        align-items: flex-start;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+    .modal-content {
+        top: 20px;
+        transform: translate(-50%, 0);
+    }
+}

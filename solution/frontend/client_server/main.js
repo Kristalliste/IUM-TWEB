@@ -1,9 +1,12 @@
-// IUM-TWEB/solution/frontend/client_server/main.js
 import { debounce } from './utils.js';
+import { formatMovieData } from './utils.js';///////////
+
 import { fetchMovies, fetchMovieDetails } from './api.js';
+import { API_BASE_URL } from './utils.js';/////
 import { showMainView, showDetailView, renderMovies } from './views.js';
 import { displayMoviePage, renderPagination } from './pagination.js';
 import { populateGenres } from './genres.js';
+import { attachModalListeners } from './modalHandler.js';
 
 // DOM elements
 const movieGrid = document.getElementById('movie-grid');
@@ -23,21 +26,24 @@ let currentPage = 1;
 let allMovies = [];
 
 // API configuration
-const API_BASE_URL = 'http://localhost:4000/api';
+//////////const API_BASE_URL = 'http://localhost:4000/api';
 
+/** spostata in utils perchè usata più volte in altri file
 function formatMovieData(movie) {
     return {
-        id: movie.id,
-        title: movie.title,
+        id: movie.id, //|| movie.movieId,
+        title: movie.title, //|| movie.name,
         year: movie.year,
         // CORRETTO: usa posterUrl invece di posterUrl
         posterUrl: movie.posterUrl || 'https://via.placeholder.com/300x450?text=No+Image',
         description: movie.description,
         rating: movie.rating || 0.0,
         actors: movie.actors || [],
-        genres: movie.genres || []
+        genres: movie.genres || [],
+        language: movie.language,
+        hasOscar: movie.hasOscar || false
     };
-}
+}*/
 
 async function loadMovies() {
     try {
@@ -47,7 +53,7 @@ async function loadMovies() {
         const data = await response.json();
         return data.map(movie => formatMovieData(movie));
     } catch (error) {
-        console.error('Errore nel caricamento dei film:', error);
+        console.error('Could not load movies. Please try again.', error);
         return [];
     }
 }
@@ -156,4 +162,7 @@ async function init() {
     displayMoviePage(recentMovies, paginationContainer, movieGrid, currentPage, mainView, detailView);
 }
 
-init();
+// Ensures all HTML is parsed before JS runs
+document.addEventListener('DOMContentLoaded', () => {
+    init(); // Now safe to access DOM
+});

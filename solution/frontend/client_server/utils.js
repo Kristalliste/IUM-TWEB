@@ -1,4 +1,5 @@
-export const API_BASE_URL = 'http://localhost:4000/api'; // URL del connector server
+// URL del connector server
+export const API_BASE_URL = 'http://localhost:4000/api';
 
 // Add debounce function
 export function debounce(func, wait) {
@@ -29,6 +30,21 @@ export function escapeHTML(str) {
             "'": '&#39;'
         }[match];
     });
+}
+
+export function formatMovieData(movie) {
+    return {
+        id: movie.id || movie.movieId,
+        title: movie.title || movie.name,
+        year: movie.year || (movie.date ? new Date(movie.date).getFullYear() : 'N/A'),
+        posterUrl: movie.posterUrl || movie.link || 'https://via.placeholder.com/300x450?text=No+Image',
+        description: movie.description || '',
+        rating: movie.rating || 0.0,
+        actors: movie.actors || [],
+        genres: movie.genres || [],
+        language: movie.language || '',
+        hasOscar: movie.hasOscar || false
+    };
 }
 
 // Add new utility functions
