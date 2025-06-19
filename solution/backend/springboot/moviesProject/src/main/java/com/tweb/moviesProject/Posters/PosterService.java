@@ -19,7 +19,9 @@ public class PosterService {
     public String getPosterByMovieId(Integer movieId) {
         String link = posterRepository.findPosterLinkByMovieId(movieId);
         if (link == null || link.isEmpty()) {
-            throw new PosterNotFoundException("Poster not found for movie with ID: " + movieId);
+            // Default poster URL
+            link = "default-poster.jpg";
+            //throw new PosterNotFoundException("Poster not found for movie with ID: " + movieId);
         }
         return link;
     }
@@ -30,11 +32,7 @@ public class PosterService {
 
         for (Integer movieId : movieIds) {
             String link = posterRepository.findPosterLinkByMovieId(movieId);
-            if (link == null || link.isEmpty()) {
-                // Default poster URL
-                link = "default-poster.jpg";
-            }
-            postersMap.put(movieId, link);
+            postersMap.put(movieId, (link != null && !link.isEmpty()) ? link : "default-poster.jpg");
         }
 
         return postersMap;

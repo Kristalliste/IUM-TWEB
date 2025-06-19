@@ -1,14 +1,19 @@
 /**
  * Module dependencies.
  */
-require('dotenv').config();
-const express = require('express');
-const swaggerSetup = require('./swagger');
-const connectorRoutes = require('./connector/ConnectorController');
+import express from 'express';
+import dotenv from 'dotenv';
+import swaggerSetup from './swagger.js';
+import connectorRoutes from './connector/ConnectorController.js';
+import cors from 'cors';
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 const API_BASE_PATH = process.env.API_BASE_PATH || '/api';
+
+app.use(cors());
 
 // JSON parser
 app.use(express.json());

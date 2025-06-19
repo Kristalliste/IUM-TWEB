@@ -7,40 +7,53 @@ export function displayMoviePage(movieList, paginationContainer, movieGrid, curr
     window.scrollTo(0, 0);
 }
 
+// Improve pagination rendering
 export function renderPagination(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView) {
     paginationContainer.innerHTML = '';
     const totalPages = Math.ceil(movieList.length / moviesPerPage);
-
     if (totalPages <= 1) return;
 
-    const prevButton = document.createElement('button');
-    prevButton.innerHTML = `&laquo; Prec`;
-    prevButton.disabled = currentPage === 1;
-    prevButton.addEventListener('click', () => {
-        currentPage--;
-        displayMoviePage(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView);
-    });
-    paginationContainer.appendChild(prevButton);
+    // Create pagination container
+    const pagination = document.createElement('div');
+    pagination.className = 'pagination';
 
-    for (let i = 1; i <= totalPages; i++) {
-        const pageButton = document.createElement('button');
-        pageButton.textContent = i;
-        if (i === currentPage) {
-            pageButton.classList.add('active');
-        }
-        pageButton.addEventListener('click', () => {
-            currentPage = i;
+    // Previous button
+    if (currentPage > 1) {
+        const prevButton = createPaginationButton('«', () => {
+            currentPage--;
             displayMoviePage(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView);
         });
-        paginationContainer.appendChild(pageButton);
+        pagination.appendChild(prevButton);
     }
 
-    const nextButton = document.createElement('button');
-    nextButton.innerHTML = `Succ &raquo;`;
-    nextButton.disabled = currentPage === totalPages;
-    nextButton.addEventListener('click', () => {
-        currentPage++;
-        displayMoviePage(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView);
-    });
-    paginationContainer.appendChild(nextButton);
+    // Page numbers
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
+
+    for (let i = startPage; i <= endPage; i++) {
+        const pageButton = createPaginationButton(i, () => {
+            currentPage = i;
+            displayMoviePage(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView);
+        }, i === currentPage);
+        pagination.appendChild(pageButton);
+    }
+
+    // Next button
+    if (currentPage < totalPages) {
+        const nextButton = createPaginationButton('»', () => {
+            currentPage++;
+            displayMoviePage(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView);
+        });
+        pagination.appendChild(nextButton);
+    }
+
+    paginationContainer.appendChild(pagination);
+}
+
+function createPaginationButton(text, onClick, isActive = false) {
+    const button = document.createElement('button');
+    button.textContent = text;
+    button.addEventListener('click', onClick);
+    if (isActive) button.classList.add('active');
+    return button;
 }

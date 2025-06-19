@@ -5,5 +5,5 @@ solution/Data/
 node_modules/
 # Ignore the node_modules directory in the express backend
 solution/backend/express/node_modules/
-
 solution/backend/express/socket/node_modules/
+solution/backend/connectorExpress/node_modules

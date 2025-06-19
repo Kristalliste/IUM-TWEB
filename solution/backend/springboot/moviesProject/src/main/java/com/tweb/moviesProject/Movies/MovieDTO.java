@@ -27,8 +27,8 @@ public class MovieDTO {
     @Schema(description = "Duration in minutes", example = "142.0")
     private Double minute;
 
-    /*@Schema(description = "Average rating", example = "9.3")
-    private Double rating;*/
+    @Schema(description = "Average rating", example = "9.3")
+    private Double rating;
 
     @Schema(description = "URL to the movie poster image",
             example = "https://example.com/posters/shawshank.jpg")
@@ -43,23 +43,28 @@ public class MovieDTO {
     @Schema(description = "All spoken languages for the movie", example = "[\"English\", \"French\"]")
     private List<String> languages;
 
+    @Schema(description = "Indicates if the movie has any Oscar nominations or wins", example = "true")
+    private Boolean hasOscar;
+
     // Constructors
     public MovieDTO() {}
 
     public MovieDTO(Integer movieId, String name, Date date,/*String tagline,*/
-                    String description, Double minute, /*Double rating,*/ String link,
-                    List<String> genres, List<String> actors, List<String> languages) {
+                    String description, Double minute, Double rating, String link,
+                    List<String> genres, List<String> actors, List<String> languages,
+                    Boolean hasOscar) {
         this.movieId = movieId;
         this.name = name;
         this.date = date;
         //this.tagline = tagline;
         this.description = description;
         this.minute = minute;
-        //this.rating = rating;
+        this.rating = rating;
         this.link = link;
         this.genres = genres;
         this.actors = actors;
         this.languages = languages;
+        this.hasOscar = hasOscar;
     }
 
     // Getters and Setters
@@ -104,13 +109,9 @@ public class MovieDTO {
     public void setMinute(Double minute) {
         this.minute = minute;
     }
-/*
-    public Double getRating() {
-        return rating;
-    }
-    public void setRating(Double rating) {
-        this.rating = rating;
-    }*/
+
+    public Double getRating() {return rating;}
+    public void setRating(Double rating) {this.rating = rating;}
 
     public String getLink() {
         return link;
@@ -139,4 +140,7 @@ public class MovieDTO {
     public void setLanguages(List<String> languages) {
         this.languages = languages;
     }
+
+    public Boolean getHasOscar() { return hasOscar; }
+    public void setHasOscar(Boolean hasOscar) { this.hasOscar = hasOscar; }
 }

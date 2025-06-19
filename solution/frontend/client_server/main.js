@@ -1,4 +1,6 @@
-import { movies } from './data.js';
+// IUM-TWEB/solution/frontend/client_server/main.js
+import { debounce } from './utils.js';
+import { fetchMovies, fetchMovieDetails } from './api.js';
 import { showMainView, showDetailView, renderMovies } from './views.js';
 import { displayMoviePage, renderPagination } from './pagination.js';
 import { populateGenres } from './genres.js';
@@ -13,12 +15,45 @@ const logo = document.querySelector('.logo');
 const paginationContainer = document.getElementById('pagination-container');
 const mainTitle = document.getElementById('main-title');
 const topRatedLink = document.getElementById('top-rated-link');
+const advancedSearchLink = document.getElementById('advanced-search-link');
 const navLinks = document.querySelectorAll('.main-nav ul > li > a');
 const genresLink = document.getElementById('genres-link');
 
 // State
 let currentPage = 1;
+let allMovies = [];
 
+// API configuration
+const API_BASE_URL = 'http://localhost:4000/api';
+
+function formatMovieData(movie) {
+    return {
+        id: movie.id,
+        title: movie.title,
+        year: movie.year,
+        // CORRETTO: usa posterUrl invece di posterUrl
+        posterUrl: movie.posterUrl || 'https://via.placeholder.com/300x450?text=No+Image',
+        description: movie.description,
+        rating: movie.rating || 0.0,
+        actors: movie.actors || [],
+        genres: movie.genres || []
+    };
+}
+
+async function loadMovies() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/movies`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        const data = await response.json();
+        return data.map(movie => formatMovieData(movie));
+    } catch (error) {
+        console.error('Errore nel caricamento dei film:', error);
+        return [];
+    }
+}
+
+// FUNZIONE AGGIUNTA: setActiveLink
 function setActiveLink(activeLink) {
     navLinks.forEach(link => link.classList.remove('active'));
     if (activeLink) {
@@ -26,73 +61,99 @@ function setActiveLink(activeLink) {
     }
 }
 
-topRatedLink.addEventListener('click', (e) => {
+topRatedLink.addEventListener('click', async (e) => {
     e.preventDefault();
-    const mainView = document.querySelector('main');
-    const detailView = document.getElementById('movie-detail-view');
     showMainView(mainView, detailView);
     searchInput.value = '';
-    const topRatedMovies = [...movies].sort((a, b) => b.rating - a.rating);
+
+    if (allMovies.length === 0) {
+        allMovies = await loadMovies();
+    }
+
+    const topRatedMovies = [...allMovies].sort((a, b) => b.rating - a.rating);
     currentPage = 1;
     mainTitle.textContent = 'Film Top Rated';
     setActiveLink(topRatedLink);
     displayMoviePage(topRatedMovies, paginationContainer, movieGrid, currentPage, mainView, detailView);
 });
 
-searchInput.addEventListener('input', (e) => {
-    const mainView = document.querySelector('main');
-    const detailView = document.getElementById('movie-detail-view');
-    if (mainView.style.display === 'none') {
-        showMainView(mainView, detailView);
-    }
+searchInput.addEventListener('input', debounce(async (e) => {
+    showMainView(mainView, detailView);
     setActiveLink(null);
+
+    if (allMovies.length === 0) allMovies = await loadMovies();
+
     const searchTerm = e.target.value.toLowerCase().trim();
     if (searchTerm) {
         mainTitle.textContent = `Risultati per: "${searchTerm}"`;
-        const filteredMovies = movies.filter(movie =>
-            movie.title.toLowerCase().includes(searchTerm) || movie.year.toString().includes(searchTerm)
+        const filteredMovies = allMovies.filter(movie =>
+            movie.title.toLowerCase().includes(searchTerm) ||
+            movie.year.toString().includes(searchTerm)
         );
-        currentPage = 1;
-        displayMoviePage(filteredMovies, paginationContainer, movieGrid, currentPage, mainView, detailView);
+        displayMoviePage(filteredMovies, paginationContainer, movieGrid, 1, mainView, detailView);
     } else {
-        const recentMovies = [...movies].sort((a, b) => b.year - a.year);
+        const recentMovies = [...allMovies].sort((a, b) => b.year - a.year);
         mainTitle.textContent = 'Film più recenti';
-        currentPage = 1;
-        displayMoviePage(recentMovies, paginationContainer, movieGrid, currentPage, mainView, detailView);
+        displayMoviePage(recentMovies, paginationContainer, movieGrid, 1, mainView, detailView);
     }
-});
+}, 300));
 
-logo.addEventListener('click', () => {
+logo.addEventListener('click', async () => {
     searchInput.value = '';
     currentPage = 1;
-    const mainView = document.querySelector('main');
-    const detailView = document.getElementById('movie-detail-view');
     showMainView(mainView, detailView);
-    const recentMovies = [...movies].sort((a, b) => b.year - a.year);
+
+    if (allMovies.length === 0) {
+        allMovies = await loadMovies();
+    }
+
+    const recentMovies = [...allMovies].sort((a, b) => b.year - a.year);
     mainTitle.textContent = 'Film più recenti';
     setActiveLink(null);
     displayMoviePage(recentMovies, paginationContainer, movieGrid, currentPage, mainView, detailView);
 });
 
+advancedSearchLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    showMainView(mainView, detailView);
+    searchInput.value = '';
+    mainTitle.textContent = 'Ricerca Avanzata';
+    setActiveLink(advancedSearchLink);
+
+    movieGrid.innerHTML = `
+    <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+      <h3>Funzionalità Ricerca Avanzata</h3>
+      <p>Questa funzionalità sarà implementata prossimamente!</p>
+      <p>Potrai cercare film per anno, genere, rating e altro.</p>
+    </div>
+  `;
+    paginationContainer.innerHTML = '';
+});
+
 // Initial render
-function init() {
-    const mainView = document.querySelector('main');
-    const detailView = document.getElementById('movie-detail-view');
+async function init() {
+    movieGrid.innerHTML = '<p class="loading">Caricamento film in corso...</p>';
+
+    allMovies = await loadMovies();
+
     populateGenres(
-        movies, 
-        mainView, 
-        detailView, 
-        searchInput, 
-        currentPage, 
-        mainTitle, 
-        genresLink, 
-        setActiveLink, 
-        displayMoviePage, 
-        paginationContainer, 
+        allMovies,
+        mainView,
+        detailView,
+        searchInput,
+        currentPage,
+        mainTitle,
+        genresLink,
+        setActiveLink,
+        displayMoviePage,
+        paginationContainer,
         movieGrid
     );
+
     showMainView(mainView, detailView);
-    const recentMovies = [...movies].sort((a, b) => b.year - a.year);
+    const recentMovies = [...allMovies].sort((a, b) => b.year - a.year);
+    mainTitle.textContent = 'Film più recenti';
+    setActiveLink(null);  // Nessun link attivo inizialmente
     displayMoviePage(recentMovies, paginationContainer, movieGrid, currentPage, mainView, detailView);
 
 }
