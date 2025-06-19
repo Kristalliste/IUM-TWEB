@@ -1,6 +1,24 @@
 # Ignore the Data directory in the solution folder
 solution/Data/
 
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+*.ids
+out/
+
+# Build systems
+build/
+.gradle/
+!gradle-wrapper.jar
+/gradle/wrapper/gradle-wrapper.properties
+
+# Logs
+logs/
+*.log
+
 # Ignore the build output directory
 node_modules/
 # Ignore the node_modules directory in the express backend
