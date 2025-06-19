@@ -27,8 +27,8 @@ public class MovieDTO {
     @Schema(description = "Duration in minutes", example = "142.0")
     private Double minute;
 
-    /*@Schema(description = "Average rating", example = "9.3")
-    private Double rating;*/
+    @Schema(description = "Average rating", example = "9.3")
+    private Double rating;
 
     @Schema(description = "URL to the movie poster image",
             example = "https://example.com/posters/shawshank.jpg")
@@ -50,7 +50,7 @@ public class MovieDTO {
     public MovieDTO() {}
 
     public MovieDTO(Integer movieId, String name, Date date,/*String tagline,*/
-                    String description, Double minute, /*Double rating,*/ String link,
+                    String description, Double minute, Double rating, String link,
                     List<String> genres, List<String> actors, List<String> languages,
                     Boolean hasOscar) {
         this.movieId = movieId;
@@ -59,7 +59,7 @@ public class MovieDTO {
         //this.tagline = tagline;
         this.description = description;
         this.minute = minute;
-        //this.rating = rating;
+        this.rating = rating;
         this.link = link;
         this.genres = genres;
         this.actors = actors;
@@ -109,13 +109,9 @@ public class MovieDTO {
     public void setMinute(Double minute) {
         this.minute = minute;
     }
-/*
-    public Double getRating() {
-        return rating;
-    }
-    public void setRating(Double rating) {
-        this.rating = rating;
-    }*/
+
+    public Double getRating() {return rating;}
+    public void setRating(Double rating) {this.rating = rating;}
 
     public String getLink() {
         return link;

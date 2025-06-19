@@ -26,7 +26,7 @@ header .container {
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 20px;
 }
 
 .logo {
@@ -61,6 +61,7 @@ header .container {
     font-weight: 500;
     transition: color 0.3s ease;
     padding: 5px 0;
+    white-space: nowrap;
 }
 
 .main-nav ul li a:hover,
@@ -101,8 +102,8 @@ header .container {
 }
 
 .dropdown-content a:hover {
-    background-color: #f5c518;
-    color: #121212;
+    background-color: #000;
+    color: #f5c518;
 }
 
 /* Custom scrollbar for description */
@@ -132,7 +133,6 @@ header .container {
 .dropdown-content::-webkit-scrollbar-thumb {
     background: #f5c518;
     border-radius: 4px;
-
 }
 
 .search-bar input {
@@ -591,4 +591,56 @@ footer {
     .detail-sections {
         grid-template-columns: 1fr;
     }
+}
+
+.loading {
+    color: #f5c518;
+    text-align: center;
+    grid-column: 1 / -1;
+    font-size: 1.2em;
+}
+
+.error {
+    color: #ff4d4d;
+    text-align: center;
+    grid-column: 1 / -1;
+    font-size: 1.2em;
+}
+
+/* Add loader styles */
+.loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(245, 197, 24, 0.3);
+    border-radius: 50%;
+    border-top-color: #f5c518;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Improve error display */
+.error {
+    color: #ff4d4d;
+    text-align: center;
+    padding: 20px;
+    background: rgba(255, 77, 77, 0.1);
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.error i {
+    font-size: 2em;
+    margin-bottom: 10px;
+    display: block;
 }

@@ -1,9 +1,42 @@
 # Ignore the Data directory in the solution folder
 solution/Data/
 
-# Ignore the build output directory
-node_modules/
-# Ignore the node_modules directory in the express backend
-solution/backend/express/node_modules/
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+*.ids
+out/
 
-solution/backend/express/socket/node_modules/
+# IntelliJ cache and local files
+.idea/shelf/
+.idea/workspace.xml
+.idea/httpRequests/
+.idea/dataSources/
+.idea/dataSources.local.xml
+
+# Build systems
+build/
+.gradle/
+!gradle-wrapper.jar //To allow developers to run the project without manually installing Gradle
+!**/gradle/wrapper/gradle-wrapper.properties
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore the node_modules directory in the express backend
+**/backend/**s/node_modules/
+
+# Logs
+logs/
+*.log
+
+# OS Junk 
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
