@@ -20,14 +20,12 @@ public class OscarAwardService {
         this.oscarAwardRepository = oscarAwardRepository;
     }
 
-    // Add this new method
-    public Map<Integer, Boolean> hasOscarByMovieIds(List<Integer> movieIds) {
+    public Map<Long, Boolean> hasOscarByMovieIds(List<Long> movieIds) {
         // This method would need movie names, but we'll handle it differently
         // We'll keep this as a placeholder for now
         return Collections.emptyMap();
     }
 
-    // Existing methods remain unchanged
     public boolean hasOscar(String film) {
         return oscarAwardRepository.existsByFilm(film);
     }

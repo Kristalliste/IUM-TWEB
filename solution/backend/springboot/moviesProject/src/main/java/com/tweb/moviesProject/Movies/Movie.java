@@ -12,7 +12,7 @@ public class Movie {
 
     @Id
     @Column(name = "id")
-    private Integer movieId;
+    private Long movieId;
 
     @Column(name = "name")
     private String name;
@@ -34,7 +34,7 @@ public class Movie {
 
     public Movie() {}
 
-    public Movie( Integer movieId, String name, Date date, String tagline, String description, Double minute, Double rating) {
+    public Movie( Long movieId, String name, Date date, String tagline, String description, Double minute, Double rating) {
         this.movieId = movieId;
         this.name = name;
         this.date = date;
@@ -54,7 +54,7 @@ public class Movie {
 
     // Getters
 
-    public Integer getMovieId() {
+    public Long getMovieId() {
         return movieId;
     }
 

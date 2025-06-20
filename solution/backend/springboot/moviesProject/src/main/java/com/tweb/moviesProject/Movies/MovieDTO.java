@@ -11,7 +11,7 @@ import java.util.List;
 public class MovieDTO {
 
     @Schema(description = "Unique identifier of the movie", example = "1")
-    private Integer movieId;
+    private Long movieId;
 
     @Schema(description = "Name of the movie", example = "The Shawshank Redemption")
     private String name;
@@ -52,7 +52,7 @@ public class MovieDTO {
     // Constructors
     public MovieDTO() {}
 
-    public MovieDTO(Integer movieId, String name, Date date,/*String tagline,*/
+    public MovieDTO(Long movieId, String name, Date date,/*String tagline,*/
                     String description, Double minute, Double rating, String link,
                     List<String> genres, List<String> actors, List<String> languages,
                     Boolean hasOscar) {
@@ -71,10 +71,10 @@ public class MovieDTO {
     }
 
     // Getters and Setters
-    public Integer getMovieId() {
+    public Long getMovieId() {
         return movieId;
     }
-    public void setMovieId(Integer movieId) {
+    public void setMovieId(Long movieId) {
         this.movieId = movieId;
     }
 
@@ -90,14 +90,6 @@ public class MovieDTO {
     }
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    // Convenience method to get only the year part of the date
-    public Integer getYear() {
-        if (this.date == null) { return null; }
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(this.date);
-        return cal.get(Calendar.YEAR);
     }
 
     /**

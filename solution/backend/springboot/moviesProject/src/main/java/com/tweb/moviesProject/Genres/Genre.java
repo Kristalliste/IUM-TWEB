@@ -8,10 +8,10 @@ public class Genre {
 
     @Id
     @Column(name = "genre_id")
-    private Integer genreId;
+    private Long genreId;
 
     @Column(name = "movie_id")
-    private Integer movieId;
+    private Long movieId;
 
     @Column(name = "genre")
     private String genre;
@@ -19,16 +19,16 @@ public class Genre {
     // Costruttori
     public Genre() {}
 
-    public Genre(Integer movieId, String genre) {
+    public Genre(Long movieId, String genre) {
         this.movieId = movieId;
         this.genre = genre;
     }
 
     // Getters e Setters
-    public Integer getGenreId() { return genreId; }
-    public void setGenreId(Integer genreId) { this.genreId = genreId; }
-    public Integer getMovieId() { return movieId; }
-    public void setMovieId(Integer movieId) { this.movieId = movieId; }
+    public Long getGenreId() { return genreId; }
+    public void setGenreId(Long genreId) { this.genreId = genreId; }
+    public Long getMovieId() { return movieId; }
+    public void setMovieId(Long movieId) { this.movieId = movieId; }
     public String getGenre() { return genre; }
     public void setGenre(String genre) { this.genre = genre; }
 }

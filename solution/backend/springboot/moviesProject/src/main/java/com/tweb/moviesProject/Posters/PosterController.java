@@ -17,7 +17,7 @@ public class PosterController {
     }
 
     @GetMapping("/movie/{movieId}")
-    public ResponseEntity<String> getPosterByMovieId(@PathVariable Integer movieId) {
+    public ResponseEntity<String> getPosterByMovieId(@PathVariable Long movieId) {
         try {
             String posterLink = posterService.getPosterByMovieId(movieId);
             return ResponseEntity.ok(posterLink);

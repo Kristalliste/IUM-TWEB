@@ -12,7 +12,7 @@ public class Language {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "language_id")
     @Schema(description = "Unique ID of the language", example = "1")
-    private Integer languageId;
+    private Long languageId;
 
     @Column(name = "language")
     @Schema(description = "Language name", example = "English")
@@ -24,11 +24,11 @@ public class Language {
 
     @Column(name = "movie_id")
     @Schema(description = "ID of the movie this language is associated with", example = "1000001")
-    private Integer movieId;
+    private Long movieId;
 
     // Getters and Setters
-    public Integer getLanguageId() { return languageId; }
-    public void setLanguageId(Integer languageId) { this.languageId = languageId; }
+    public Long getLanguageId() { return languageId; }
+    public void setLanguageId(Long languageId) { this.languageId = languageId; }
 
     public String getLanguage() { return language; }
     public void setLanguage(String language) { this.language = language; }
@@ -36,6 +36,6 @@ public class Language {
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
 
-    public Integer getMovieId() { return movieId; }
-    public void setMovieId(Integer movieId) { this.movieId = movieId; }
+    public Long getMovieId() { return movieId; }
+    public void setMovieId(Long movieId) { this.movieId = movieId; }
 }

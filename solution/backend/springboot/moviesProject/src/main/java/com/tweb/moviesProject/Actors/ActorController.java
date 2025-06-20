@@ -42,7 +42,7 @@ public class ActorController {
     }
 
     @GetMapping("/findActorById/{id}")
-    public ResponseEntity<?> findActorById(@PathVariable Integer id) {
+    public ResponseEntity<?> findActorById(@PathVariable Long id) {
         try {
             Actor actor = actorService.findActorById(id);
             return ResponseEntity.ok(actor);
@@ -52,7 +52,7 @@ public class ActorController {
     }
 
     @GetMapping("/namesByMovieId/{movieId}")
-    public ResponseEntity<?> getActorNamesByMovieId(@PathVariable Integer movieId) {
+    public ResponseEntity<?> getActorNamesByMovieId(@PathVariable Long movieId) {
         try {
             List<String> names = actorService.getActorNamesByMovieId(movieId);
             return ResponseEntity.ok(names);
