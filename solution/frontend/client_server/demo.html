@@ -32,6 +32,11 @@
             <div class="search-bar">
                 <input type="text" id="searchInput" placeholder="Cerca film...">
             </div>
+
+            <button id="toggle-chat-btn" class="chat-toggle-btn">
+                💬 Chat
+            </button>
+
         </div>
     </header>
 
@@ -50,6 +55,24 @@
     <div id="movie-detail-view" class="container">
         <!-- Film details will be inserted here -->
     </div>
+
+    <div id="floating-chat" class="floating-chat hidden">
+        <div class="chat-header">
+            <span>Chat Generale</span>
+            <button id="close-chat-btn">×</button>
+        </div>
+        <div class="chat-body" id="floating-chat-body">
+            <!-- Messaggi verranno inseriti qui -->
+        </div>
+    </div>
+
+
+    <!--    <div class="chat-section">-->
+<!--        <h2>Chat Live</h2>-->
+<!--        <div id="chat-wrapper">-->
+<!--            &lt;!&ndash; Chat content will be rendered here &ndash;&gt;-->
+<!--        </div>-->
+<!--    </div>-->
 
     <footer>
         <div class="container">
