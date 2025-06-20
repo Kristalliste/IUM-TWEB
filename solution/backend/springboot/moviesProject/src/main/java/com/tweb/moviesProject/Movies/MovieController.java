@@ -56,7 +56,7 @@ public class MovieController {
     @Operation(summary = "Get detailed movie information by ID")
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
-    public ResponseEntity<MovieDTO> getMovieDetails(@PathVariable Integer id) {  // Simplified parameter name
+    public ResponseEntity<MovieDTO> getMovieDetails(@PathVariable Long id) {  // Simplified parameter name
         try {
             MovieDTO movieDetails = movieService.getMovieDetails(id);
             return ResponseEntity.ok(movieDetails);

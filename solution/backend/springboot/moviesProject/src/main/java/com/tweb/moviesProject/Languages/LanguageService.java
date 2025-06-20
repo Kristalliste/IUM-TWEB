@@ -19,20 +19,20 @@ public class LanguageService {
     }
 
     // Add this new method
-    public Map<Integer, List<String>> getLanguageNamesByMovieIds(List<Integer> movieIds) {
+    public Map<Long, List<String>> getLanguageNamesByMovieIds(List<Long> movieIds) {
         if (movieIds == null || movieIds.isEmpty()) {
             return Collections.emptyMap();
         }
 
-        Map<Integer, List<String>> result = new HashMap<>();
-        for (Integer movieId : movieIds) {
+        Map<Long, List<String>> result = new HashMap<>();
+        for (Long movieId : movieIds) {
             result.put(movieId, languageRepository.findLanguageNamesByMovieId(movieId));
         }
         return result;
     }
 
     // Existing methods remain unchanged
-    public List<Language> getLanguagesByMovieId(Integer movieId) {
+    public List<Language> getLanguagesByMovieId(Long movieId) {
         List<Language> languages = languageRepository.findByMovieId(movieId);
         if (languages.isEmpty()) {
             return Collections.emptyList();

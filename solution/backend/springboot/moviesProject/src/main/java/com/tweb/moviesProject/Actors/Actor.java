@@ -7,10 +7,10 @@ import jakarta.persistence.*;
 public class Actor {
     @Id
     @Column(name = "actor_id")
-    private Integer actorId;
+    private Long actorId;
 
     @Column(name = "movie_id")
-    private Integer movieId;
+    private Long movieId;
 
     @Column(name = "name")
     private String name;
@@ -21,17 +21,17 @@ public class Actor {
     // Constructors, Getters, and Setters
     public Actor() {}
 
-    public Actor(Integer movieId, String name, String role) {
+    public Actor(Long movieId, String name, String role) {
         this.movieId = movieId;
         this.name = name;
         this.role = role;
     }
 
     // Getters and Setters for all fields
-    public Integer getActorId() { return actorId; }
-    public void setActorId(Integer actorId) { this.actorId = actorId; }
-    public Integer getMovieId() { return movieId; }
-    public void setMovieId(Integer movieId) { this.movieId = movieId; }
+    public Long getActorId() { return actorId; }
+    public void setActorId(Long actorId) { this.actorId = actorId; }
+    public Long getMovieId() { return movieId; }
+    public void setMovieId(Long movieId) { this.movieId = movieId; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getRole() { return role; }

@@ -20,7 +20,7 @@ public class LanguageController {
 
     @Operation(summary = "Get all languages for a specific movie")
     @GetMapping("/movie/{movieId}")
-    public ResponseEntity<List<Language>> getLanguagesByMovieId(@PathVariable Integer movieId) {
+    public ResponseEntity<List<Language>> getLanguagesByMovieId(@PathVariable Long movieId) {
         List<Language> languages = languageService.getLanguagesByMovieId(movieId);
         return ResponseEntity.ok(languages);
     }

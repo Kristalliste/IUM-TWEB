@@ -19,24 +19,24 @@ public class GenreService {
     }
 
     // Batch method to get genre names by movie IDs
-    public Map<Integer, List<String>> getGenreNamesByMovieIds(List<Integer> movieIds) {
+    public Map<Long, List<String>> getGenreNamesByMovieIds(List<Long> movieIds) {
         if (movieIds == null || movieIds.isEmpty()) {
             return Collections.emptyMap();
         }
 
-        Map<Integer, List<String>> result = new HashMap<>();
-        for (Integer movieId : movieIds) {
+        Map<Long, List<String>> result = new HashMap<>();
+        for (Long movieId : movieIds) {
             result.put(movieId, genreRepository.findGenreNamesByMovieId(movieId));
         }
         return result;
     }
 
     // Existing methods remain unchanged
-    public List<Genre> getGenresByMovieId(Integer movieId) {
+    public List<Genre> getGenresByMovieId(Long movieId) {
         return genreRepository.findByMovieId(movieId);
     }
 
-    public List<String> getGenreNamesByMovieId(Integer movieId) {
+    public List<String> getGenreNamesByMovieId(Long movieId) {
         return genreRepository.findGenreNamesByMovieId(movieId);
     }
 

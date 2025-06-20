@@ -7,30 +7,29 @@ import jakarta.persistence.*;
 public class Poster {
     @Id
     @Column(name = "poster_id")
-    private Integer posterId;
+    private Long posterId;
 
     @Column(name = "movie_id")
-    private Integer movieId;
+    private Long movieId;
 
     @Column(name = "link")
     private String link;
 
-    public Poster() {
-    }
+    public Poster() { }
 
-    public Poster(Integer movieId, String link) {
+    public Poster(Long movieId, String link) {
         this.movieId = movieId;
         this.link = link;
     }
 
     // Getters and Setters for all fields
-    public Integer getPosterId() {return posterId;}
+    public Long getPosterId() {return posterId;}
 
-    public void setPosterId(Integer posterId) {this.posterId = posterId;}
+    public void setPosterId(Long posterId) {this.posterId = posterId;}
 
-    public Integer getMovieId() {return movieId;}
+    public Long getMovieId() {return movieId;}
 
-    public void setMovieId(Integer movieId) {this.movieId = movieId;}
+    public void setMovieId(Long movieId) {this.movieId = movieId;}
 
     public String getLink() {return link;}
 

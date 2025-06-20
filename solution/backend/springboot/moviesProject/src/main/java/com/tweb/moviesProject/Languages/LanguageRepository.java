@@ -8,12 +8,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface LanguageRepository extends JpaRepository<Language, Integer> {
+public interface LanguageRepository extends JpaRepository<Language, Long> {
 
-    // Add this new method
     @Query(value = "SELECT l.language FROM \"Languages\" l WHERE l.movie_id = :movieId", nativeQuery = true)
-    List<String> findLanguageNamesByMovieId(@Param("movieId") Integer movieId);
+    List<String> findLanguageNamesByMovieId(@Param("movieId") Long movieId);
 
-    // Existing methods remain unchanged
-    List<Language> findByMovieId(Integer movieId);
+    List<Language> findByMovieId(Long movieId);
 }

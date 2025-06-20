@@ -21,13 +21,13 @@ public class ActorService {
     }
 
     // Add this new method
-    public Map<Integer, List<String>> getActorNamesByMovieIds(List<Integer> movieIds) {
+    public Map<Long, List<String>> getActorNamesByMovieIds(List<Long> movieIds) {
         if (movieIds == null || movieIds.isEmpty()) {
             return Collections.emptyMap();
         }
 
-        Map<Integer, List<String>> result = new HashMap<>();
-        for (Integer movieId : movieIds) {
+        Map<Long, List<String>> result = new HashMap<>();
+        for (Long movieId : movieIds) {
             result.put(movieId, actorRepository.findActorNamesByMovieId(movieId));
         }
         return result;
@@ -46,11 +46,11 @@ public class ActorService {
         return actorRepository.findMovieNameByActorNameIgnoreCase(name);
     }
 
-    public Actor findActorById(Integer id) {
+    public Actor findActorById(Long id) {
         return actorRepository.findActorById(id);
     }
 
-    public List<String> getActorNamesByMovieId(Integer movieId) {
+    public List<String> getActorNamesByMovieId(Long movieId) {
         List<String> names = actorRepository.findActorNamesByMovieId(movieId);
         if (names == null) {
             return Collections.emptyList();

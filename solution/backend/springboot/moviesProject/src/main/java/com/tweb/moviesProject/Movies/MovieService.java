@@ -55,7 +55,7 @@ public class MovieService {
     }
 
     // Batch method to get posters by movie IDs
-    public Map<Integer, String> getPostersByMovieIds(List<Integer> movieIds) {
+    public Map<Long, String> getPostersByMovieIds(List<Long> movieIds) {
         return posterService.getPostersByMovieIds(movieIds);
     }
 
@@ -73,15 +73,15 @@ public class MovieService {
     // Optimize DTO conversion
     private Page<MovieDTO> convertToDTOPage(Page<Movie> moviePage) {
         // Get all movie IDs
-        List<Integer> movieIds = moviePage.getContent().stream()
+        List<Long> movieIds = moviePage.getContent().stream()
                 .map(Movie::getMovieId)
                 .collect(Collectors.toList());
 
         // Batch fetch all related data
-        Map<Integer, String> posters = getPostersByMovieIds(movieIds);
-        Map<Integer, List<String>> genresMap = genreService.getGenreNamesByMovieIds(movieIds);
-        Map<Integer, List<String>> actorsMap = actorService.getActorNamesByMovieIds(movieIds);
-        Map<Integer, List<String>> languagesMap = languageService.getLanguageNamesByMovieIds(movieIds);
+        Map<Long, String> posters = getPostersByMovieIds(movieIds);
+        Map<Long, List<String>> genresMap = genreService.getGenreNamesByMovieIds(movieIds);
+        Map<Long, List<String>> actorsMap = actorService.getActorNamesByMovieIds(movieIds);
+        Map<Long, List<String>> languagesMap = languageService.getLanguageNamesByMovieIds(movieIds);
 
         // Get movie names for Oscar check
         List<String> movieNames = moviePage.getContent().stream()
@@ -90,7 +90,7 @@ public class MovieService {
         Map<String, Boolean> oscarMap = oscarAwardService.hasOscarBatch(movieNames);
 
         return moviePage.map(movie -> {
-            Integer movieId = movie.getMovieId();
+            Long movieId = movie.getMovieId();
             return new MovieDTO(
                     movieId,
                     movie.getName(),
@@ -123,7 +123,7 @@ public class MovieService {
         return convertToDTOPage(movieRepository.findAllMovies(pageable));
     }
 
-    public MovieDTO getMovieDetails(Integer movieId) {
+    public MovieDTO getMovieDetails(Long movieId) {
         System.out.println("DEBUG: Fetching details for movie: " + movieId); // Debug log
 
         Movie movie = movieRepository.findById(movieId).orElseThrow(() ->{
