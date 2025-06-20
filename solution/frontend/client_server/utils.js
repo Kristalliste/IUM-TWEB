@@ -32,19 +32,24 @@ export function escapeHTML(str) {
     });
 }
 
-export function formatMovieData(movie) {
-    return {
-        id: movie.id || movie.movieId,
-        title: movie.title || movie.name,
-        year: movie.year || (movie.date ? new Date(movie.date).getFullYear() : 'N/A'),
-        posterUrl: movie.posterUrl || movie.link || 'https://via.placeholder.com/300x450?text=No+Image',
-        description: movie.description || '',
-        rating: movie.rating || 0.0,
-        actors: movie.actors || [],
-        genres: movie.genres || [],
-        language: movie.language || '',
-        hasOscar: movie.hasOscar || false
-    };
+export function toTitleCase(str) {
+    return str
+        .toLowerCase()
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+export function capitalizeDescription(str) {
+    if (!str) return '';
+    return str
+        .split('.')
+        .map(sentence => {
+            const trimmed = sentence.trim();
+            return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+        })
+        .join('. ')
+        .trim();
 }
 
 // Add new utility functions
@@ -63,4 +68,4 @@ export const validateResponse = (response) => {
     return response.json();
 };
 
-export const moviesPerPage = 8;
+export const moviesPerPage = 10;

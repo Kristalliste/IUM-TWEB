@@ -98,7 +98,7 @@ public class MovieService {
                     movie.getDescription(),
                     movie.getMinute(),
                     movie.getRating(),
-                    posters.getOrDefault(movieId, "default-poster.jpg"),
+                    posters.getOrDefault(movieId, "https://placehold.co/300x450?text=No+Image"),
                     genresMap.getOrDefault(movieId, Collections.emptyList()),
                     actorsMap.getOrDefault(movieId, Collections.emptyList()),
                     languagesMap.getOrDefault(movieId, Collections.emptyList()),
@@ -124,32 +124,41 @@ public class MovieService {
     }
 
     public MovieDTO getMovieDetails(Integer movieId) {
-        Movie movie = movieRepository.findById(movieId).orElseThrow(() ->
-                new NoSuchElementException("Movie with ID " + movieId + " not found"));
+        System.out.println("DEBUG: Fetching details for movie: " + movieId); // Debug log
 
-        String posterUrl = posterService.getPosterByMovieId(movieId); // also no exception thrown here
-        List<String> genres = genreService.getGenreNamesByMovieId(movieId);
-        List<String> actors = actorService.getActorNamesByMovieId(movieId);
-        //List<Review> reviews = reviewRepository.findByMovieId(movieId);
-        List<String> languages = languageService.getLanguagesByMovieId(movieId)
-                .stream().map(Language::getLanguage).distinct().toList();
+        Movie movie = movieRepository.findById(movieId).orElseThrow(() ->{
+            System.err.println("MOVIE NOT FOUND IN DATABASE: " + movieId);
+            return new NoSuchElementException("Movie " + movieId + " doesn't exist");
+        });
+        try {
+            String posterUrl = posterService.getPosterByMovieId(movieId); // also no exception thrown here
+            List<String> genres = genreService.getGenreNamesByMovieId(movieId);
+            List<String> actors = actorService.getActorNamesByMovieId(movieId);
+            //List<Review> reviews = reviewRepository.findByMovieId(movieId);
+            List<String> languages = languageService.getLanguagesByMovieId(movieId)
+                    .stream().map(Language::getLanguage).distinct().toList();
 
-        boolean hasOscar = oscarAwardService.hasOscar(movie.getName());
+            boolean hasOscar = oscarAwardService.hasOscar(movie.getName());
 
-        return new MovieDTO(
-                movie.getMovieId(),
-                movie.getName(),
-                movie.getDate(),
-                // movie.getTagline(),
-                movie.getDescription(),
-                movie.getMinute(),
-                movie.getRating(),
-                posterUrl != null ? posterUrl : "default-poster.jpg",
-                genres,
-                actors,
-                languages,
-                hasOscar
-                //reviews.stream().map(review ->new ReviewDTO(review.getUser(), review.getComment())).collect(Collectors.toList())
-        );
+            return new MovieDTO(
+                    movie.getMovieId(),
+                    movie.getName(),
+                    movie.getDate(),
+                    // movie.getTagline(),
+                    movie.getDescription(),
+                    movie.getMinute(),
+                    movie.getRating(),
+                    posterUrl != null ? posterUrl : "https://placehold.co/300x450?text=No+Image",
+                    genres,
+                    actors,
+                    languages,
+                    hasOscar
+                    //reviews.stream().map(review ->new ReviewDTO(review.getUser(), review.getComment())).collect(Collectors.toList())
+            );
+        } catch (Exception e) {
+            // Log the error
+            System.err.println("Error building MovieDTO: " + e.getMessage());
+            throw e; // Re-throw to be handled by controller
+        }
     }
 }

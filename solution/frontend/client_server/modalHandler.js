@@ -1,5 +1,4 @@
-import { fetchMovieDetails } from './api.js';
-import { formatMovieData } from './utils.js';
+import { API_BASE_URL, toTitleCase, capitalizeDescription } from './utils.js';
 
 const modal = document.getElementById('movieModal');
 if (!modal) console.error('Modal element not found');
@@ -14,39 +13,81 @@ const detailLink = document.getElementById('detailLink');
 
 async function loadMovieDetails(movieId) {
     try {
-        const movie = await fetchMovieDetails(movieId);
-        return formatMovieData(movie);
+        const response = await fetch(`${API_BASE_URL}/movies/${movieId}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`API error: ${response.status} - ${JSON.stringify(errorData)}`);
+        }
+        const movie = await response.json();
+
+        // Map backend DTO to frontend format
+        return {
+            id: movie.id,
+            title: toTitleCase(movie.title),
+            year: movie.year || 'N/A',
+            description: capitalizeDescription(movie.description),
+            rating: movie.rating,
+            posterUrl: movie.posterUrl,
+            hasOscar: movie.hasOscar || false
+        };
     } catch (error) {
-        console.error('Error fetching movie details:', error);
-        return null;
+        console.error("Fetch error:", error);
+        return {
+            title: "Error Loading Movie",
+            description: error.message,
+            rating: 0,
+            posterUrl: "https://placehold.co/300x450?text=Error+Loading",
+            year: 'N/A'
+        };
     }
 }
 
 function populateModal(movie) {
-    if (!movie) return;
-
-    if (detailTitle) detailTitle.textContent = movie.title || 'Unknown Title';
-    if (detailPoster) {
-        detailPoster.src = movie.posterUrl || 'https://via.placeholder.com/300x450?text=No+Image';
-        detailPoster.alt = `Poster for ${movie.title}`;
+    if (!movie) {
+        console.error('No movie data provided to populateModal');
+        return;
     }
-    if (detailDescription) detailDescription.textContent = movie.description || 'No description available';
-    if (detailRating) detailRating.textContent = movie.rating?.toFixed(1) || 'N/A';
+
+    // Safely extract properties with fallbacks
+    const movieData = {
+        id: movie.id || '',
+        title: movie.title || 'Title not available',
+        posterUrl: movie.posterUrl || 'https://placehold.co/300x450?text=No+Image',
+        description: movie.description || 'No description available',
+        year: movie.year || 'N/A',
+        rating: movie.rating ? movie.rating.toFixed(1) : 'N/A',
+        hasOscar: movie.hasOscar || false
+    };
+
+    console.log('Displaying movie:', movieData); // Debug
+
+    // Update DOM elements
+    if (detailTitle) detailTitle.textContent = movieData.title;
+    if (detailPoster) {
+        detailPoster.src = movieData.posterUrl;
+        detailPoster.alt = `Poster for ${movieData.title}`;
+    }
+    if (detailDescription) detailDescription.textContent = movieData.description;
+    if (detailRating) detailRating.textContent = movieData.rating;
     if (detailOscarIcon) {
-        detailOscarIcon.style.display = movie.hasOscar ? 'inline-block' : 'none';
-        detailOscarIcon.title = movie.hasOscar ? 'Nominated to the Oscar Awards' : '';
+        detailOscarIcon.style.display = movieData.hasOscar ? 'inline-block' : 'none';
+        detailOscarIcon.title = movieData.hasOscar ? 'Oscar nominated' : '';
     }
     if (detailLink) {
-        detailLink.href = `#${movie.id}`;
+        detailLink.href = movieData.id ? `#${movieData.id}` : '#';
         detailLink.textContent = 'View Full Details and Reviews';
     }
+    const detailYear = document.getElementById('detailYear');
+    if (detailYear) detailYear.textContent = movieData.year;
 }
 
 export function showModal(movieId) {
+    console.log(movieId);
     if (!modal) return;
 
     // Show loading state
-    if (detailDescription) detailDescription.textContent = 'Loading...';
+    if (detailTitle) detailTitle.textContent = 'Loading...';
+    if (detailDescription) detailDescription.textContent = 'Loading movie details...';
     modal.style.display = 'block';
     document.body.style.overflow = 'hidden';
 
@@ -55,13 +96,21 @@ export function showModal(movieId) {
             if (movie) {
                 populateModal(movie);
             } else {
-                if (detailDescription) detailDescription.textContent = 'Error loading movie details';
-            }
+                if (detailTitle) detailTitle.textContent = 'Error';
+                if (detailDescription) detailDescription.textContent = 'Failed to load movie details';}
         })
         .catch(error => {
             console.error('Error showing modal:', error);
-            if (detailDescription) detailDescription.textContent = 'Error loading movie details';
+            if (detailTitle) detailTitle.textContent = 'Error';
+            if (detailDescription) {
+                detailDescription.textContent = `Error loading movie details: ${error.message}`;
+            }
+            if (detailRating) detailRating.textContent = '0.0';
         });
+
+    console.log("Requesting movie ID:", movieId); // Should match IDs from homepage
+
+
 }
 
 export function hideModal() {

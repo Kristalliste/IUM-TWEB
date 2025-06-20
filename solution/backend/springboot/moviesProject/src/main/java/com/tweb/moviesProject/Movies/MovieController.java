@@ -8,7 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.NoSuchElementException;
 
 @Tag(name = "Movies API", description = "Endpoints for managing movies")
 @RestController
@@ -50,28 +53,19 @@ public class MovieController {
         return ResponseEntity.ok(movies);
     }
 
-    /**
     @Operation(summary = "Get detailed movie information by ID")
     @GetMapping("/{id}")
-    public ResponseEntity<MovieDTO> getMovieDetails(@PathVariable("id") Integer movieId) {
-        MovieDTO movieDetails = movieService.getMovieDetails(movieId);
-        if (movieDetails == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(movieDetails);
-    }*/
-
-    @Operation(summary = "Get detailed movie information by ID")
-    @GetMapping("/{id}")
-    public ResponseEntity<MovieDTO> getMovieDetails(@PathVariable("id") Integer movieId) {
+    @Transactional(readOnly = true)
+    public ResponseEntity<MovieDTO> getMovieDetails(@PathVariable Integer id) {  // Simplified parameter name
         try {
-            MovieDTO movieDetails = movieService.getMovieDetails(movieId);
+            MovieDTO movieDetails = movieService.getMovieDetails(id);
             return ResponseEntity.ok(movieDetails);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            System.err.println("Error fetching movie details: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();  // Remove .body(null)
         }
     }
-
 }

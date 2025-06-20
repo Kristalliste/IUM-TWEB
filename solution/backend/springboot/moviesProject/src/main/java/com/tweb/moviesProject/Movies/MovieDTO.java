@@ -1,5 +1,6 @@
 package com.tweb.moviesProject.Movies;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
@@ -16,6 +17,7 @@ public class MovieDTO {
     private String name;
 
     @Schema(description = "Release date of the movie", example = "1994-09-23")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date date;
 
     /*@Schema(description = "Tagline of the movie", example = "Fear can hold you prisoner. Hope can set you free.")
@@ -123,9 +125,7 @@ public class MovieDTO {
     public String getLink() {
         return link;
     }
-    public void setLink(String link) {
-        this.link = link;
-    }
+    public void setLink(String link) { this.link = link; }
 
     public List<String> getGenres() {
         return genres;

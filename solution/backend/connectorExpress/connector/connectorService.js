@@ -16,7 +16,11 @@ const getAllMovies = async () => {
 // Aggiunto metodo mancante
 const getMovieById = async (id) => {
     try {
-        return await ConnectorRepository.fetchMovieById(id);
+        const movie = await ConnectorRepository.fetchMovieById(id);
+        if (!movie) {
+            throw new Error('Movie not found');
+        }
+        return movie;
     } catch (error) {
         console.error('Error in getMovieById:', error);
         throw new Error('Failed to fetch movie');

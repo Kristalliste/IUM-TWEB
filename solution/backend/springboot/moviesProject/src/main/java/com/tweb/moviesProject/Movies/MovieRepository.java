@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Integer> {
@@ -37,4 +38,10 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
             countQuery = "SELECT count(*) FROM \"Movies\" ",
             nativeQuery = true)
     Page<Movie> findAllMovies(Pageable pageable);
+
+    // Overriding the standard jpa function (otherwise it doesnt work)
+    @Override
+    @Query(value = "SELECT * FROM \"Movies\" WHERE id = :id", nativeQuery = true)
+    Optional<Movie> findById(@Param("id") Integer id);
+
 }

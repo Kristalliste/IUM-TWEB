@@ -8,7 +8,7 @@ function formatMovieDetails(movieData) {
         id: movieData.id || movieData.movieId,
         title: movieData.name,
         year: new Date(movieData.date).getFullYear(),
-        posterUrl: movieData.link || 'https://via.placeholder.com/300x450?text=No+Image',
+        posterUrl: movieData.link || 'https://placehold.co/300x450?text=No+Image',
         description: movieData.description,
         rating: movieData.rating || 0.0,
         actors: movieData.actors || [],
@@ -120,27 +120,6 @@ export async function showDetailView(movieId, mainView, detailView) {
             showMainView(mainView, detailView)
         );
     }
-
-/** DA RIVEDERE JAS
-    movieCard.addEventListener('click', async () => {
-        try {
-            const movieData = await fetchMovieDetails(movie.id);
-            const movie = formatMovieDetails(movieData);
-
-            document.getElementById("detailPoster").src = movie.posterUrl;
-            document.getElementById("detailTitle").textContent = movie.title;
-            document.getElementById("detailRating").textContent = movie.rating;
-            document.getElementById("detailYear").textContent = movie.year;
-            document.getElementById("detailGenre").textContent = movie.genres.join(', ');
-            document.getElementById("detailLanguage").textContent = movie.languages?.join(', ') ?? '';
-            document.getElementById("detailCast").textContent = movie.actors.join(', ');
-            document.getElementById("detailDescription").textContent = movie.description;
-
-            document.getElementById("movieModal").style.display = "block";
-        } catch (err) {
-            console.error("Failed to load movie detail:", err);
-        }
-    }); */
 }
 
 export function renderMovies(movieList, movieGrid, currentPage, mainView, detailView) {
@@ -166,7 +145,7 @@ export function renderMovies(movieList, movieGrid, currentPage, mainView, detail
 
         movieCard.innerHTML = `
       <div class="movie-poster-container">
-        <img src="${movie.posterUrl}" alt="Locandina di ${movie.title}" loading="lazy">
+        <img src="${movie.posterUrl}" alt="Locandina di ${movie.title}" onerror="this.src='https://placehold.co/300x450?text=No+Image'" loading="lazy">
         <div class="movie-overlay">
           <p class="movie-description">${escapeHTML(movie.description)}</p>
         </div>
@@ -179,7 +158,11 @@ export function renderMovies(movieList, movieGrid, currentPage, mainView, detail
         </div>
       </div>
     `;
-
+/**
+        movieCard.addEventListener('click', () =>
+            showDetailView(movie.id, mainView, detailView)
+        );
+*/
 
         movieGrid.appendChild(movieCard);
     });
