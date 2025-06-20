@@ -395,6 +395,34 @@ footer {
     gap: 40px;
 }
 
+.details-link {
+    background-color: #f5c518;
+    color: #121212 !important;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 30px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.details-link:hover {
+    background-color: #fff; /* White on hover */
+    color: #121212 !important; /* Keep text black on hover */
+    text-decoration: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.details-link i {
+    margin-right: 5px;
+}
+
 .reviews-section h2, .chat-section h2 {
     font-size: 1.8em;
     color: #f5c518;
@@ -722,18 +750,7 @@ footer {
     font-size: 1.2em;
 }
 
-.details-link {
-    display: inline-block;
-    margin-top: 20px;
-    color: #f5c518;
-    text-decoration: none;
-    font-weight: bold;
-}
 
-.details-link:hover {
-    color: #fff;
-    text-decoration: underline;
-}
 
 /* For smaller screens where modal might be taller than viewport */
 @media (max-height: 700px) {
@@ -746,4 +763,24 @@ footer {
         top: 20px;
         transform: translate(-50%, 0);
     }
+}
+
+
+/* Add this to your CSS */
+.bi-award {
+    color: #f5c518;
+    margin-left: 10px;
+    font-size: 1.2em;
+    vertical-align: middle;
+}
+
+/* If you want to add animation for the Oscar icon */
+.bi-award {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
 }
