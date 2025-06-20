@@ -53,7 +53,12 @@ function connectToChat(username, movieTitle, roomId) {
             room: roomId,
             username: username
         });
-        renderChatInterface(document.getElementById('chat-wrapper'), movieTitle, username, roomId);
+        if(roomId === 1){
+            renderChatInterface(document.getElementById('floating-chat-body'), movieTitle, username, roomId);
+        }else {
+            renderChatInterface(document.getElementById('chat-wrapper'), movieTitle, username, roomId);
+        }
+
     });
 
     socket.on('message', (data) => {
@@ -86,7 +91,23 @@ function connectToChat(username, movieTitle, roomId) {
 }
 
 export function renderChatInterface(container, movieTitle, username, roomId) {
-    container.innerHTML = `
+
+    if(roomId === 1){
+        container.innerHTML = `
+        <div class="chat-username-display">
+            Stai chattando come: <strong>${escapeHTML(username)}</strong> | 
+            Chat: <strong>${escapeHTML(movieTitle)}</strong>
+        </div>
+        <div id="chat-messages" class="chat-messages">
+            <p class="chat-system">Benvenuto nella chat generale!</p>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Scrivi un messaggio...">
+            <button id="send-chat-btn">Invia</button>
+        </div>
+        `;
+    } else {
+        container.innerHTML = `
         <div class="chat-username-display">
             Stai chattando come: <strong>${escapeHTML(username)}</strong> | 
             Film: <strong>${escapeHTML(movieTitle)}</strong>
@@ -98,7 +119,9 @@ export function renderChatInterface(container, movieTitle, username, roomId) {
             <input type="text" id="chat-input" placeholder="Scrivi un messaggio...">
             <button id="send-chat-btn">Invia</button>
         </div>
-    `;
+        `;
+    }
+
     
     const sendBtn = document.getElementById('send-chat-btn');
     const chatInput = document.getElementById('chat-input');

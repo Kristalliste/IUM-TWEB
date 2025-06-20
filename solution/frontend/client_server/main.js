@@ -4,6 +4,7 @@ import { fetchMovies, fetchMovieDetails } from './api.js';
 import { showMainView, showDetailView, renderMovies } from './views.js';
 import { displayMoviePage, renderPagination } from './pagination.js';
 import { populateGenres } from './genres.js';
+import {renderUsernamePrompt} from "./chat.js";
 
 // DOM elements
 const movieGrid = document.getElementById('movie-grid');
@@ -154,6 +155,18 @@ async function init() {
     mainTitle.textContent = 'Film più recenti';
     setActiveLink(null);  // Nessun link attivo inizialmente
     displayMoviePage(recentMovies, paginationContainer, movieGrid, currentPage, mainView, detailView);
+
 }
+
+document.getElementById('toggle-chat-btn').addEventListener('click', () => {
+    document.getElementById('floating-chat').classList.toggle('hidden');
+    const chatWrapper = document.getElementById('floating-chat-body');
+    renderUsernamePrompt(chatWrapper, "homepage", 1);
+});
+
+document.getElementById('close-chat-btn').addEventListener('click', () => {
+    document.getElementById('floating-chat').classList.add('hidden');
+});
+
 
 init();
