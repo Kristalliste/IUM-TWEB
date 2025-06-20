@@ -1,4 +1,5 @@
 import { API_BASE_URL, toTitleCase, capitalizeDescription } from './utils.js';
+import { showDetailView } from './views.js';
 
 const modal = document.getElementById('movieModal');
 if (!modal) console.error('Modal element not found');
@@ -73,12 +74,37 @@ function populateModal(movie) {
         detailOscarIcon.style.display = movieData.hasOscar ? 'inline-block' : 'none';
         detailOscarIcon.title = movieData.hasOscar ? 'Oscar nominated' : '';
     }
-    if (detailLink) {
-        detailLink.href = movieData.id ? `#${movieData.id}` : '#';
-        detailLink.textContent = 'View Full Details and Reviews';
-    }
     const detailYear = document.getElementById('detailYear');
     if (detailYear) detailYear.textContent = movieData.year;
+
+    if (detailLink) {
+        detailLink.href = '#'; // Kept as hash to prevent page reload
+        detailLink.textContent = 'View Full Details and Reviews';
+        // Add click handler to show detail view
+        detailLink.onclick = (e) => {
+            e.preventDefault();
+            hideModal();
+            // Get the mainView and detailView elements
+            const mainView = document.querySelector('main');
+            const detailView = document.getElementById('movie-detail-view');
+            if (mainView && detailView) {
+                showDetailView(movieData.id, mainView, detailView);
+            }
+        };
+    }
+    if (detailOscarIcon) {
+        if (movie.hasOscar) {
+            detailOscarIcon.className = 'bi bi-award'; // Set Bootstrap Icons class
+            detailOscarIcon.style.display = 'inline-block';
+            detailOscarIcon.style.color = '#f5c518'; // Gold color
+            detailOscarIcon.style.marginLeft = '10px';
+            detailOscarIcon.style.fontSize = '1.2em';
+            detailOscarIcon.title = 'Oscar Winner';
+        } else {
+            detailOscarIcon.style.display = 'none';
+        }
+    }
+
 }
 
 export function showModal(movieId) {
