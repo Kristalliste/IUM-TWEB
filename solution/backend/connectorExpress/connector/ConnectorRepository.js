@@ -7,39 +7,6 @@ const SPRING_API = process.env.SPRING_SERVER_URL || 'http://localhost:8080/api';
 // Create cache instance, for 5 minutes
 const cache = new NodeCache({ stdTTL: 300 });
 
-/**
-const fetchMovieById = async (id) => {
-    try {
-        const response = await axios.get(`${SPRING_API}/movies/${id}`, { timeout: 5000 });
-        return response.data;
-    } catch (error) {
-        if (error.response) {
-            throw new Error(`Server responded with ${error.response.status}`);
-        } else if (error.request) {
-            throw new Error('No response received from server');
-        } else {
-            throw new Error('Request setup error');
-        }
-    }
-};
-
-const fetchMovieById = async (id) => {
-    try {
-        const response = await axios.get(`http://localhost:8080/api/movies/${id}`);
-
-        if (response.status !== 200) {
-            throw new Error(`Server responded with ${response.status}`);
-        }
-        return response.data;
-    } catch (error) {
-        console.error(`Error fetching movie ${id}:`, error.message);
-        if (error.response) {
-            console.error('Response data:', error.response.data);
-        }
-        throw error;
-    }
-}; */
-
 const fetchMovieById = async (id) => {
     const cacheKey = `movie_${id}`;
 
@@ -164,7 +131,7 @@ const fetchAllMovies = async () => {
         return cachedMovies;
     }
     try {
-        const response = await axios.get(`${SPRING_API}/movies`, { timeout: 5000 });
+        const response = await axios.get(`${SPRING_API}/movies?size=1000`, { timeout: 20000 });
         console.log('Connection successful');
         const moviesDTO = response.data.content;
 

@@ -1,8 +1,6 @@
 import ConnectorRepository from './ConnectorRepository.js';
 
-const getAllReviews = async () => {
-    // Implementazione esistente
-};
+const getAllReviews = async () => { /* ... */ };
 
 const getAllMovies = async () => {
     try {
