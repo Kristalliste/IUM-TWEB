@@ -135,8 +135,8 @@ public class MovieService {
             List<String> genres = genreService.getGenreNamesByMovieId(movieId);
             List<String> actors = actorService.getActorNamesByMovieId(movieId);
             //List<Review> reviews = reviewRepository.findByMovieId(movieId);
-            List<String> languages = languageService.getLanguagesByMovieId(movieId)
-                    .stream().map(Language::getLanguage).distinct().toList();
+            List<String> languages = languageService.getLanguageNamesByMovieId(movieId);
+                   // .stream().map(Language::getLanguage).distinct().toList();
 
             boolean hasOscar = oscarAwardService.hasOscar(movie.getName());
 

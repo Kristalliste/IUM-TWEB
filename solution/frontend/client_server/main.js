@@ -31,7 +31,7 @@ function formatMovieData(movie) {
         rating: movie.rating || 0,
         //actors: movie.actors || [],
        // genres: movie.genres || [],
-       // language: movie.language || [],
+       // language: movie.languages || [],
         hasOscar: movie.hasOscar || false
     };
 }

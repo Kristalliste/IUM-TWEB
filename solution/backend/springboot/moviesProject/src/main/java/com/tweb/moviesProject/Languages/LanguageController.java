@@ -18,16 +18,31 @@ public class LanguageController {
         this.languageService = languageService;
     }
 
-    @Operation(summary = "Get all languages for a specific movie")
+    @Operation(summary = "Get all language entities for a specific movie")
     @GetMapping("/movie/{movieId}")
-    public ResponseEntity<List<Language>> getLanguagesByMovieId(@PathVariable Long movieId) {
-        List<Language> languages = languageService.getLanguagesByMovieId(movieId);
+    public ResponseEntity<List<String>> getLanguagesByMovieId(@PathVariable Long movieId) {
+        List<String> languages = languageService.getLanguageNamesByMovieId(movieId);
         return ResponseEntity.ok(languages);
     }
 
     @ExceptionHandler(LanguageNotFoundException.class)
     public ResponseEntity<String> handleLanguageNotFound(LanguageNotFoundException ex) {
         return ResponseEntity.status(404).body(ex.getMessage());
+    }
+
+    @Operation(summary = "Get all language names for a specific movie")
+    @GetMapping("/names/movie/{movieId}")
+    public ResponseEntity<List<String>> getLanguageNamesByMovieId(@PathVariable Long movieId) {
+        List<String> languageNames = languageService.getLanguageNamesByMovieId(movieId);
+        return languageNames.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(languageNames);
+    }
+
+    @Operation(
+            summary = "Get all Language entities by language name")
+    @GetMapping("/{languageName}")
+    public ResponseEntity<List<Language>> getLanguagesByName(@PathVariable String languageName) {
+        List<Language> languages = languageService.getLanguagesByName(languageName);
+        return languages.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(languages);
     }
 }
 

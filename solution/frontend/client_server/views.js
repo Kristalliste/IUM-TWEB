@@ -13,7 +13,7 @@ function formatMovieDetails(movieData) {
         rating: movieData.rating || 0.,
         actors: movieData.actors || [],
         genres: movieData.genres || [],
-        language: movieData.language || [],
+        languages: movieData.languages || [],
         hasOscar: movieData.hasOscar || false,
         reviews: movieData.reviews?.map(review => ({
             user: review.critic_name || 'Anonimo',
@@ -67,18 +67,18 @@ export async function showDetailView(movieId, mainView, detailView) {
           <p class="description">${escapeHTML(movie.description)}</p>
           
           <h3>Languages</h3>
-            <ul class="language-list">
-            ${movie.language.map(lang => `<li>${escapeHTML(lang)}</li>`).join('')}
+            <ul class="languages-list">
+            ${movie.languages.map(lang => `<li>${escapeHTML(lang)}</li>`).join('') || '<li>No languages specified</li>'}
              </ul>
 
           <h3>Genres</h3>
               <ul class="genre-list">
-                ${movie.genres.map(genre => `<li>${escapeHTML(genre)}</li>`).join('')}
+                ${movie.genres.map(genre => `<li>${escapeHTML(genre)}</li>`).join('') || '<li>No genres specified</li>'}
             </ul>
 
           <h3>Cast</h3>
           <ul class="actors-list">
-            ${movie.actors.map(actor => `<li>${escapeHTML(actor)}</li>`).join('')}
+            ${movie.actors.map(actor => `<li>${escapeHTML(actor)}</li>`).join('') || '<li>No cast specified</li>'}
           </ul>
         </div>
       </div>

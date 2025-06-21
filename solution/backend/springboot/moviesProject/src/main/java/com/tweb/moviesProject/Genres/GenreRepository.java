@@ -14,7 +14,6 @@ public interface GenreRepository extends JpaRepository<Genre, Long> {
     @Query(value = "SELECT genre FROM \"Genres\" WHERE movie_id = :movieId", nativeQuery = true)
     List<String> findGenreNamesByMovieId(@Param("movieId") Long movieId);
 
-    // Existing methods remain unchanged
     @Query(value = "SELECT * FROM \"Genres\" WHERE movie_id = :movieId", nativeQuery = true)
     List<Genre> findByMovieId(@Param("movieId") Long movieId);
 
