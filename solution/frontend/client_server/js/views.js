@@ -1,6 +1,7 @@
 import {capitalizeDescription, escapeHTML, toTitleCase} from './utils.js';
 import { renderUsernamePrompt } from './chat.js';
 import { fetchMovieDetails } from './api.js';
+import { moviesPerPage } from './utils.js';
 
 // Format movie details response to a consistent structure
 function formatMovieDetails(movieData) {
@@ -167,8 +168,8 @@ export function renderMovies(movieList, movieGrid, currentPage, mainView, detail
         return;
     }
 
-    const startIndex = (currentPage - 1) * 8;
-    const endIndex = startIndex + 8;
+    const startIndex = (currentPage - 1) * moviesPerPage;
+    const endIndex = startIndex + moviesPerPage;
     const paginatedMovies = movieList.slice(startIndex, endIndex);
 
     paginatedMovies.forEach(movie => {
