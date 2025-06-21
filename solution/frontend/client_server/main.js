@@ -29,9 +29,9 @@ function formatMovieData(movie) {
         posterUrl: movie.posterUrl || 'https://placehold.co/300x450?text=No+Image',
         description: capitalizeDescription(movie.description),
         rating: movie.rating || 0,
-        actors: movie.actors || [],
-        genres: movie.genres || [],
-        language: movie.language,
+        //actors: movie.actors || [],
+       // genres: movie.genres || [],
+       // language: movie.language || [],
         hasOscar: movie.hasOscar || false
     };
 }
