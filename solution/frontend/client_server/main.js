@@ -156,9 +156,14 @@ async function init() {
 }
 
 document.getElementById('toggle-chat-btn').addEventListener('click', () => {
-    document.getElementById('floating-chat').classList.toggle('hidden');
-    const chatWrapper = document.getElementById('floating-chat-body');
-    renderUsernamePrompt(chatWrapper, "homepage", 1);
+    const floatingChat = document.getElementById('floating-chat');
+    floatingChat.classList.toggle('hidden');
+
+    // Initialize chat only when opening
+    if (!floatingChat.classList.contains('hidden')) {
+        const chatWrapper = document.getElementById('floating-chat-body');
+        renderUsernamePrompt(chatWrapper, "homepage", 1);
+    }
 });
 
 document.getElementById('close-chat-btn').addEventListener('click', () => {
