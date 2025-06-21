@@ -1,5 +1,4 @@
-// IUM-TWEB/solution/frontend/client_server/main.js
-import { debounce } from './utils.js';
+import {API_BASE_URL, debounce, toTitleCase, capitalizeDescription } from './utils.js';
 import { fetchMovies, fetchMovieDetails } from './api.js';
 import { showMainView, showDetailView, renderMovies } from './views.js';
 import { displayMoviePage, renderPagination } from './pagination.js';
@@ -23,20 +22,18 @@ const genresLink = document.getElementById('genres-link');
 let currentPage = 1;
 let allMovies = [];
 
-// API configuration
-const API_BASE_URL = 'http://localhost:4000/api';
-
 function formatMovieData(movie) {
     return {
         id: movie.id,
-        title: movie.title,
+        title: toTitleCase(movie.title),
         year: movie.year,
-        // CORRETTO: usa posterUrl invece di posterUrl
-        posterUrl: movie.posterUrl || 'https://via.placeholder.com/300x450?text=No+Image',
-        description: movie.description,
-        rating: movie.rating || 0.0,
-        actors: movie.actors || [],
-        genres: movie.genres || []
+        posterUrl: movie.posterUrl || 'https://placehold.co/300x450?text=No+Image',
+        description: capitalizeDescription(movie.description),
+        rating: movie.rating || 0,
+        //actors: movie.actors || [],
+       // genres: movie.genres || [],
+       // language: movie.languages || [],
+        hasOscar: movie.hasOscar || false
     };
 }
 
@@ -48,7 +45,7 @@ async function loadMovies() {
         const data = await response.json();
         return data.map(movie => formatMovieData(movie));
     } catch (error) {
-        console.error('Errore nel caricamento dei film:', error);
+        console.error('Could not load movies. Please try again.', error);
         return [];
     }
 }
@@ -159,9 +156,14 @@ async function init() {
 }
 
 document.getElementById('toggle-chat-btn').addEventListener('click', () => {
-    document.getElementById('floating-chat').classList.toggle('hidden');
-    const chatWrapper = document.getElementById('floating-chat-body');
-    renderUsernamePrompt(chatWrapper, "homepage", 1);
+    const floatingChat = document.getElementById('floating-chat');
+    floatingChat.classList.toggle('hidden');
+
+    // Initialize chat only when opening
+    if (!floatingChat.classList.contains('hidden')) {
+        const chatWrapper = document.getElementById('floating-chat-body');
+        renderUsernamePrompt(chatWrapper, "homepage", 1);
+    }
 });
 
 document.getElementById('close-chat-btn').addEventListener('click', () => {
@@ -169,4 +171,7 @@ document.getElementById('close-chat-btn').addEventListener('click', () => {
 });
 
 
-init();
+// Ensures all HTML is parsed before JS runs
+document.addEventListener('DOMContentLoaded', () => {
+    init(); // Now safe to access DOM
+});

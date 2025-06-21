@@ -12,7 +12,7 @@ import java.util.List;
  * Provides methods to check existence of films and find films from a list.
  */
 @Repository
-public interface OscarAwardRepository extends JpaRepository<OscarAward, Integer> {
+public interface OscarAwardRepository extends JpaRepository<OscarAward, Long> {
 
     /**
      * Checks if a film exists in the OscarAwards table, case-insensitive.

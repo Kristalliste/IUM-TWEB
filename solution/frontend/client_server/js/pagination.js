@@ -1,6 +1,7 @@
 import { moviesPerPage } from './utils.js';
 import { renderMovies } from './views.js';
 
+// Main function to display a page of movies with pagination controls
 export function displayMoviePage(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView) {
     renderMovies(movieList, movieGrid, currentPage, mainView, detailView);
     renderPagination(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView);

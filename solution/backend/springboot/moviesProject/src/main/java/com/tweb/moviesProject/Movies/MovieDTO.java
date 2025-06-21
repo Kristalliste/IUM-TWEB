@@ -1,20 +1,23 @@
 package com.tweb.moviesProject.Movies;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 @Schema(description = "Data Transfer Object for movie details")
 public class MovieDTO {
 
     @Schema(description = "Unique identifier of the movie", example = "1")
-    private Integer movieId;
+    private Long movieId;
 
     @Schema(description = "Name of the movie", example = "The Shawshank Redemption")
     private String name;
 
     @Schema(description = "Release date of the movie", example = "1994-09-23")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date date;
 
     /*@Schema(description = "Tagline of the movie", example = "Fear can hold you prisoner. Hope can set you free.")
@@ -49,7 +52,7 @@ public class MovieDTO {
     // Constructors
     public MovieDTO() {}
 
-    public MovieDTO(Integer movieId, String name, Date date,/*String tagline,*/
+    public MovieDTO(Long movieId, String name, Date date,/*String tagline,*/
                     String description, Double minute, Double rating, String link,
                     List<String> genres, List<String> actors, List<String> languages,
                     Boolean hasOscar) {
@@ -68,10 +71,10 @@ public class MovieDTO {
     }
 
     // Getters and Setters
-    public Integer getMovieId() {
+    public Long getMovieId() {
         return movieId;
     }
-    public void setMovieId(Integer movieId) {
+    public void setMovieId(Long movieId) {
         this.movieId = movieId;
     }
 
@@ -88,13 +91,11 @@ public class MovieDTO {
     public void setDate(Date date) {
         this.date = date;
     }
-/*
-    public String getTagline() {
-        return tagline;
-    }
-    public void setTagline(String tagline) {
-        this.tagline = tagline;
-    }*/
+
+    /**
+    public String getTagline() { return tagline; }
+    public void setTagline(String tagline) { this.tagline = tagline; }
+    */
 
     public String getDescription() {
         return description;
@@ -116,9 +117,7 @@ public class MovieDTO {
     public String getLink() {
         return link;
     }
-    public void setLink(String link) {
-        this.link = link;
-    }
+    public void setLink(String link) { this.link = link; }
 
     public List<String> getGenres() {
         return genres;

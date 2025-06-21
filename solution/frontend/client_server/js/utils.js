@@ -1,4 +1,5 @@
-export const API_BASE_URL = 'http://localhost:4000/api'; // URL del connector server
+// URL del connector server
+export const API_BASE_URL = 'http://localhost:4000/api';
 
 // Add debounce function
 export function debounce(func, wait) {
@@ -31,6 +32,31 @@ export function escapeHTML(str) {
     });
 }
 
+export function toTitleCase(str) {
+    return str
+        .toLowerCase()
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+export function capitalizeDescription(str) {
+    if (!str) return '';
+    return str
+        .split('.')
+        .map(sentence => {
+            const trimmed = sentence.trim();
+            if (!trimmed) return ''; // Skip empty sentences
+
+            // Capitalize first letter and add period if missing
+            const capitalized = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+            return capitalized.endsWith('.') ? capitalized : capitalized + '.';
+        })
+        .filter(sentence => sentence) // Remove any empty strings
+        .join(' ')
+        .trim();
+}
+
 // Add new utility functions
 export const handleApiError = (error) => {
     console.error('API Error:', error);
@@ -47,4 +73,4 @@ export const validateResponse = (response) => {
     return response.json();
 };
 
-export const moviesPerPage = 8;
+export const moviesPerPage = 10;

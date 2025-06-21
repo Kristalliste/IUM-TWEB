@@ -15,7 +15,7 @@ public class OscarAward {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "dummy_id")
     @Schema(description = "Dummy ID (required by JPA, not used)", hidden = true)
-    private Integer id;
+    private Long id;
 
     @Column(name = "year_film")
     @Schema(description = "Year the film was released", example = "1997")
@@ -49,8 +49,8 @@ public class OscarAward {
     public OscarAward() {}
 
     // Getters and Setters
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public Date getYearFilm() { return yearFilm; }
     public void setYearFilm(Date yearFilm) { this.yearFilm = yearFilm; }

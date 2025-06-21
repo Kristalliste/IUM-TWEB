@@ -330,6 +330,13 @@ footer {
     background-color: #fff;
 }
 
+/* Clean, consistent detail view sections */
+.detail-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
 .detail-grid {
     display: grid;
     grid-template-columns: 300px 1fr;
@@ -371,34 +378,130 @@ footer {
     margin-bottom: 30px;
 }
 
-.detail-info h3 {
+/* List containers */
+.detail-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+}
+
+/* List items */
+.detail-list-item {
+    padding: 0.3rem 0;
+    color: #ffffff;
+    font-size: 0.95rem;
+    break-inside: avoid;
+}
+
+.languages-section,
+.genres-section,
+.actors-section {
+    width: 100%;
+}
+
+/* Section headers (h3) styling */
+.reviews-section h3,
+.languages-section h3,
+.genres-section h3,
+.actors-section h3 {
     font-size: 1.5em;
     color: #f5c518;
     border-bottom: 1px solid #333;
     padding-bottom: 5px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
+.detail-list {
+    padding-top: 5px;
+}
+
+/* Item lists styling */
+.languages-list,
+.genres-list,
 .actors-list {
     list-style: none;
     padding: 0;
-    columns: 2;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+    gap: 0.5rem 1.5rem;
 }
 
+/* List items styling */
+.languages-list li,
+.genres-list li,
 .actors-list li {
-    padding: 5px 0;
+    padding: 0.3rem 0;
+    color: #ffffff;
+    font-size: 1em;
+    //break-inside: avoid; /* Prevents item splitting across columns */
 }
 
+/* Responsive: Reduce to 1 column on mobile */
+@media (max-width: 768px) {
+    .languages-list,
+    .genres-list,
+    .actors-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+/**
 .detail-sections {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 40px;
+}*/
+
+.reviews-section {
+    grid-column: 2;
 }
 
-.reviews-section h2, .chat-section h2 {
+.detail-sections-container {
+    display: grid;
+    grid-template-columns: 300px 1fr; /* Chat takes 300px, reviews takes remaining */
+    gap: 40px;
+    margin-top: 20px;
+}
+
+.details-link {
+    background-color: #f5c518;
+    color: #121212 !important;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 30px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.details-link:hover {
+    background-color: #fff; /* White on hover */
+    color: #121212 !important; /* Keep text black on hover */
+    text-decoration: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.details-link i {
+    margin-right: 5px;
+}
+
+.chat-section h2 {
     font-size: 1.8em;
     color: #f5c518;
     margin-bottom: 20px;
+}
+
+.reviews-list {
+    max-height: 500px;
+    overflow-y: auto;
 }
 
 .reviews-list .review-item {
@@ -424,8 +527,20 @@ footer {
     font-style: italic;
 }
 
+/* Mobile responsiveness */
+@media (max-width: 992px) {
+    .detail-sections-container {
+        grid-template-columns: 1fr;
+    }
+
+    .chat-section,
+    .reviews-section {
+        grid-column: auto;
+    }
+}
 
 .chat-section {
+    grid-column: 1;
     display: flex;
     flex-direction: column;
 }
@@ -643,4 +758,217 @@ footer {
     font-size: 2em;
     margin-bottom: 10px;
     display: block;
+}
+
+/* Adding modal (pop-up) styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    overflow-y: auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.modal-content {
+    background-color: #1a1a1a;
+    margin: auto;
+    padding: 25px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 800px;
+    position: relative;
+    color: #fff;
+    border: 1px solid #333;
+    position: absolute; /* Center the modal vertically and horizontally */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    //display: flex;
+   // flex-direction: column;
+   // min-height: 80vh;
+    padding-bottom: 25px;
+}
+
+.close {
+    color: #f5c518;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #fff;
+}
+
+.modal-header {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    flex: 1;
+}
+
+.modal-poster {
+    max-width: 300px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.movie-details {
+    flex: 1;
+}
+
+.movie-details h2 {
+    margin-top: 0;
+    color: #f5c518;
+    font-size: 2em;
+}
+
+.detail-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 15px 0;
+    color: #f5c518;
+    font-size: 1.2em;
+}
+
+
+
+/* For smaller screens where modal might be taller than viewport */
+@media (max-height: 700px) {
+    .modal {
+        align-items: flex-start;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+    .modal-content {
+        top: 20px;
+        transform: translate(-50%, 0);
+    }
+}
+
+
+.bi-award {
+    color: #f5c518;
+    margin-left: 10px;
+    font-size: 1.2em;
+    vertical-align: middle;
+}
+
+/* add animation for the Oscar icon */
+.bi-award {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Header actions container */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Chat toggle button */
+.chat-toggle-btn {
+    background: #f5c518;
+    color: #121212;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+    white-space: nowrap;
+}
+
+.chat-toggle-btn:hover {
+    background: #e6b800;
+}
+
+/* Floating chat positioning */
+.floating-chat {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    height: 450px;
+    background: #1a1a1a;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    border: 1px solid #333;
+    overflow: hidden;
+}
+
+.floating-chat.hidden {
+    display: none;
+}
+
+.chat-header {
+    background-color: #1f1f1f;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+}
+
+.chat-header span {
+    font-weight: bold;
+    color: #f5c518;
+}
+
+#close-chat-btn {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 5px;
+}
+
+#close-chat-btn:hover {
+    color: #fff;
+}
+
+.chat-body {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .floating-chat {
+        width: 300px;
+        height: 400px;
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .header-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .search-bar input {
+        width: 180px;
+    }
 }

@@ -9,9 +9,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface MovieRepository extends JpaRepository<Movie, Integer> {
+public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     @Query(value = "SELECT * FROM \"Movies\" m WHERE m.name ILIKE '%' || :title || '%'",
             countQuery = "SELECT count(*) FROM \"Movies\" m WHERE m.name ILIKE '%' || :title || '%'",
@@ -37,4 +38,9 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
             countQuery = "SELECT count(*) FROM \"Movies\" ",
             nativeQuery = true)
     Page<Movie> findAllMovies(Pageable pageable);
+
+    // Overriding the standard jpa function (otherwise it doesn't load details)
+    @Override
+    @Query(value = "SELECT * FROM \"Movies\" WHERE id = :id", nativeQuery = true)
+    Optional<Movie> findById(@Param("id") Long id); //integer
 }

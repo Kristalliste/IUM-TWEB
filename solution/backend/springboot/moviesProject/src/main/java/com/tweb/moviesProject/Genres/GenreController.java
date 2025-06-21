@@ -18,13 +18,13 @@ public class GenreController {
     }
 
     @GetMapping("/movie/{movieId}")
-    public ResponseEntity<List<Genre>> getGenresByMovieId(@PathVariable Integer movieId) {
+    public ResponseEntity<List<Genre>> getGenresByMovieId(@PathVariable Long movieId) {
         List<Genre> genres = genreService.getGenresByMovieId(movieId);
         return genres.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(genres);
     }
 
     @GetMapping("/names/movie/{movieId}")
-    public ResponseEntity<List<String>> getGenreNamesByMovieId(@PathVariable Integer movieId) {
+    public ResponseEntity<List<String>> getGenreNamesByMovieId(@PathVariable Long movieId) {
         List<String> genreNames = genreService.getGenreNamesByMovieId(movieId);
         return genreNames.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(genreNames);
     }

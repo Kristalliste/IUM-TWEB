@@ -16,7 +16,7 @@ public class PosterService {
         this.posterRepository = posterRepository;
     }
 
-    public String getPosterByMovieId(Integer movieId) {
+    public String getPosterByMovieId(Long movieId) {
         String link = posterRepository.findPosterLinkByMovieId(movieId);
         if (link == null || link.isEmpty()) {
             // Default poster URL
@@ -27,10 +27,10 @@ public class PosterService {
     }
 
     // Method to fetch posters in bulk
-    public Map<Integer, String> getPostersByMovieIds(List<Integer> movieIds) {
-        Map<Integer, String> postersMap = new HashMap<>();
+    public Map<Long, String> getPostersByMovieIds(List<Long> movieIds) {
+        Map<Long, String> postersMap = new HashMap<>();
 
-        for (Integer movieId : movieIds) {
+        for (Long movieId : movieIds) {
             String link = posterRepository.findPosterLinkByMovieId(movieId);
             postersMap.put(movieId, (link != null && !link.isEmpty()) ? link : "default-poster.jpg");
         }
