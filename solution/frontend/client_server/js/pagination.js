@@ -14,23 +14,38 @@ export function renderPagination(movieList, paginationContainer, movieGrid, curr
     const totalPages = Math.ceil(movieList.length / moviesPerPage);
     if (totalPages <= 1) return;
 
-    // Create pagination container
     const pagination = document.createElement('div');
     pagination.className = 'pagination';
 
     // Previous button
     if (currentPage > 1) {
-        const prevButton = createPaginationButton('«', () => {
+        const prevButton = createPaginationButton('←', () => {
             currentPage--;
             displayMoviePage(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView);
         });
         pagination.appendChild(prevButton);
     }
 
-    // Page numbers
-    const startPage = Math.max(1, currentPage - 2);
-    const endPage = Math.min(totalPages, currentPage + 2);
+    // Always show first page
+    const firstPageButton = createPaginationButton(1, () => {
+        currentPage = 1;
+        displayMoviePage(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView);
+    }, currentPage === 1);
+    pagination.appendChild(firstPageButton);
 
+    // Calculate page range to show
+    let startPage = Math.max(2, currentPage - 3);
+    let endPage = Math.min(totalPages - 1, currentPage + 3);
+
+    // Show ellipsis if needed before middle pages
+    if (startPage > 2) {
+        const ellipsis = document.createElement('span');
+        ellipsis.className = 'ellipsis';
+        ellipsis.textContent = '…';
+        pagination.appendChild(ellipsis);
+    }
+
+    // Middle pages (current page ±3)
     for (let i = startPage; i <= endPage; i++) {
         const pageButton = createPaginationButton(i, () => {
             currentPage = i;
@@ -39,9 +54,26 @@ export function renderPagination(movieList, paginationContainer, movieGrid, curr
         pagination.appendChild(pageButton);
     }
 
+    // Show ellipsis if needed after middle pages
+    if (endPage < totalPages - 1) {
+        const ellipsis = document.createElement('span');
+        ellipsis.className = 'ellipsis';
+        ellipsis.textContent = '…';
+        pagination.appendChild(ellipsis);
+    }
+
+    // Always show last page if there is more than one page
+    if (totalPages > 1) {
+        const lastPageButton = createPaginationButton(totalPages, () => {
+            currentPage = totalPages;
+            displayMoviePage(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView);
+        }, currentPage === totalPages);
+        pagination.appendChild(lastPageButton);
+    }
+
     // Next button
     if (currentPage < totalPages) {
-        const nextButton = createPaginationButton('»', () => {
+        const nextButton = createPaginationButton('→', () => {
             currentPage++;
             displayMoviePage(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView);
         });
