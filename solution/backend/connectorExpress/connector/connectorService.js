@@ -11,6 +11,15 @@ const getAllMovies = async () => {
     }
 };
 
+const getFilteredByTitleMovies = async (title) => {
+    try {
+        return await ConnectorRepository.fetchFilteredByTitleMovies(title);
+    } catch (error) {
+        console.error('Error in getFilteredByTitleMovies:', error);
+        throw new Error('Failed to fetch movies');
+    }
+};
+
 const getMovieById = async (id) => {
     try {
         const movie = await ConnectorRepository.fetchMovieById(id);
@@ -47,5 +56,6 @@ export default {
     getAllMovies,
     getMovieById,
     getReviewsByMovieId,
-    getMovieWithReviews
+    getMovieWithReviews,
+    getFilteredByTitleMovies
 };

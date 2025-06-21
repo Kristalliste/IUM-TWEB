@@ -7,7 +7,7 @@ const SPRING_API = process.env.SPRING_SERVER_URL || 'http://localhost:8080/api';
 // Create cache instance, for 5 minutes
 const cache = new NodeCache({ stdTTL: 300 });
 
-const fetchMovieById = async (id) => {
+const fetchMovieById = async (id) =>    {
     const cacheKey = `movie_${id}`;
 
     try {
@@ -131,6 +131,9 @@ const fetchAllMovies = async () => {
         return cachedMovies;
     }
     try {
+        let size = 10;
+        let page = 1;
+
         const response = await axios.get(`${SPRING_API}/movies?size=1000`, { timeout: 20000 });
         console.log('Connection successful');
         const moviesDTO = response.data.content;
@@ -162,9 +165,60 @@ const fetchAllMovies = async () => {
     }
 };
 
+const fetchFilteredByTitleMovies = async (title) => {
+    const cacheKey = 'filteredMovies_' + title;
+    const cachedMovies = cache.get(cacheKey);
+    if (cachedMovies) {
+        console.log('Returning cached movies');
+        return cachedMovies;
+    }
+    try {
+        let size = 10;
+        let page = 1;
+
+        const response = await axios.get(`${SPRING_API}/movies/search/title`, {
+            params: {
+                title: title,
+                // If you want pagination, include these:
+                size: size,
+                page: page  // Spring Data JPA pages are 0-indexed
+            },
+            timeout: 20000
+        });
+        console.log('Connection successful');
+        const moviesDTO = response.data.content;
+
+        const transformedMovies = moviesDTO.map(movieDTO => ({
+            id: movieDTO.movieId,
+            title: movieDTO.name,
+            year: new Date(movieDTO.date).getFullYear(),
+            posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
+            description: movieDTO.description || '',
+            rating: movieDTO.rating || 0.0,
+            minute: movieDTO.minute || 0,
+            actors: movieDTO.actors || [],
+            genres: movieDTO.genres || [],
+            languages: movieDTO.languages || [],
+            hasOscar: movieDTO.hasOscar || false
+        }));
+
+        cache.set(cacheKey, transformedMovies);
+        return transformedMovies;
+
+    } catch (error) {
+        console.error('Failed to fetch movies:', {
+            url: `${SPRING_API}/search/title?title=${title}`,
+            error: error.message,
+            stack: error.stack
+        });
+        throw error;
+    }
+};
+
 export default {
     fetchMovieById,
     fetchReviewsByMovieId,
     fetchMovieWithReviews,
-    fetchAllMovies
+    fetchAllMovies,
+    fetchFilteredByTitleMovies
 };

@@ -50,6 +50,30 @@ async function loadMovies() {
     }
 }
 
+async function loadFilteredByTitleMovies() {
+    try {
+        const title = document.getElementById("searchInput").value;
+        console.log(title);
+        //const response = await fetch(`${API_BASE_URL}/filteredMovies/${title}`);
+
+        // URL-encode the title for use in the path
+        const encodedTitle = encodeURIComponent(title);
+        console.log("Encoded title:", encodedTitle);
+
+        const response = await fetch(`${API_BASE_URL}/filteredMovies/${encodedTitle}`);
+        console.log(response);
+
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        const data = await response.json();
+        console.log(data);
+        return data.map(movie => formatMovieData(movie));
+    } catch (error) {
+        console.error('Movies not found. Please try again.', error);
+        return [];
+    }
+}
+
 // FUNZIONE AGGIUNTA: setActiveLink
 function setActiveLink(activeLink) {
     navLinks.forEach(link => link.classList.remove('active'));
@@ -64,7 +88,7 @@ topRatedLink.addEventListener('click', async (e) => {
     searchInput.value = '';
 
     if (allMovies.length === 0) {
-        allMovies = await loadMovies();
+        allMovies = await loadMovies(); // deve andare a richiamare un'altra query
     }
 
     const topRatedMovies = [...allMovies].sort((a, b) => b.rating - a.rating);
@@ -78,15 +102,19 @@ searchInput.addEventListener('input', debounce(async (e) => {
     showMainView(mainView, detailView);
     setActiveLink(null);
 
-    if (allMovies.length === 0) allMovies = await loadMovies();
-
+    //if (allMovies.length === 0) allMovies = await loadMovies(); //far chiamare la query
+    let filteredMovies = await loadFilteredByTitleMovies();
+    if(!filteredMovies) {
+        console.error('Could not find movie list');
+        return;
+    }
     const searchTerm = e.target.value.toLowerCase().trim();
     if (searchTerm) {
         mainTitle.textContent = `Risultati per: "${searchTerm}"`;
-        const filteredMovies = allMovies.filter(movie =>
+/*        const filteredMovies = allMovies.filter(movie =>
             movie.title.toLowerCase().includes(searchTerm) ||
             movie.year.toString().includes(searchTerm)
-        );
+        );*/
         displayMoviePage(filteredMovies, paginationContainer, movieGrid, 1, mainView, detailView);
     } else {
         const recentMovies = [...allMovies].sort((a, b) => b.year - a.year);

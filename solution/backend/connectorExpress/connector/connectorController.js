@@ -258,4 +258,22 @@ router.get('/movies/:id/full', async (req, res, next) => {
     }
 });
 
+//DA METTERE POI SWAGGER
+router.get('/filteredMovies/:title', async (req, res, next) => {
+    try {
+        // Get the title from the query parameters
+        const title = req.params.title; // 'title' will be the value of ?title=... in the URL
+
+        if (!title) {
+            // Handle case where title is not provided, if it's required by your backend
+            // For example, you might want to return an error or fetch all movies
+            return res.status(400).json({ error: 'Title query parameter is required.' });
+        }
+
+        const movies = await connectorService.getFilteredByTitleMovies(title);
+        res.json(movies);
+    } catch (error) {
+        next(error);
+    }
+});
 export default router;
