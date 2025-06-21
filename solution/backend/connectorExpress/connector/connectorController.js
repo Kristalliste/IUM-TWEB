@@ -103,7 +103,7 @@ router.get('/movies', async (req, res, next) => {
     }
 });
 
-// Aggiunto endpoint mancante
+
 /**
  * @swagger
  * /movies/{id}:

@@ -31,7 +31,6 @@ public class GenreService {
         return result;
     }
 
-    // Existing methods remain unchanged
     public List<Genre> getGenresByMovieId(Long movieId) {
         return genreRepository.findByMovieId(movieId);
     }

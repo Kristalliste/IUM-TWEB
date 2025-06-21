@@ -46,9 +46,14 @@ export function capitalizeDescription(str) {
         .split('.')
         .map(sentence => {
             const trimmed = sentence.trim();
-            return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+            if (!trimmed) return ''; // Skip empty sentences
+
+            // Capitalize first letter and add period if missing
+            const capitalized = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+            return capitalized.endsWith('.') ? capitalized : capitalized + '.';
         })
-        .join('. ')
+        .filter(sentence => sentence) // Remove any empty strings
+        .join(' ')
         .trim();
 }
 

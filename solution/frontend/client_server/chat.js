@@ -11,8 +11,8 @@ export function renderUsernamePrompt(container, movieTitle, movieId) {
             <p>Scegli il tuo nome per la chat o partecipa in modo anonimo.</p>
             <input type="text" id="username-input" placeholder="Inserisci il tuo username..." maxlength="20">
             <div class="username-prompt-buttons">
-                <button id="start-chat-btn">Inizia a chattare</button>
                 <button id="anonymous-chat-btn">Entra come Anonimo</button>
+                <button id="start-chat-btn">Inizia a chattare</button>
             </div>
         </div>
     `;

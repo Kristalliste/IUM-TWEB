@@ -330,6 +330,13 @@ footer {
     background-color: #fff;
 }
 
+/* Clean, consistent detail view sections */
+.detail-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
 .detail-grid {
     display: grid;
     grid-template-columns: 300px 1fr;
@@ -371,28 +378,91 @@ footer {
     margin-bottom: 30px;
 }
 
-.detail-info h3 {
+/* List containers */
+.detail-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+}
+
+/* List items */
+.detail-list-item {
+    padding: 0.3rem 0;
+    color: #ffffff;
+    font-size: 0.95rem;
+    break-inside: avoid;
+}
+
+.languages-section,
+.genres-section,
+.actors-section {
+    width: 100%;
+}
+
+/* Section headers (h3) styling */
+.reviews-section h3,
+.languages-section h3,
+.genres-section h3,
+.actors-section h3 {
     font-size: 1.5em;
     color: #f5c518;
     border-bottom: 1px solid #333;
     padding-bottom: 5px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
+.detail-list {
+    padding-top: 5px;
+}
+
+/* Item lists styling */
+.languages-list,
+.genres-list,
 .actors-list {
     list-style: none;
     padding: 0;
-    columns: 2;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+    gap: 0.5rem 1.5rem;
 }
 
+/* List items styling */
+.languages-list li,
+.genres-list li,
 .actors-list li {
-    padding: 5px 0;
+    padding: 0.3rem 0;
+    color: #ffffff;
+    font-size: 1em;
+    //break-inside: avoid; /* Prevents item splitting across columns */
 }
 
+/* Responsive: Reduce to 1 column on mobile */
+@media (max-width: 768px) {
+    .languages-list,
+    .genres-list,
+    .actors-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+/**
 .detail-sections {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 40px;
+}*/
+
+.reviews-section {
+    grid-column: 2;
+}
+
+.detail-sections-container {
+    display: grid;
+    grid-template-columns: 300px 1fr; /* Chat takes 300px, reviews takes remaining */
+    gap: 40px;
+    margin-top: 20px;
 }
 
 .details-link {
@@ -423,10 +493,15 @@ footer {
     margin-right: 5px;
 }
 
-.reviews-section h2, .chat-section h2 {
+.chat-section h2 {
     font-size: 1.8em;
     color: #f5c518;
     margin-bottom: 20px;
+}
+
+.reviews-list {
+    max-height: 500px;
+    overflow-y: auto;
 }
 
 .reviews-list .review-item {
@@ -452,8 +527,20 @@ footer {
     font-style: italic;
 }
 
+/* Mobile responsiveness */
+@media (max-width: 992px) {
+    .detail-sections-container {
+        grid-template-columns: 1fr;
+    }
+
+    .chat-section,
+    .reviews-section {
+        grid-column: auto;
+    }
+}
 
 .chat-section {
+    grid-column: 1;
     display: flex;
     flex-direction: column;
 }
@@ -698,11 +785,14 @@ footer {
     position: relative;
     color: #fff;
     border: 1px solid #333;
-    /* Center the modal vertically and horizontally */
-    position: absolute;
+    position: absolute; /* Center the modal vertically and horizontally */
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    //display: flex;
+   // flex-direction: column;
+   // min-height: 80vh;
+    padding-bottom: 25px;
 }
 
 .close {
@@ -723,6 +813,7 @@ footer {
     display: flex;
     gap: 30px;
     align-items: flex-start;
+    flex: 1;
 }
 
 .modal-poster {
@@ -766,7 +857,6 @@ footer {
 }
 
 
-/* Add this to your CSS */
 .bi-award {
     color: #f5c518;
     margin-left: 10px;
@@ -774,7 +864,7 @@ footer {
     vertical-align: middle;
 }
 
-/* If you want to add animation for the Oscar icon */
+/* add animation for the Oscar icon */
 .bi-award {
     animation: pulse 2s infinite;
 }

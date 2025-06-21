@@ -1,5 +1,6 @@
 package com.tweb.moviesProject.Languages;
 
+import com.tweb.moviesProject.Genres.Genre;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ public class LanguageService {
         this.languageRepository = languageRepository;
     }
 
-    // Add this new method
+    // Batch method to get language names by movie IDs
     public Map<Long, List<String>> getLanguageNamesByMovieIds(List<Long> movieIds) {
         if (movieIds == null || movieIds.isEmpty()) {
             return Collections.emptyMap();
@@ -31,12 +32,16 @@ public class LanguageService {
         return result;
     }
 
-    // Existing methods remain unchanged
     public List<Language> getLanguagesByMovieId(Long movieId) {
-        List<Language> languages = languageRepository.findByMovieId(movieId);
-        if (languages.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return languages;
+        return languageRepository.findByMovieId(movieId);
     }
+
+    public List<String> getLanguageNamesByMovieId(Long movieId) {
+        return languageRepository.findLanguageNamesByMovieId(movieId);
+    }
+
+    public List<Language> getLanguagesByName(String languageName) {
+        return languageRepository.findByLanguageName(languageName);
+    }
+
 }

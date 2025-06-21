@@ -13,7 +13,6 @@ const getAllMovies = async () => {
     }
 };
 
-// Aggiunto metodo mancante
 const getMovieById = async (id) => {
     try {
         const movie = await ConnectorRepository.fetchMovieById(id);
@@ -48,7 +47,7 @@ const getMovieWithReviews = async (movieId) => {
 export default {
     getAllReviews,
     getAllMovies,
-    getMovieById, // Esportato
+    getMovieById,
     getReviewsByMovieId,
     getMovieWithReviews
 };
