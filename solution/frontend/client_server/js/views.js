@@ -7,11 +7,12 @@ import { moviesPerPage } from './utils.js';
 function formatMovieDetails(movieData) {
     return {
         id: movieData.id,
-        title: toTitleCase(movieData.title),
-        year: movieData.year,
+        title: toTitleCase(movieData.title) || 'Unkonwn',
+        year: movieData.year || 0,
+        minute: movieData.minute || 0,
         posterUrl: movieData.posterUrl || 'https://placehold.co/300x450?text=No+Image',
-        description: capitalizeDescription(movieData.description),
-        rating: movieData.rating || 0.,
+        description: capitalizeDescription(movieData.description) || '',
+        rating: movieData.rating || 'N/A',
         actors: movieData.actors || [],
         genres: movieData.genres || [],
         languages: movieData.languages || [],
@@ -54,19 +55,35 @@ export async function showDetailView(movieId, mainView, detailView) {
     <div class="container">
         <button id="back-button" class="back-button"><i class="fas fa-arrow-left"></i> Return to Movie List </button>
         <div id="MovieDetailsPage" class="detail-grid">
-             <div class="detail-poster">
-                 <img src="${movie.posterUrl}" alt=" ${movie.title} poster">
-             </div>
+            <div class="detail-poster-chat-container">
+                <div class="detail-poster">
+                    <img src="${movie.posterUrl}" alt=" ${movie.title} poster">
+                </div>
+                
+                <div class="chat-section">
+                    <h2>Chat Live</h2>
+                    <div id="chat-wrapper">
+                        <!-- Chat content will be rendered here -->
+                    </div>
+                </div>
+            </div>
+            
             
             <div class="detail-info">
-            <h1>${escapeHTML(movie.title)} 
-                ${movie.hasOscar ? `<span id="detailOscarIcon" class="bi bi-award" title="Nominated to the Oscar Awards"></span>` : ''}
-                <span class="year">(${movie.year})</span>
-            </h1>
+                <h1>${escapeHTML(movie.title)} 
+                    <span class="year">(${movie.year})</span>
+                </h1>
           
-            <div class="detail-rating">
-                <i class="fas fa-star icon-star"></i>
-                <span>${movie.rating.toFixed(1)}</span>
+            <div class="detail-meta">
+                <div class="detail-rating">
+                    <i class="bi bi-star-fill"></i>
+                        <span>${movie.rating}</span>
+                </div>
+                <div class="detail-runtime">
+                    <i class="bi bi-clock"></i>
+                        <span>${movie.minute} min</span>
+                </div>
+                    ${movie.hasOscar ? `<span id="detailOscarIcon" class="bi bi-award" title="Nominated to the Oscar Awards"></span>` : ''}
             </div>
           
             <p class="description">${escapeHTML(movie.description)}</p>
@@ -100,14 +117,6 @@ export async function showDetailView(movieId, mainView, detailView) {
                 </div>
             </div>
         </div>
-
-        <div class="detail-sections-container">
-            <div class="chat-section">
-            <h2>Chat Live</h2>
-                <div id="chat-wrapper">
-                <!-- Chat content will be rendered here -->
-                </div>
-            </div>
         
             <div class="reviews-section">
             <h3>Reviews</h3>
@@ -120,7 +129,7 @@ export async function showDetailView(movieId, mainView, detailView) {
                     `).join('') : '<p>No reviews yet.</p>'} <!--//////////////-->
                 </div>
             </div>
-        </div>
+    </div>   
 
         
         `;
