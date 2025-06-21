@@ -159,39 +159,81 @@ const fetchAllMovies = async () => {
 const fetchAllMovies = async () => {
     const cacheKey = 'allMovies';
     const cachedMovies = cache.get(cacheKey);
+
     if (cachedMovies) {
         console.log('Returning cached movies');
         return cachedMovies;
     }
-    try {
-        const response = await axios.get(`${SPRING_API}/movies`, { timeout: 5000 });
-        console.log('Connection successful');
-        const moviesDTO = response.data.content;
 
-        const transformedMovies = moviesDTO.map(movieDTO => ({
+    try {
+        let allMovies = [];
+        let currentPage = 0;
+        let totalPages = 1;
+        const pageSize = 710000; // Aumenta la dimensione della pagina
+        const concurrencyLimit = 5; // Limite di richieste parallele
+        let pendingPromises = [];
+
+        while (currentPage < totalPages) {
+            // Avvia le richieste con controllo della concorrenza
+            if (pendingPromises.length >= concurrencyLimit) {
+                await Promise.race(pendingPromises);
+            }
+
+            const promise = axios.get(`${SPRING_API}/movies`, {
+                params: {
+                    page: currentPage,
+                    size: pageSize
+                },
+                timeout: 10000 // Aumenta il timeout
+            }).then(response => {
+                // Rimuovi la promise completata
+                pendingPromises = pendingPromises.filter(p => p !== promise);
+                return response;
+            }).catch(error => {
+                pendingPromises = pendingPromises.filter(p => p !== promise);
+                throw error;
+            });
+
+            pendingPromises.push(promise);
+            currentPage++;
+        }
+
+        // Attendi il completamento di tutte le richieste rimanenti
+        const responses = await Promise.all(pendingPromises);
+
+        // Estrai e combina i dati
+        for (const response of responses) {
+            const pageData = response.data;
+            allMovies = [...allMovies, ...pageData.content];
+            totalPages = pageData.totalPages;
+        }
+
+        console.log(`Fetched ${allMovies.length} movies in total`);
+
+        const transformedMovies = allMovies.map(movieDTO => ({
             id: movieDTO.movieId,
             title: movieDTO.name,
-            year: new Date(movieDTO.date).getFullYear(),
+            year: movieDTO.date ? new Date(movieDTO.date).getFullYear() : 0,
             posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
-            description: movieDTO.description || '',
-            rating: movieDTO.rating || 0.0,
-            minute: movieDTO.minute || 0,
-            actors: movieDTO.actors || [],
-            genres: movieDTO.genres || [],
-            languages: movieDTO.languages || [],
-            hasOscar: movieDTO.hasOscar || false
+            description: movieDTO.description,
+            minute: movieDTO.minute,
+            rating: movieDTO.rating || 0.0
         }));
 
         cache.set(cacheKey, transformedMovies);
         return transformedMovies;
 
     } catch (error) {
-        console.error('Failed to fetch movies:', {
-            url: `${SPRING_API}/movies`,
-            error: error.message,
-            stack: error.stack
-        });
-        throw error;
+        console.error('Failed to fetch all movies:', error);
+
+        // Migliore gestione degli errori
+        if (error.response) {
+            throw new Error(`Server responded with ${error.response.status}`);
+        } else if (error.request) {
+            throw new Error('No response received from server');
+        } else {
+            throw new Error('Request setup error: ' + error.message);
+        }
     }
 };
 
