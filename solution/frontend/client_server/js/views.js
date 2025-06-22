@@ -1,7 +1,6 @@
 import {capitalizeDescription, escapeHTML, toTitleCase} from './utils.js';
 import { renderUsernamePrompt } from './chat.js';
 import { fetchMovieDetails } from './api.js';
-import { moviesPerPage } from './utils.js';
 
 // Format movie details response to a consistent structure
 function formatMovieDetails(movieData) {
@@ -11,7 +10,7 @@ function formatMovieDetails(movieData) {
         year: movieData.year,
         posterUrl: movieData.posterUrl || 'https://placehold.co/300x450?text=No+Image',
         description: capitalizeDescription(movieData.description),
-        rating: movieData.rating || 0.,
+        rating: movieData.rating || 0, // Ensure rating defaults to 0
         actors: movieData.actors || [],
         genres: movieData.genres || [],
         languages: movieData.languages || [],
@@ -23,16 +22,14 @@ function formatMovieDetails(movieData) {
     };
 }
 
-
 export function showMainView(mainView, detailView) {
     mainView.style.display = 'block';
     detailView.style.display = 'none';
     detailView.innerHTML = '';
 }
 
-//  Function to show the film details view, reached via 'View Full Details and Reviews' button
+// Function to show the film details view
 export async function showDetailView(movieId, mainView, detailView) {
-    // Shows details view
     mainView.style.display = 'none';
     detailView.style.display = 'block';
     window.scrollTo(0, 0);
@@ -45,11 +42,9 @@ export async function showDetailView(movieId, mainView, detailView) {
     `;
 
     try {
-        // Fetches movie details from backend
         const movieData = await fetchMovieDetails(movieId);
         const movie = formatMovieDetails(movieData);
 
-        // Renders the details view with movie data
         detailView.innerHTML = `
     <div class="container">
         <button id="back-button" class="back-button"><i class="fas fa-arrow-left"></i> Return to Movie List </button>
@@ -66,7 +61,7 @@ export async function showDetailView(movieId, mainView, detailView) {
           
             <div class="detail-rating">
                 <i class="fas fa-star icon-star"></i>
-                <span>${movie.rating.toFixed(1)}</span>
+                <span>${movie.rating.toFixed(1) ?? 'N/A'}</span>
             </div>
           
             <p class="description">${escapeHTML(movie.description)}</p>
@@ -76,8 +71,8 @@ export async function showDetailView(movieId, mainView, detailView) {
                     <h3 class="detail-section-header">Languages</h3>
                     <ul class="languages-list">
                         ${(movie.languages || []).map(lang =>
-                        `<li class="detail-list-item">${escapeHTML(lang)}</li>`
-                        ).join('') || '<li class="detail-list-item">No languages specified</li>'}
+            `<li class="detail-list-item">${escapeHTML(lang)}</li>`
+        ).join('') || '<li class="detail-list-item">No languages specified</li>'}
                     </ul>
                 </div>
    
@@ -85,8 +80,8 @@ export async function showDetailView(movieId, mainView, detailView) {
                     <h3 class="detail-section-header">Genres</h3>
                     <ul class="genres-list">
                         ${(movie.genres || []).map(genre =>
-                        `<li class="detail-list-item">${escapeHTML(genre)}</li>`
-                        ).join('') || '<li class="detail-list-item">No genres specified</li>'}
+            `<li class="detail-list-item">${escapeHTML(genre)}</li>`
+        ).join('') || '<li class="detail-list-item">No genres specified</li>'}
                     </ul>
                 </div>
             
@@ -94,8 +89,8 @@ export async function showDetailView(movieId, mainView, detailView) {
                     <h3 class="detail-section-header">Cast</h3>
                     <ul class="actors-list">
                         ${(movie.actors || []).map(actor =>
-                        `<li class="detail-list-item">${escapeHTML(actor)}</li>`
-                        ).join('') || '<li class="detail-list-item">No cast specified</li>'}
+            `<li class="detail-list-item">${escapeHTML(actor)}</li>`
+        ).join('') || '<li class="detail-list-item">No cast specified</li>'}
                     </ul>
                 </div>
             </div>
@@ -117,20 +112,16 @@ export async function showDetailView(movieId, mainView, detailView) {
                             <p><strong>${escapeHTML(review.user)}</strong></p>
                             <p>"${escapeHTML(review.comment)}"</p>
                         </div>
-                    `).join('') : '<p>No reviews yet.</p>'} <!--//////////////-->
+                    `).join('') : '<p>No reviews yet.</p>'}
                 </div>
             </div>
         </div>
-
-        
         `;
 
-        // Adds back-button event listener
         document.getElementById('back-button').addEventListener('click', () =>
             showMainView(mainView, detailView)
         );
 
-        // Inizializza la chat
         const chatWrapper = document.getElementById('chat-wrapper');
         const movieIdSlug = movie.title.toLowerCase()
             .replace(/\s+/g, '-')
@@ -155,48 +146,51 @@ export async function showDetailView(movieId, mainView, detailView) {
     }
 }
 
-// function to render movie cards
-export function renderMovies(movieList, movieGrid, currentPage, mainView, detailView) {
+// function to render movie cards (now receives pre-paginated movies)
+export function renderMovies(movieList, movieGrid, mainView, detailView) {
     movieGrid.innerHTML = '';
 
-    if (movieList.length === 0) {
+    if (!movieList || movieList.length === 0) {
         movieGrid.innerHTML = `
-      <p class="no-results" style="color: #888; grid-column: 1 / -1; text-align: center;">
-        No film found.
-      </p>
-    `;
+            <p class="no-results" style="color: #888; grid-column: 1 / -1; text-align: center;">
+                No film found.
+            </p>
+        `;
         return;
     }
 
-    const startIndex = (currentPage - 1) * moviesPerPage;
-    const endIndex = startIndex + moviesPerPage;
-    const paginatedMovies = movieList.slice(startIndex, endIndex);
-
-    paginatedMovies.forEach(movie => {
+    movieList.forEach(movie => {
         const movieCard = document.createElement('div');
         movieCard.classList.add('movie-card');
-        movieCard.dataset.movieId = movie.id; //addition for modals
+        movieCard.setAttribute('data-movie-id', movie.id);
+
+        // Handle missing data gracefully
+        const title = movie.title ? escapeHTML(movie.title) : 'Untitled Movie';
+        const year = movie.year || 'N/A';
+        const rating = movie.rating ? movie.rating.toFixed(1) : 'N/A';
+        const description = movie.description ?
+            escapeHTML(movie.description) :
+            'No description available';
+        const posterUrl = movie.posterUrl ||
+            'https://placehold.co/300x450?text=No+Image';
 
         movieCard.innerHTML = `
-      <div class="movie-poster-container">
-        <img src="${movie.posterUrl}" alt="${movie.title} poster" onerror="this.src='https://placehold.co/300x450?text=No+Image'" loading="lazy">
-        <div class="movie-overlay">
-          <p class="movie-description">${escapeHTML(movie.description)}</p>
-        </div>
-      </div>
-      <div class="movie-info">
-        <h3>${escapeHTML(movie.title)} (${movie.year})</h3>
-        <div class="movie-rating">
-          <i class="fas fa-star icon-star"></i>
-          <span>${movie.rating.toFixed(1)}</span>
-        </div>
-      </div>
-    `;
-/**
-        movieCard.addEventListener('click', () =>
-            showDetailView(movie.id, mainView, detailView)
-        );
-*/
+            <div class="movie-poster-container">
+                <img src="${posterUrl}" alt="${title} poster" 
+                    onerror="this.src='https://placehold.co/300x450?text=No+Image'" 
+                    loading="lazy">
+                <div class="movie-overlay">
+                    <p class="movie-description">${description}</p>
+                </div>
+            </div>
+            <div class="movie-info">
+                <h3>${title} (${year})</h3>
+                <div class="movie-rating">
+                    <i class="fas fa-star icon-star"></i>
+                    <span>${rating}</span>
+                </div>
+            </div>
+        `;
 
         movieGrid.appendChild(movieCard);
     });

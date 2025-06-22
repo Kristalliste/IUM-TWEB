@@ -108,6 +108,16 @@ function populateModal(movie) {
 }
 
 export function showModal(movieId) {
+    // Validate movie ID before making API call
+    if (!movieId || movieId === '0' || isNaN(movieId)) {
+        console.error('Invalid movie ID:', movieId);
+        return;
+    }
+
+    if (!movieId) {
+        console.error('No movie ID provided');
+        return;
+    }
     console.log(movieId);
     if (!modal) return;
 
@@ -149,22 +159,26 @@ export function hideModal() {
 export function attachModalListeners() {
     if (!modal || !closeBtn) return;
 
-    // Close modal when clicking X
     closeBtn.addEventListener('click', hideModal);
-
-    // Close modal when clicking outside
     window.addEventListener('click', (e) => {
         if (e.target === modal) hideModal();
     });
 
-    // Handle movie card clicks via event delegation
-    document.addEventListener('click', (e) => {
+    // Use event delegation on movie grid container
+    const movieGrid = document.getElementById('movie-grid');
+    if (!movieGrid) return;
+
+    movieGrid.addEventListener('click', (e) => {
         const card = e.target.closest('.movie-card');
         if (card) {
             e.preventDefault();
-            const movieId = card.dataset.movieId;
-            if (movieId) {
+            const movieId = card.getAttribute('data-movie-id');
+
+            // Validate movie ID
+            if (movieId && movieId !== '0' && !isNaN(movieId)) {
                 showModal(movieId);
+            } else {
+                console.error('Invalid movie ID:', movieId);
             }
         }
     });

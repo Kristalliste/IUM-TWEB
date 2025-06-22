@@ -161,4 +161,12 @@ public class MovieService {
             throw e; // Re-throw to be handled by controller
         }
     }
+
+    public Page<MovieDTO> getAllMoviesOrderedByDateDescDTO(Pageable pageable) {
+        return convertToDTOPage(movieRepository.findAllMoviesOrderedByDateDesc(pageable));
+    }
+
+    public Page<MovieDTO> getAllMoviesOrderedByRatingDescDTO(Pageable pageable) {
+        return convertToDTOPage(movieRepository.findAllMoviesOrderedByRatingDesc(pageable));
+    }
 }

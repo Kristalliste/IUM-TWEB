@@ -7,39 +7,6 @@ const SPRING_API = process.env.SPRING_SERVER_URL || 'http://localhost:8080/api';
 // Create cache instance, for 5 minutes
 const cache = new NodeCache({ stdTTL: 300 });
 
-/**
-const fetchMovieById = async (id) => {
-    try {
-        const response = await axios.get(`${SPRING_API}/movies/${id}`, { timeout: 5000 });
-        return response.data;
-    } catch (error) {
-        if (error.response) {
-            throw new Error(`Server responded with ${error.response.status}`);
-        } else if (error.request) {
-            throw new Error('No response received from server');
-        } else {
-            throw new Error('Request setup error');
-        }
-    }
-};
-
-const fetchMovieById = async (id) => {
-    try {
-        const response = await axios.get(`http://localhost:8080/api/movies/${id}`);
-
-        if (response.status !== 200) {
-            throw new Error(`Server responded with ${response.status}`);
-        }
-        return response.data;
-    } catch (error) {
-        console.error(`Error fetching movie ${id}:`, error.message);
-        if (error.response) {
-            console.error('Response data:', error.response.data);
-        }
-        throw error;
-    }
-}; */
-
 const fetchMovieById = async (id) => {
     const cacheKey = `movie_${id}`;
 
@@ -51,7 +18,6 @@ const fetchMovieById = async (id) => {
             return cachedMovie;
         }
 
-        console.log(`Fetching from: ${SPRING_API}/movies/${id}`); // Debug URL
         // Fetch from API
         const response = await axios.get(`${SPRING_API}/movies/${id}`);
         const movieDTO = response.data;
@@ -59,7 +25,7 @@ const fetchMovieById = async (id) => {
         const transformedMovie = {
             id: movieDTO?.movieId || 0,
             title: movieDTO?.name || 'Unknown',
-            year: movieDTO?.date ? new Date(movieDTO.date).getFullYear() : 0,
+            year: movieDTO?.date ? new Date(movieDTO.date).getUTCFullYear() : 0,
             posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
             description: movieDTO.description || '',
             rating: movieDTO.rating || 0.0,
@@ -117,100 +83,43 @@ const fetchMovieWithReviews = async (movieId) => {
     }
 };
 
-/**
-const fetchAllMovies = async () => {
-    const cacheKey = 'allMovies';
-    const cachedMovies = cache.get(cacheKey);
-
-    if (cachedMovies) {
-        console.log('Returning cached movies');
-        return cachedMovies;
-    }
+const fetchMoviesPaginated = async (type, page = 0, size = 10) => {
+    const cacheKey = `movies_${type}_${page}_${size}`;
 
     try {
-        const url = `${SPRING_API}/movies?size=1000`;
-        console.log(`Fetching movies from: ${url}`);
-
-        const response = await axios.get(url);
-        console.log(`Response status: ${response.status}`);
-        console.log(`Movies count: ${response.data.content.length}`);
-
-        const movies = response.data.content;
-
-        // AGGIUNTO posterUrl e risolto il campo rating
-        const transformedMovies = movies.map(movie => ({
-            id: movie.movieId,
-            title: movie.name,
-            year: new Date(movie.date).getFullYear(),
-            posterUrl: movie.link, // Aggiunto campo posterUrl
-            description: movie.description,
-            minute: movie.minute,
-            rating: movie.rating || 0.0 // Risolto problema rating null
-        }));
-
-        cache.set(cacheKey, transformedMovies);
-        return transformedMovies;
-    } catch (error) {
-        console.error('Error fetching movies:', error);
-        throw error;
-    }
-};*/
-
-const fetchAllMovies = async () => {
-    const cacheKey = 'allMovies';
-    const cachedMovies = cache.get(cacheKey);
-
-    if (cachedMovies) {
-        console.log('Returning cached movies');
-        return cachedMovies;
-    }
-
-    try {
-        let allMovies = [];
-        let currentPage = 0;
-        let totalPages = 1;
-        const pageSize = 710000; // Aumenta la dimensione della pagina
-        const concurrencyLimit = 5; // Limite di richieste parallele
-        let pendingPromises = [];
-
-        while (currentPage < totalPages) {
-            // Avvia le richieste con controllo della concorrenza
-            if (pendingPromises.length >= concurrencyLimit) {
-                await Promise.race(pendingPromises);
-            }
-
-            const promise = axios.get(`${SPRING_API}/movies`, {
-                params: {
-                    page: currentPage,
-                    size: pageSize
-                },
-                timeout: 10000 // Aumenta il timeout
-            }).then(response => {
-                // Rimuovi la promise completata
-                pendingPromises = pendingPromises.filter(p => p !== promise);
-                return response;
-            }).catch(error => {
-                pendingPromises = pendingPromises.filter(p => p !== promise);
-                throw error;
-            });
-
-            pendingPromises.push(promise);
-            currentPage++;
+        // Check cache first
+        const cachedData = cache.get(cacheKey);
+        if (cachedData) {
+            console.log(`Returning cached ${type} movies page ${page}`);
+            return cachedData;
         }
 
-        // Attendi il completamento di tutte le richieste rimanenti
-        const responses = await Promise.all(pendingPromises);
-
-        // Estrai e combina i dati
-        for (const response of responses) {
-            const pageData = response.data;
-            allMovies = [...allMovies, ...pageData.content];
-            totalPages = pageData.totalPages;
+        // Build URL based on type
+        let url;
+        switch(type) {
+            case 'recent':
+                url = `${SPRING_API}/movies/recent`;
+                break;
+            case 'top-rated':
+                url = `${SPRING_API}/movies/top-rated`;
+                break;
+            default:
+                throw new Error('Invalid movie type');
         }
 
-        console.log(`Fetched ${allMovies.length} movies in total`);
+        // Make request with pagination parameters
+        const response = await axios.get(url, {
+            params: {
+                page,
+                size
+            },
+            timeout: 10000
+        });
 
-        const transformedMovies = allMovies.map(movieDTO => ({
+        const pageData = response.data;
+
+        // Transform movies to consistent format
+        const transformedMovies = pageData.content.map(movieDTO => ({
             id: movieDTO.movieId,
             title: movieDTO.name,
             year: movieDTO.date ? new Date(movieDTO.date).getFullYear() : 0,
@@ -220,20 +129,66 @@ const fetchAllMovies = async () => {
             rating: movieDTO.rating || 0.0
         }));
 
-        cache.set(cacheKey, transformedMovies);
-        return transformedMovies;
+        const result = {
+            content: transformedMovies,
+            totalPages: pageData.totalPages,
+            totalElements: pageData.totalElements
+        };
+
+        // Cache result
+        cache.set(cacheKey, result);
+        return result;
 
     } catch (error) {
-        console.error('Failed to fetch all movies:', error);
+        console.error(`Failed to fetch ${type} movies:`, error);
+        throw error;
+    }
+};
 
-        // Migliore gestione degli errori
-        if (error.response) {
-            throw new Error(`Server responded with ${error.response.status}`);
-        } else if (error.request) {
-            throw new Error('No response received from server');
-        } else {
-            throw new Error('Request setup error: ' + error.message);
-        }
+const searchMoviesPaginated = async (query, page = 0, size = 10) => {
+    const cacheKey = `movies_search_${query}_${page}_${size}`;
+
+    try {
+        // Check cache first
+        const cachedData = cache.get(cacheKey);
+        if (cachedData) return cachedData;
+
+        // Make request to search endpoint
+        const response = await axios.get(`${SPRING_API}/movies/search/title`, {
+            params: {
+                title: query,
+                page,
+                size
+            },
+            timeout: 10000
+        });
+
+        const pageData = response.data;
+
+        // Transform movies to consistent format
+        const transformedMovies = pageData.content.map(movieDTO => ({
+            id: movieDTO.movieId,
+            title: movieDTO.name,
+            year: movieDTO.date ? new Date(movieDTO.date).getFullYear() : 0,
+            posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
+            description: movieDTO.description,
+            minute: movieDTO.minute,
+            rating: movieDTO.rating || 0.0
+        }));
+
+        const result = {
+            content: transformedMovies,
+            totalPages: pageData.totalPages,
+            totalElements: pageData.totalElements
+        };
+
+        // Cache result
+        cache.set(cacheKey, result);
+        return result;
+
+    } catch (error) {
+        console.error('Failed to search movies:', error);
+        throw error;
     }
 };
 
@@ -241,5 +196,6 @@ export default {
     fetchMovieById,
     fetchReviewsByMovieId,
     fetchMovieWithReviews,
-    fetchAllMovies
+    fetchMoviesPaginated,
+    searchMoviesPaginated
 };
