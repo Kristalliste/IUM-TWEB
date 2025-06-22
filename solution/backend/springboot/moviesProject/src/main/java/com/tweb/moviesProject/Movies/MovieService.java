@@ -59,10 +59,6 @@ public class MovieService {
         return posterService.getPostersByMovieIds(movieIds);
     }
 
-    public List<String> getAllGenres() {
-        return movieRepository.findDistinctGenres();
-    }
-
     public Page<Movie> getAllMovies(Pageable pageable) {
         return movieRepository.findAllMovies(pageable);
     }

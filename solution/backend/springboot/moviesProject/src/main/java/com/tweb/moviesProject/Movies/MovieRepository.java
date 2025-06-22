@@ -29,8 +29,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             nativeQuery = true)
     Page<Movie> findByGenreIgnoreCase(@Param("genre")String genre, Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT g.genre FROM \"Genres\" g", nativeQuery = true)
-    List<String> findDistinctGenres();
 
     // Add caching annotation to the single findAllMovies method
     @Cacheable("moviesCache")
