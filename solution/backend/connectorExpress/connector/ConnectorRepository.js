@@ -165,7 +165,7 @@ const fetchAllMovies = async () => {
     }
 };
 
-const fetchFilteredByTitleMovies = async (title) => {
+const fetchFilteredByTitleMovies = async (title, page) => {
     const cacheKey = 'filteredMovies_' + title;
     const cachedMovies = cache.get(cacheKey);
     if (cachedMovies) {
@@ -174,7 +174,7 @@ const fetchFilteredByTitleMovies = async (title) => {
     }
     try {
         let size = 10;
-        let page = 1;
+        //let page = 1;
 
         const response = await axios.get(`${SPRING_API}/movies/search/title`, {
             params: {

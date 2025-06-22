@@ -58,9 +58,10 @@ async function loadFilteredByTitleMovies() {
 
         // URL-encode the title for use in the path
         const encodedTitle = encodeURIComponent(title);
+        let page = 0;
         console.log("Encoded title:", encodedTitle);
 
-        const response = await fetch(`${API_BASE_URL}/filteredMovies/${encodedTitle}`);
+        const response = await fetch(`${API_BASE_URL}/filteredMovies/${encodedTitle}/page`);
         console.log(response);
 
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
