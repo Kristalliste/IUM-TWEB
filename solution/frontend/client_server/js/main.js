@@ -25,7 +25,6 @@ let totalPages = 1;
 
 // Funzione per formattare i dati del film
 function formatMovieData(movie) {
-    console.log(movie.date);
     return {
         id: movie.id,
         title: movie.title ? toTitleCase(movie.title) : 'Untitled Movie',
