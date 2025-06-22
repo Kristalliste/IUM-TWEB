@@ -179,7 +179,7 @@ export function renderMovies(movieList, movieGrid, mainView, detailView) {
         // Handle missing data gracefully
         const title = movie.title ? escapeHTML(movie.title) : 'Untitled Movie';
         const year = movie.year || 'N/A';
-        const rating = movie.rating ? movie.rating.toFixed(1) : 'N/A';
+        const rating = movie.rating ? movie.rating : 'N/A';
         const description = movie.description ?
             escapeHTML(movie.description) :
             'No description available';
