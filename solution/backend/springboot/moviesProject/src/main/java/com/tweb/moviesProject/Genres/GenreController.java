@@ -1,5 +1,6 @@
 package com.tweb.moviesProject.Genres;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,5 +34,12 @@ public class GenreController {
     public ResponseEntity<List<Genre>> getGenresByName(@PathVariable String genreName) {
         List<Genre> genres = genreService.getGenresByName(genreName);
         return genres.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(genres);
+    }
+
+    @Operation(summary = "Get all distinct movie genres")
+    @GetMapping("allGenres")
+    public ResponseEntity<List<String>> getAllGenres() {
+        List<String> genres = genreService.getAllGenres();
+        return ResponseEntity.ok(genres);
     }
 }

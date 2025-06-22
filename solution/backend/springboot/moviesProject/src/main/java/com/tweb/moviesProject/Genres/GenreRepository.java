@@ -19,4 +19,7 @@ public interface GenreRepository extends JpaRepository<Genre, Long> {
 
     @Query(value = "SELECT * FROM \"Genres\" WHERE genre ILIKE :genre", nativeQuery = true)
     List<Genre> findByGenreName(@Param("genre") String genre);
+
+    @Query(value = "SELECT DISTINCT g.genre FROM \"Genres\" g", nativeQuery = true)
+    List<String> findDistinctGenres();
 }

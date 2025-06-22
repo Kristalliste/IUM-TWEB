@@ -31,6 +31,10 @@ public class GenreService {
         return result;
     }
 
+    public List<String> getAllGenres() {
+        return genreRepository.findDistinctGenres();
+    }
+
     public List<Genre> getGenresByMovieId(Long movieId) {
         return genreRepository.findByMovieId(movieId);
     }
