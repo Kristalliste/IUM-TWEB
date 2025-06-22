@@ -57,7 +57,7 @@ function populateModal(movie) {
         year: movie.year || 'N/A',
         minute: movie.minute || 0,
         description: movie.description || 'No description available',
-        rating: movie.rating ? movie.rating.toFixed(1) : 'N/A',
+        rating: movie.rating ? movie.rating : 'N/A',
         posterUrl: movie.posterUrl || 'https://placehold.co/300x450?text=No+Image',
         hasOscar: movie.hasOscar || false
     };

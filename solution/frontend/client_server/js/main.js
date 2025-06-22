@@ -32,7 +32,7 @@ function formatMovieData(movie) {
         year: movie.year || (movie.date ? new Date(movie.date).getUTCFullYear() : 0),
         posterUrl: movie.posterUrl || movie.link || 'https://placehold.co/300x450?text=No+Image',
         description: capitalizeDescription(movie.description),
-        rating: movie.rating || 0, // Ensure rating defaults to 0
+        rating: movie.rating || 'N/A',
         minute: movie.minute || 0,
         hasOscar: movie.hasOscar || false
     };
