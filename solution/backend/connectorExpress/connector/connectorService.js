@@ -16,7 +16,7 @@ const getMoviesPaginated = async (type, page, size) => {
     }
 };
 
-const searchMoviesPaginated = async (query, page, size) => {
+/*const searchMoviesPaginated = async (query, page, size) => {
     try {
         // Validate input parameters
         if (!query || query.trim() === '') throw new Error('Search query is required');
@@ -28,11 +28,11 @@ const searchMoviesPaginated = async (query, page, size) => {
         console.error('Error in searchMoviesPaginated:', error.message);
         throw new Error(`Failed to search movies: ${error.message}`);
     }
-};
+};*/
 
-const getFilteredByTitleMovies = async (title) => {
+const getFilteredByTitleMovies = async (title, page, size) => {
     try {
-        return await ConnectorRepository.fetchFilteredByTitleMovies(title);
+        return await ConnectorRepository.fetchFilteredByTitleMovies(title, page, size);
     } catch (error) {
         console.error('Error in getFilteredByTitleMovies:', error);
         throw new Error('Failed to fetch movies');
@@ -88,7 +88,7 @@ const getMovieWithReviews = async (movieId) => {
 
 export default {
     getMoviesPaginated,
-    searchMoviesPaginated,
+    //searchMoviesPaginated,
     getMovieById,
     getReviewsByMovieId,
     getMovieWithReviews,

@@ -145,7 +145,7 @@ const fetchMoviesPaginated = async (type, page = 0, size = 10) => {
     }
 };
 
-const searchMoviesPaginated = async (query, page = 0, size = 10) => {
+/*const searchMoviesPaginated = async (query, page = 0, size = 10) => {
     const cacheKey = `movies_search_${query}_${page}_${size}`;
 
     try {
@@ -190,17 +190,17 @@ const searchMoviesPaginated = async (query, page = 0, size = 10) => {
         console.error('Failed to search movies:', error);
         throw error;
     }
-};
+};*/
 
-const fetchFilteredByTitleMovies = async (title, page) => {
-    const cacheKey = 'filteredMovies_' + title;
+const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
+    const cacheKey = `filteredMovies_title_${title}_page_${page}_size_${size}`;
     const cachedMovies = cache.get(cacheKey);
     if (cachedMovies) {
         console.log('Returning cached movies');
         return cachedMovies;
     }
     try {
-        let size = 10;
+        // let size = 10;
         //let page = 1;
 
         const response = await axios.get(`${SPRING_API}/movies/search/title`, {
@@ -210,12 +210,13 @@ const fetchFilteredByTitleMovies = async (title, page) => {
                 size: size,
                 page: page  // Spring Data JPA pages are 0-indexed
             },
-            timeout: 20000
+            timeout: 10000
         });
         console.log('Connection successful');
-        const moviesDTO = response.data.content;
+        const pageData = response.data;
+        //const moviesDTO = response.data.content;
 
-        const transformedMovies = moviesDTO.map(movieDTO => ({
+        const transformedMovies = pageData.content.map(movieDTO => ({
             id: movieDTO.movieId,
             title: movieDTO.name,
             year: new Date(movieDTO.date).getFullYear(),
@@ -229,8 +230,19 @@ const fetchFilteredByTitleMovies = async (title, page) => {
             hasOscar: movieDTO.hasOscar || false
         }));
 
-        cache.set(cacheKey, transformedMovies);
-        return transformedMovies;
+        const result = {
+            content: transformedMovies,
+            totalPages: pageData.totalPages,
+            totalElements: pageData.totalElements,
+            currentPage: pageData.number, // Add current page number from Spring response
+            pageSize: pageData.size       // Add page size from Spring response
+        };
+
+        // Cache result
+        cache.set(cacheKey, result);
+        return result;
+        /*cache.set(cacheKey, transformedMovies);
+        return transformedMovies;*/
 
     } catch (error) {
         console.error('Failed to fetch movies:', {
@@ -247,7 +259,7 @@ export default {
     fetchReviewsByMovieId,
     fetchMovieWithReviews,
     fetchMoviesPaginated,
-    searchMoviesPaginated,
+    //searchMoviesPaginated,
     // fetchAllMovies,
     fetchFilteredByTitleMovies
 };

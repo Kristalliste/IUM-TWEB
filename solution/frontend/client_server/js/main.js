@@ -46,12 +46,12 @@ async function fetchMovies(type, page = 0, query = '') {
             size: moviesPerPage
         });
 
-        if (type === 'search') {
+/*        if (type === 'search') {
             url = `${API_BASE_URL}/movies/search`;
             params.append('query', query);
-        } else {
+        } else {*/
             params.append('type', type);
-        }
+        //}
 
         const response = await fetch(`${url}?${params}`);
         if (!response.ok) {
@@ -84,10 +84,12 @@ async function fetchMovies(type, page = 0, query = '') {
 // Carica e mostra una pagina di film
 async function loadAndDisplayMoviesPage(page = 0) {
     currentPage = page + 1; // Converti in 1-indexed per UI
-
+    console.log(`Loading movies page: ${page}`);
+    console.log(`Current movies page: ${currentPage}`);
     let data;
     if (currentView === 'search') {
-        data = await fetchMovies('search', page, currentSearchTerm);
+        //data = await fetchMovies('search', page, currentSearchTerm);
+        data = await loadFilteredByTitleMovies(page);
     } else {
         data = await fetchMovies(currentView, page);
     }
@@ -109,25 +111,48 @@ async function loadAndDisplayMoviesPage(page = 0) {
     );
 }
 
-async function loadFilteredByTitleMovies() {
+async function loadFilteredByTitleMovies(page = 0) {
     try {
         const title = document.getElementById("searchInput").value;
-        console.log(title);
+        //console.log(title);
         //const response = await fetch(`${API_BASE_URL}/filteredMovies/${title}`);
 
         // URL-encode the title for use in the path
         const encodedTitle = encodeURIComponent(title);
-        let page = 0;
-        console.log("Encoded title:", encodedTitle);
+        //let page = 0;
 
-        const response = await fetch(`${API_BASE_URL}/filteredMovies/${encodedTitle}/page`);
-        console.log(response);
+        //console.log("Encoded title:", encodedTitle);
 
+        const response = await fetch(`${API_BASE_URL}/filteredMovies/${encodedTitle}?page=${page}&size=${moviesPerPage}`);
+        //console.log(response);
+        const data = await response.json();
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-        const data = await response.json();
-        console.log(data);
-        return data.map(movie => formatMovieData(movie));
+        // If response is an array (for recent movies)
+        if (Array.isArray(data)) {
+            return {
+                content: data,
+                totalPages: Math.ceil(data.length / moviesPerPage),
+                totalElements: data.length
+            };
+        }
+        // If response is paginated object
+        else if (data.content) {
+            return data;
+        }
+        // Fallback for unexpected formats
+        return { content: [], totalPages: 1, totalElements: 0 };
+
+        // --- THE FIX ---
+        // Access the 'content' array from the received 'data' object
+       /* const moviesToFormat = data.content;
+
+        if (!Array.isArray(moviesToFormat)) {
+            console.error('Expected "content" to be an array of movies, but received:', moviesToFormat);
+            throw new TypeError('Received data content is not an array.');
+        }
+
+        return moviesToFormat.map(movie => formatMovieData(movie)); // Map on the actual array*/
     } catch (error) {
         console.error('Movies not found. Please try again.', error);
         return [];
@@ -166,14 +191,17 @@ searchInput.addEventListener('input', debounce(async (e) => {
         console.error('Could not find movie list');
         return;
     }
+    currentView = 'search';
+    currentPage = 1;
     const searchTerm = e.target.value.toLowerCase().trim();
+
     if (searchTerm) {
         mainTitle.textContent = `Risultati per: "${searchTerm}"`;
 /*        const filteredMovies = allMovies.filter(movie =>
             movie.title.toLowerCase().includes(searchTerm) ||
             movie.year.toString().includes(searchTerm)
         );*/
-        displayMoviePage(filteredMovies, paginationContainer, movieGrid, 1, mainView, detailView);
+        //displayMoviePage(filteredMovies, paginationContainer, movieGrid, 1, mainView, detailView);
         await loadAndDisplayMoviesPage(0);
     } else {
         currentView = 'recent';
