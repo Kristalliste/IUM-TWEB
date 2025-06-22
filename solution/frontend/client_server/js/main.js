@@ -155,7 +155,7 @@ function setActiveLink(activeLink) {
 }
 
 // Gestori eventi
-topRatedLink.addEventListener('click', async (e) => {
+/*topRatedLink.addEventListener('click', async (e) => {
     e.preventDefault();
     showMainView(mainView, detailView);
     searchInput.value = '';
@@ -166,7 +166,25 @@ topRatedLink.addEventListener('click', async (e) => {
     setActiveLink(topRatedLink);
 
     await loadAndDisplayMoviesPage(0);
-});
+});*/
+//const topRatedLink = document.getElementById('top-rated-link');
+
+if (topRatedLink) {
+    topRatedLink.addEventListener('click', async (e) => {
+        e.preventDefault(); // <-- QUESTO È IL PUNTO CHIAVE!
+        window.history.pushState({}, '', 'demo.html'); // Questa riga potrebbe non essere necessaria se sei già su demo.html e non vuoi ricaricare
+
+        // Imposta la UI per i film Top Rated
+        // showMainView(mainView, detailView); // Se hai queste variabili globali
+        // searchInput.value = ''; // Pulisce la barra di ricerca
+        currentView = 'top-rated'; // Aggiorna lo stato interno della pagina
+        currentPage = 1; // Resetta la paginazione
+        mainTitle.textContent = 'Film Top Rated'; // Cambia il titolo principale della homepage
+        setActiveLink(topRatedLink); // Rende attivo il link "Film Top Rated" nella navbar
+
+        await loadAndDisplayMoviesPage(0); // <-- CHIAMA LA FUNZIONE DI CARICAMENTO DEI FILM
+    });
+}
 
 searchInput.addEventListener('input', debounce(async (e) => {
     showMainView(mainView, detailView);
@@ -197,7 +215,7 @@ searchInput.addEventListener('input', debounce(async (e) => {
     }
 }, 300));
 
-logo.addEventListener('click', async () => {
+/*logo.addEventListener('click', async () => {
     searchInput.value = '';
     currentView = 'recent';
     currentPage = 1;
@@ -206,30 +224,70 @@ logo.addEventListener('click', async () => {
     setActiveLink(null);
 
     await loadAndDisplayMoviesPage(0);
-});
+});*/
+// Listener per il logo FilmTWEB per tornare alla homepage e caricare i film recenti
+if (logo) { // Verifica che l'elemento esista
+    logo.addEventListener('click', async (e) => {
+        e.preventDefault(); // Impedisce il comportamento predefinito del link (se il logo fosse un <a>)
+        window.location.href = 'demo.html'; // Reindirizza il browser alla homepage (demo.html)
+        // Una volta caricata demo.html, la logica iniziale del DOMContentLoaded in main.js
+        // si occuperà di caricare i film di default (es. "Film più recenti")
+    });
+}
 
-advancedSearchLink.addEventListener('click', (e) => {
+/*advancedSearchLink.addEventListener('click', (e) => {
     e.preventDefault();
     showMainView(mainView, detailView);
-    searchInput.value = '';
-    mainTitle.textContent = 'Ricerca Avanzata';
+/!*    searchInput.value = '';
+    mainTitle.textContent = 'Ricerca Avanzata';*!/
     setActiveLink(advancedSearchLink);
 
-    movieGrid.innerHTML = `
-    <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-      <h3>Funzionalità Ricerca Avanzata</h3>
-      <p>Questa funzionalità sarà implementata prossimamente!</p>
-      <p>Potrai cercare film per anno, genere, rating e altro.</p>
-    </div>
-  `;
-    paginationContainer.innerHTML = '';
-});
+    const searchLink = document.getElementById('advanced-search-link');
+    if (searchLink) {
+        searchLink.addEventListener('click', function(event) {
+            event.preventDefault(); // Previeni il comportamento di default del link
+            window.location.href = 'search.html'; // Percorso alla tua pagina di ricerca avanzata
+        });
+    }
+});*/
+// CORREZIONE: Gestore click per "Ricerca Avanzata"
+// Questo listener viene aggiunto una sola volta al DOMContentLoaded.
+if (advancedSearchLink) { // Verifica che l'elemento esista
+    advancedSearchLink.addEventListener('click', (e) => {
+        e.preventDefault(); // Previene la navigazione di default
+        // Non sono necessarie showMainView o altre manipolazioni UI qui
+        // perché si sta navigando a una pagina completamente nuova.
+        window.location.href = 'search.html'; // Naviga alla pagina di ricerca avanzata
+    });
+}
 
 // Inizializzazione
 async function init() {
     movieGrid.innerHTML = '<p class="loading">Caricamento film in corso...</p>';
 
     try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const requestedView = urlParams.get('view'); // Ottiene il valore del parametro 'view'
+
+        currentPage = 1; // Resetta sempre la paginazione all'avvio
+
+        if (requestedView === 'top-rated') {
+            currentView = 'top-rated';
+            if (mainTitle) mainTitle.textContent = 'Film Top Rated';
+            // Imposta lo stato attivo del link nella navbar
+            const topRatedLinkElement = document.getElementById('top-rated-link');
+            if (topRatedLinkElement) { // Verifica che l'elemento esista nel DOM
+                setActiveLink(topRatedLinkElement);
+            } else {
+                console.warn("Element with ID 'top-rated-link' not found in DOM.");
+            }
+        } else  {
+            // Comportamento di default: carica i film più recenti
+            currentView = 'recent';
+            if (mainTitle) mainTitle.textContent = 'Film più recenti';
+            setActiveLink(null); // Nessun link specifico attivo per la vista di default 'recenti'
+        }
+
         // Carica prima pagina di film recenti
         const initialData = await fetchMovies('recent', 0);
 
@@ -253,7 +311,7 @@ async function init() {
         );
 
         showMainView(mainView, detailView);
-        mainTitle.textContent = 'Film più recenti';
+
         setActiveLink(null);
         await loadAndDisplayMoviesPage(0);
     } catch (error) {
