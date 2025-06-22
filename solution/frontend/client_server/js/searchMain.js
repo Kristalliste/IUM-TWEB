@@ -74,7 +74,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     searchType.addEventListener("change", () => {
         const type = searchType.value;
-        console.log("Tipo selezionato:", type); // DEBUG
         if (type === "GENRE") {
             searchInput.style.display = "none";
             searchGenre.style.display = "inline-block";
