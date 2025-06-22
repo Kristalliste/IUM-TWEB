@@ -260,6 +260,45 @@ const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
     }
 };
 
+const fetchAllGenres = async () => {
+    const cacheKey = 'all_genres';
+
+    try {
+        // Check cache first
+        const cachedGenres = cache.get(cacheKey);
+        if (cachedGenres) {
+            console.log('Returning cached genres');
+            return cachedGenres;
+        }
+
+        // Fetch from API
+        const response = await axios.get(`${SPRING_API}/genres/allGenres`, {
+            timeout: 5000
+        });
+
+        const genres = response.data;
+
+        // Cache the result
+        cache.set(cacheKey, genres);
+        return genres;
+
+    } catch (error) {
+        console.error('Failed to fetch genres:', {
+            url: `${SPRING_API}/genres/allGenres`,
+            error: error.message,
+            stack: error.stack
+        });
+
+        if (error.response) {
+            throw new Error(`Server responded with ${error.response.status}`);
+        } else if (error.request) {
+            throw new Error('No response received from server');
+        } else {
+            throw new Error('Request setup error');
+        }
+    }
+};
+
 export default {
     fetchMovieById,
     fetchReviewsByMovieId,
@@ -267,5 +306,6 @@ export default {
     fetchMoviesPaginated,
     //searchMoviesPaginated,
     // fetchAllMovies,
-    fetchFilteredByTitleMovies
+    fetchFilteredByTitleMovies,
+    fetchAllGenres
 };
