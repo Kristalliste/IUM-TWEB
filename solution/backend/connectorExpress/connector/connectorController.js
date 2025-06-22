@@ -437,7 +437,7 @@ router.get('/filteredMovies/:title', async (req, res, next) => {
     }
 });
 
-router.get('/movies/genres', async (req, res, next) => {
+router.get('/genres', async (req, res, next) => {
     try {
         const genres = await connectorService.getAllGenres();
         res.json(genres);

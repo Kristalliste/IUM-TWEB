@@ -1,7 +1,8 @@
-import {renderUsernamePrompt} from "./chat.js";
-// import axios from "axios";
-// import {showMainView} from "./views";
-// import {loadAndDisplayMoviesPage} from "./main";
+import { API_BASE_URL, debounce, toTitleCase, capitalizeDescription, moviesPerPage } from './utils.js';
+import { showMainView, showDetailView, renderMovies } from './views.js';
+import { displayMoviePage } from './pagination.js';
+import { populateGenres } from './genres.js';
+import { renderUsernamePrompt } from "./chat.js";
 
 
 
@@ -14,15 +15,15 @@ document.getElementById('search-button').addEventListener('click', () => {
     console.log("user clicked");
 });
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const logoElement = document.getElementById("logo");
     const searchType = document.getElementById("search-type");
     const searchInput = document.getElementById("search-input"); // ✅ CORRETTO
     const searchGenre = document.getElementById("search-genre"); // ✅ CORRETTO
     let genresList = []; // Array per salvare i generi
-
+    genresList.push("Select a genre");
     // Carica i generi una sola volta al caricamento della pagina
-    function loadGenres() {
+/*    function loadGenres() {
         fetch ("http://localhost:8080/api/movies/genres") // Cambia endpoint se necessario
             .then(response => {
                 genresList = response.data || []; // Salva i generi nell'array
@@ -30,7 +31,19 @@ document.addEventListener("DOMContentLoaded", () => {
             .catch(error => {
                 console.error("Errore caricamento generi:", error);
             });
+    }*/
+    async function loadGenres() {
+        try {
+            let genres = await fetchAllGenres(); // Wait for genres to load
+            genresList.push(...genres);
+            populateGenreDropdown(); // Populate dropdown immediately after
+        } catch (error) {
+            console.error("Error loading genres:", error);
+            // Optionally show error to user
+        }
     }
+
+
 
 /*    function loadAllMovies(page){
         // showFilmLoader();
@@ -50,6 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Popola il menu a tendina usando l'array genresList
     function populateGenreDropdown() {
         searchGenre.innerHTML = "";
+
         genresList.forEach(genre => {
             const option = document.createElement("option");
             option.value = genre;
@@ -57,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
             searchGenre.appendChild(option);
         });
     }
-    console.log("Elemento searchType:", document.getElementById("search-type"));
+
     searchType.addEventListener("change", () => {
         const type = searchType.value;
         console.log("Tipo selezionato:", type); // DEBUG
@@ -89,6 +103,22 @@ function setActiveLink(activeLink) {
     navLinks.forEach(link => link.classList.remove('active'));
     if (activeLink) {
         activeLink.classList.add('active');
+    }
+}
+
+async function fetchAllGenres(){
+    try {
+        const response = await fetch(`${API_BASE_URL}/genres`);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to fetch genres');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('API Error:', error);
+        throw error; // Rethrow for component handling
     }
 }
 
