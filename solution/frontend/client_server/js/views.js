@@ -197,7 +197,7 @@ export function renderMovies(movieList, movieGrid, currentPage, mainView, detail
         <h3>${escapeHTML(movie.title)} (${movie.year})</h3>
         <div class="movie-rating">
           <i class="fas fa-star icon-star"></i>
-          <span>${movie.rating.toFixed(1)}</span>
+          <span>${movie.rating}</span>
         </div>
       </div>
     `;
