@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import reviewsService from './ReviewsService.js';
+
 const router = express.Router();
-const reviewsService = require('./ReviewsService');
 
 /**
  * @swagger
@@ -161,5 +162,41 @@ router.get('/score/:normalized_score', async (req, res, next) => {
     }
 });
 
+// GET /reviews?movieTitle=someTitle
+router.get('/reviews', async (req, res, next) => {
+    try {
+        const movieTitle = req.query.movieTitle;
 
-module.exports = router;
+        if (!movieTitle || typeof movieTitle !== 'string' || movieTitle.trim() === '') {
+            return res.status(400).json({ error: 'Invalid or missing movieTitle query parameter' });
+        }
+
+        const reviews = await reviewsService.getReviewsByMovieTitle(movieTitle.trim());
+        res.json(reviews);
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.get('/movies/:movie_title', async (req, res, next) => {
+    try {
+        const movieTitle = req.params.movie_title;
+        console.log(`[ReviewsController] Received movie_title from request: "${movieTitle}"`); // ADD THIS LINE
+
+        if (!movieTitle || typeof movieTitle !== 'string' || movieTitle.trim() === '') {
+            return res.status(400).json({ error: 'Invalid or missing movieTitle parameter' });
+        }
+
+        const reviews = await reviewsService.getReviewsByMovieTitle(movieTitle.trim());
+        if (reviews.length > 0) {
+            res.status(200).json(reviews);
+        } else {
+            res.status(404).json({ message: 'No reviews found for this movie title' });
+        }
+    } catch (error) {
+        next(error);
+    }
+});
+
+
+export default router;

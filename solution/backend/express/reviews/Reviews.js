@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 /**
  * Mongoose schema for reviews.
@@ -27,4 +27,6 @@ const reviewsSchema = new mongoose.Schema({
     normalized_score: { type: Number, default: 0 }
 });
 
-module.exports = mongoose.model('Reviews', reviewsSchema);
+const Reviews = mongoose.model('Reviews', reviewsSchema, 'reviews');
+
+export default Reviews;

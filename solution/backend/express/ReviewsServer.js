@@ -1,17 +1,15 @@
 /**
  * Module dependencies.
  */
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const swaggerSetup = require('./swagger');
-const reviewsRoutes = require('./reviews/ReviewsController');
-const Reviews = require('./reviews/Reviews');
+import reviewsRouter from './reviews/ReviewsController.js';
+import dotenv from 'dotenv';
+import express from 'express';
+import swaggerSetup from './swagger.js';
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const API_BASE_PATH = process.env.API_BASE_PATH || '/api';
-const mongo_url = "mongodb://127.0.0.1:27017/MongoDB_TWEB";
 
 // Middleware to parse JSON
 app.use(express.json());
@@ -20,7 +18,7 @@ app.use(express.json());
 swaggerSetup(app, API_BASE_PATH);
 
 // Mounting API routes using the base path
-app.use(`${API_BASE_PATH}/reviews`, reviewsRoutes);
+app.use(`${API_BASE_PATH}/reviews`, reviewsRouter);
 
 // Root route
 app.get('/', (req, res) => {
@@ -33,18 +31,18 @@ app.use((req, res) => {
 });
 
 // Connecting to MongoDB
-require('./mongoConnect');
-
+// This line imports and executes the mongoConnect.js module,
+// which establishes the MongoDB connection without deprecated options.
+import './mongoConnect.js';
 
 // Error handling middleware
 app.use((err, req, res, _next) => {
     console.error(err.stack);
     const statusCode = err.status || 500;
-    const message = err.message || 'Internal Server Error';
-    res.status(statusCode).json({ error: { message } });
+    res.status(statusCode).json({ error: { message: err.message || 'Internal Server Error' } });
 });
 
-// Starting server
+// Start server
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Reviews server listening on http://localhost:${PORT}`);
 });

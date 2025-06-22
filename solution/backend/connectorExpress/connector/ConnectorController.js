@@ -248,7 +248,8 @@ router.get('/movies/:id', validateMovieId, async (req, res, next) => {
 });
 
 /**
- * @swagger
+ * @ s
+ * wagger
  * /movies/{id}/reviews:
  *   get:
  *     summary: Get reviews for a specific movie
@@ -274,14 +275,94 @@ router.get('/movies/:id', validateMovieId, async (req, res, next) => {
  *       500:
  *         description: Server error
  */
-router.get('/movies/:id/reviews', validateMovieId, async (req, res, next) => {
+/**router.get('/movies/:id/reviews', validateMovieId, async (req, res, next) => {
     try {
         const reviews = await connectorService.getReviewsByMovieId(req.validatedId);
         res.json(reviews);
     } catch (error) {
         next(error);
     }
+});*/
+
+
+/**
+ * @swagger
+ * /reviews/movies/{movie_title}:
+ *   get:
+ *     summary: Get reviews by movie title with validation
+ *     description: >
+ *       Fetches reviews for a specified movie title after validating the parameter.
+ *       Returns 400 if the movie title is missing or invalid.
+ *     parameters:
+ *       - name: movie_title
+ *         in: path
+ *         required: true
+ *         description: The movie title to fetch reviews for (non-empty string).
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Reviews retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "60d21b4667d0d8992e610c85"
+ *                   movie_title:
+ *                     type: string
+ *                     example: "Inception"
+ *                   review_text:
+ *                     type: string
+ *                     example: "Amazing visual effects and story."
+ *                   normalized_score:
+ *                     type: number
+ *                     example: 9.0
+ *       '400':
+ *         description: Invalid or missing movie title parameter.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid or missing movieTitle parameter"
+ *       '500':
+ *         description: Server error while fetching reviews.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to fetch reviews from Reviews Server"
+ */
+
+router.get('/reviews/movies/:movie_title', async (req, res, next) => {
+    try {
+        const movieTitle = req.params.movie_title;
+        if (!movieTitle || typeof movieTitle !== 'string' || movieTitle.trim() === '') {
+            return res.status(400).json({ error: 'Invalid or missing movieTitle parameter' });
+        }
+        console.log(`[ConnectorController] Received request for reviews for movie title: "${movieTitle}"`);
+        const reviews = await connectorService.getReviewsFromReviewsServer(movieTitle.trim());
+        res.json(reviews);
+    } catch (error) {
+        console.error('[ConnectorController ERROR] Failed to fetch reviews from Reviews Server:', error.message);
+        next(error); // Pass the error to the error handling middleware
+    }
 });
+
+
+
+
+
 
 /**
  * @swagger
@@ -371,4 +452,5 @@ router.get('/filteredMovies/:title', async (req, res, next) => {
         next(error);
     }
 });
+
 export default router;

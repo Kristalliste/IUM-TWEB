@@ -1,7 +1,8 @@
 import axios from 'axios';
+import ReviewsDTO from '../../express/reviews/ReviewsDTO.js';
 import NodeCache from 'node-cache';
 
-const MONGO_API = process.env.MONGO_SERVER_URL || 'http://localhost:3000';
+const MONGO_API = process.env.MONGO_SERVER_URL || 'http://localhost:3000/api';
 const SPRING_API = process.env.SPRING_SERVER_URL || 'http://localhost:8080/api';
 
 // Create cache instance, for 5 minutes
@@ -59,6 +60,36 @@ const fetchReviewsByMovieId = async (movieId) => {
         }
     }
 };
+
+/**
+const fetchReviewsByMovieTitle = async (title) => {
+    const cacheKey = `reviews_movie_title_${title}`;
+    try {
+        const cachedReviews = cache.get(cacheKey);
+        if (cachedReviews) {
+            console.log(`Returning cached reviews for movie title ${title}`);
+            return cachedReviews;
+        }
+
+        // Corrected URL: Add the /api base path
+        const response = await axios.get(`${MONGO_API}/reviews?movieTitle=${encodeURIComponent(title)}`);
+        const transformedReviews = response.data.map(reviewDoc => new ReviewsDTO(reviewDoc));
+
+        cache.set(cacheKey, transformedReviews);
+        return transformedReviews;
+    } catch (error) {
+        console.error(`Failed to fetch reviews for movie title "${title}":`, {
+            url: `${MONGO_API}/api/reviews?movieTitle=${encodeURIComponent(title)}`, // Also update for error logging
+            error: error.message,
+            statusCode: error.response ? error.response.status : 'N/A',
+            data: error.response ? error.response.data : 'N/A',
+            stack: error.stack
+        });
+        throw new Error(`Failed to fetch reviews: ${error.response ? error.response.status : 'Server not reachable'}`);
+    }
+};*/
+
+
 
 const fetchMovieWithReviews = async (movieId) => {
     try {
@@ -260,12 +291,32 @@ const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
     }
 };
 
+const getReviewsFromReviewsServer = async (movieTitle) => {
+    try {
+        if (!movieTitle || typeof movieTitle !== 'string' || movieTitle.trim() === '') {
+            throw new Error('Invalid movie title for reviews');
+        }
+        const encodedTitle = encodeURIComponent(movieTitle.trim());
+        // Use MONGO_API which is already defined in this repository
+        console.log(`[ConnectorRepository] Proxying review request for "${movieTitle}" to Reviews Server: ${MONGO_API}/reviews/movies/${encodedTitle}`);
+        const response = await axios.get(`${MONGO_API}/reviews/movies/${encodedTitle}`);
+        console.log(`[ConnectorRepository] Received response from ReviewsServer for "${movieTitle}".`);
+        return response.data; // Return the data received from the ReviewsServer
+    } catch (error) {
+        console.error('[ConnectorRepository ERROR] Failed to proxy review request to Reviews Server:', error.message);
+        // Rethrow or return a specific error to the controller
+        throw new Error(`Failed to fetch reviews from Reviews Server: ${error.message}`);
+    }
+};
+
 export default {
     fetchMovieById,
     fetchReviewsByMovieId,
     fetchMovieWithReviews,
+    //fetchReviewsByMovieTitle,
     fetchMoviesPaginated,
     //searchMoviesPaginated,
     // fetchAllMovies,
-    fetchFilteredByTitleMovies
+    fetchFilteredByTitleMovies,
+    getReviewsFromReviewsServer
 };

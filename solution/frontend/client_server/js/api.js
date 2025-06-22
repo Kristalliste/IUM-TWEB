@@ -11,6 +11,12 @@ export async function fetchMovieDetails(movieId) {
     return await response.json();
 }
 
+export async function fetchMovieReviews(movieTitle) {
+    const response = await fetch(`${API_BASE_URL}/reviews/movies/${encodeURIComponent(movieTitle)}`);
+    if (!response.ok) throw new Error('Failed to fetch movie reviews');
+    return await response.json();
+}
+
 export async function fetchMoviesByType(type, page = 0) {
     const response = await fetch(`${API_BASE_URL}/movies/${type}?page=${page}&size=${moviesPerPage}`);
     return await response.json();

@@ -1,12 +1,13 @@
 import {capitalizeDescription, escapeHTML, toTitleCase} from './utils.js';
 import { renderUsernamePrompt } from './chat.js';
-import { fetchMovieDetails } from './api.js';
+import { fetchMovieDetails, fetchMovieReviews } from './api.js';
 
 // Format movie details response to a consistent structure
 function formatMovieDetails(movieData) {
     return {
         id: movieData.id,
         title: toTitleCase(movieData.title) || 'Unkonwn',
+        originalTitle: movieData.title || 'Unknown', // we keep the original titles to look for its reviews
         year: movieData.year || 0,
         minute: movieData.minute || 0,
         posterUrl: movieData.posterUrl || 'https://placehold.co/300x450?text=No+Image',
@@ -16,10 +17,20 @@ function formatMovieDetails(movieData) {
         genres: movieData.genres || [],
         languages: movieData.languages || [],
         hasOscar: movieData.hasOscar || false,
-        reviews: movieData.reviews?.map(review => ({
-            user: review.critic_name || 'Anonimo',
-            comment: review.review_text || ''
-        })) || []
+    };
+}
+
+// Format movie reviews response to a consistent structure
+function formatMovieReviews(movieReviews) {
+    // Directly map over movieReviews as it's already an array of review objects
+    return {
+        reviews: movieReviews.map(review => ({
+            critic_name: review.criticName || 'Anonymous',
+            top_critic: review.topCritic || false,
+            review_date: review.reviewDate || '',
+            review_content: review.reviewContent || '',
+            normalized_score: review.normalizedScore || 'N/A'
+        })) || [],
     };
 }
 
@@ -43,8 +54,21 @@ export async function showDetailView(movieId, mainView, detailView) {
     `;
 
     try {
+        console.log(`[showDetailView] Attempting to fetch details for movie ID: ${movieId}`);
         const movieData = await fetchMovieDetails(movieId);
+        console.log("[showDetailView] Movie details fetched:", movieData);
+
         const movie = formatMovieDetails(movieData);
+        console.log("[showDetailView] Formatted movie object:", movie);
+        console.log("[showDetailView] Movie title used for review fetch:", movie.originalTitle);
+
+        console.log("Movie title used for review fetch:", movie.originalTitle);
+        const movieReviews = await fetchMovieReviews(movie.originalTitle);
+        console.log(`[showDetailView] Reviews fetched raw:`, movieReviews);
+        // --- END Debugging Logs ---
+        const formattedReviews = formatMovieReviews(movieReviews);
+        console.log(`[showDetailView] Formatted reviews object (after formatMovieReviews):`, formattedReviews);
+
 
         detailView.innerHTML = `
     <div class="container">
@@ -116,12 +140,16 @@ export async function showDetailView(movieId, mainView, detailView) {
             <div class="reviews-section">
             <h3>Reviews</h3>
                 <div id="reviews-list" class="reviews-list">
-                    ${movie.reviews.length > 0 ? movie.reviews.map(review => `
-                        <div class="review-item">
-                            <p><strong>${escapeHTML(review.user)}</strong></p>
-                            <p>"${escapeHTML(review.comment)}"</p>
-                        </div>
-                    `).join('') : '<p>No reviews yet.</p>'}
+                   ${formattedReviews.reviews && formattedReviews.reviews.length > 0 ? 
+                    formattedReviews.reviews.map(review => `
+                    <div class="review-item">
+                        <p><strong>Critic:</strong> ${escapeHTML(review.critic_name || 'Anonymous')}</p>
+                        <p><strong>Top Critic:</strong> ${review.top_critic ? 'Yes' : 'No'}</p>
+                        <!--<p><p><strong>Date:</strong> {review.review_date ? new Date(review.review_date).getFullYear() : 'N/A'}</p> -->
+                        <p><strong>Score:</strong> ${review.normalized_score}/10</p>
+                        <p><strong>Review:</strong> "${escapeHTML(review.review_content)}"</p>
+                    </div>
+                    `).join('') : '<p>No reviews for this movie yet.</p>'    }
                 </div>
             </div>
         </div>

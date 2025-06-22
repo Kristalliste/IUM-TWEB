@@ -72,6 +72,13 @@ function populateModal(movie) {
     }
     if (detailDescription) detailDescription.textContent = movieData.description;
     if (detailRating) detailRating.textContent = movieData.rating;
+
+    const detailYear = document.getElementById('detailYear');
+    if (detailYear) detailYear.textContent = movieData.year;
+
+    const detailMinute = document.getElementById('detailMinute');
+    if (detailMinute) detailMinute.textContent = `${movieData.minute} min`;
+
     if (detailOscarIcon) {
         if (movieData.hasOscar) {
             detailOscarIcon.className = 'bi bi-award'; // Bootstrap Icons class
@@ -86,16 +93,10 @@ function populateModal(movie) {
         }
     }
 
-
-    const detailYear = document.getElementById('detailYear');
-    if (detailYear) detailYear.textContent = movieData.year;
-
-    const detailMinute = document.getElementById('detailMinute');
-    if (detailMinute) detailMinute.textContent = `${movieData.minute} min`;
     if (detailLink) {
         detailLink.href = '#'; // Kept as hash to prevent page reload
         detailLink.textContent = 'View Full Details and Reviews';
-        // Add click handler to show detail view
+            // Click handler to show detail view
         detailLink.onclick = (e) => {
             e.preventDefault();
             hideModal();

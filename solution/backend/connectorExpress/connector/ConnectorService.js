@@ -72,6 +72,19 @@ const getReviewsByMovieId = async (movieId) => {
     }
 };
 
+const getReviewsByMovieTitle = async (movieTitle) => {
+    try {
+        if (!movieTitle || typeof movieTitle !== 'string' || movieTitle.trim() === '') {
+            throw new Error('Invalid movie title');
+        }
+
+        return await ConnectorRepository.fetchReviewsByMovieTitle(movieTitle.trim());
+    } catch (error) {
+        console.error('Error in getReviewsByMovieTitle:', error.message);
+        throw new Error(`Failed to fetch reviews: ${error.message}`);
+    }
+};
+
 const getMovieWithReviews = async (movieId) => {
     try {
         const id = Number(movieId);
@@ -86,11 +99,29 @@ const getMovieWithReviews = async (movieId) => {
     }
 };
 
+
+const getReviewsFromReviewsServer = async (movieTitle) => {
+    try {
+        console.log(`[ConnectorService] Calling ConnectorRepository to proxy review request for: "${movieTitle}"`);
+        // Call the function now located in the repository
+        const reviewsData = await ConnectorRepository.getReviewsFromReviewsServer(movieTitle);
+        return reviewsData;
+    } catch (error) {
+        console.error('[ConnectorService ERROR] Error in getReviewsFromReviewsServer:', error.message);
+        throw error; // Re-throw the error from the repository
+    }
+};
+
+
+
+
 export default {
     getMoviesPaginated,
     //searchMoviesPaginated,
+    getReviewsByMovieTitle,
     getMovieById,
     getReviewsByMovieId,
     getMovieWithReviews,
-    getFilteredByTitleMovies
+    getFilteredByTitleMovies,
+    getReviewsFromReviewsServer
 };

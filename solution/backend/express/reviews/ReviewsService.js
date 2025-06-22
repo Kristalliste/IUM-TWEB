@@ -1,4 +1,4 @@
-const ReviewsRepository = require('./ReviewsRepository');
+import ReviewsRepository from './ReviewsRepository.js';
 
 const ReviewsService = {
     getAllReviews: async () => {
@@ -9,13 +9,13 @@ const ReviewsService = {
         }
     },
 
-    getReviewsByMovieTitle: async (title) => {
+    /*getReviewsByMovieTitle: async (title) => {
         try {
             return await ReviewsRepository.findByMovieTitle(title);
         } catch (err) {
             throw new Error('Failed to fetch reviews by title');
         }
-    },
+    },*/
 
     createReview: async (data) => {
         try {
@@ -39,7 +39,15 @@ const ReviewsService = {
         } catch (err) {
             throw new Error('Failed to fetch reviews by score');
         }
+    },
+
+    getReviewsByMovieTitle: async (movieTitle) => {
+        try {
+            return await ReviewsRepository.findByMovieTitle(movieTitle);
+        } catch (err) {
+            throw new Error('Failed to fetch reviews by movie title');
+        }
     }
 };
 
-module.exports = ReviewsService;
+export default ReviewsService;
