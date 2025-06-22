@@ -112,6 +112,7 @@ async function loadAndDisplayMoviesPage(page = 0) {
 async function loadFilteredByTitleMovies(page = 0) {
     try {
         const title = document.getElementById("searchInput").value;
+        if(title == null || title === "") { return; }
         //console.log(title);
         //const response = await fetch(`${API_BASE_URL}/filteredMovies/${title}`);
 
