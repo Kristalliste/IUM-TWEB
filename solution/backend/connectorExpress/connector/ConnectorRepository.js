@@ -179,7 +179,7 @@ const fetchMoviesPaginated = async (type, page = 0, size = 10) => {
              * genres: movieDTO.genres || [],
              * languages: movieDTO.languages || [],
              * hasOscar: movieDTO.hasOscar || false
-             */
+
         }));
 
         const result = {
