@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FilmTWEB - Il tuo database di film</title>
+    <title>FilmTWEB - Your Film Database</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Bootstrap Icons CSS for Oscar Awards -->
@@ -20,13 +20,13 @@
             <nav class="main-nav">
                 <ul>
                     <li class="dropdown">
-                        <a href="#" id="genres-link">Generi <i class="fas fa-caret-down"></i></a>
+                        <a href="#" id="genres-link">Genres <i class="fas fa-caret-down"></i></a>
                         <div id="genres-dropdown" class="dropdown-content">
                             <!-- Populated by JS -->
                         </div>
                     </li>
-                    <li><a href="#" id="top-rated-link">Film Top Rated</a></li>
-                    <li><a href="#" id="advanced-search-link">Ricerca Avanzata</a></li>
+                    <li><a href="#" id="top-rated-link">Top Rated Films</a></li>
+                    <li><a href="#" id="advanced-search-link">Advanced Research</a></li>
                 </ul>
             </nav>
             <div class="search-bar">
@@ -41,7 +41,7 @@
 
     <main>
         <div class="container">
-            <h2 id="main-title">Film più recenti</h2>
+            <h2 id="main-title">Most recent films</h2>
             <div id="movie-grid" class="movie-grid">
                 <!-- Movie cards will be inserted here by JS -->
             </div>
@@ -57,11 +57,11 @@
 
     <div id="floating-chat" class="floating-chat hidden">
         <div class="chat-header">
-            <span>Chat Generale</span>
+            <span>Chat </span>
             <button id="close-chat-btn">×</button>
         </div>
         <div class="chat-body" id="floating-chat-body">
-            <!-- Messaggi verranno inseriti qui -->
+            <!-- Messages here -->
         </div>
     </div>
 

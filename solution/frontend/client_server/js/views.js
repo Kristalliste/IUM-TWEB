@@ -34,6 +34,15 @@ function formatMovieReviews(movieReviews) {
     };
 }
 
+// Function to fetch the HTML template for movie details view
+async function fetchMovieDetailTemplate() {
+    const response = await fetch('./movieDetail.html');
+    if (!response.ok) {
+        throw new Error('Failed to load movie detail template');
+    }
+    return response.text();
+}
+
 export function showMainView(mainView, detailView) {
     mainView.style.display = 'block';
     detailView.style.display = 'none';
@@ -54,109 +63,58 @@ export async function showDetailView(movieId, mainView, detailView) {
     `;
 
     try {
-        console.log(`[showDetailView] Attempting to fetch details for movie ID: ${movieId}`);
-        const movieData = await fetchMovieDetails(movieId);
-        console.log("[showDetailView] Movie details fetched:", movieData);
-
+        const [movieData, movieDetailTemplate] = await Promise.all([
+            fetchMovieDetails(movieId),
+            fetchMovieDetailTemplate()
+        ]);
         const movie = formatMovieDetails(movieData);
-        console.log("[showDetailView] Formatted movie object:", movie);
-        console.log("[showDetailView] Movie title used for review fetch:", movie.originalTitle);
 
-        console.log("Movie title used for review fetch:", movie.originalTitle);
         const movieReviews = await fetchMovieReviews(movie.originalTitle);
-        console.log(`[showDetailView] Reviews fetched raw:`, movieReviews);
-        // --- END Debugging Logs ---
+
         const formattedReviews = formatMovieReviews(movieReviews);
-        console.log(`[showDetailView] Formatted reviews object (after formatMovieReviews):`, formattedReviews);
 
+        detailView.innerHTML = movieDetailTemplate;
 
-        detailView.innerHTML = `
-    <div class="container">
-        <button id="back-button" class="back-button"><i class="fas fa-arrow-left"></i> Return to Movie List </button>
-        <div id="MovieDetailsPage" class="detail-grid">
-            <div class="detail-poster-chat-container">
-                <div class="detail-poster">
-                    <img src="${movie.posterUrl}" alt=" ${movie.title} poster">
-                </div>
-                
-                <div class="chat-section">
-                    <h2>Chat Live</h2>
-                    <div id="chat-wrapper">
-                        <!-- Chat content will be rendered here -->
-                    </div>
-                </div>
-            </div>
-            
-            
-            <div class="detail-info">
-                <h1>${escapeHTML(movie.title)} 
-                    <span class="year">(${movie.year})</span>
-                </h1>
-          
-            <div class="detail-meta">
-                <div class="detail-rating">
-                    <i class="bi bi-star-fill"></i>
-                        <span>${movie.rating}</span>
-                </div>
-                <div class="detail-runtime">
-                    <i class="bi bi-clock"></i>
-                        <span>${movie.minute} min</span>
-                </div>
-                    ${movie.hasOscar ? `<span id="detailOscarIcon" class="bi bi-award" title="Nominated to the Oscar Awards"></span>` : ''}
-            </div>
-          
-            <p class="description">${escapeHTML(movie.description)}</p>
-          
-            <div class="detail-list-container">
-                <div class="languages-section">
-                    <h3 class="detail-section-header">Languages</h3>
-                    <ul class="languages-list">
-                        ${(movie.languages || []).map(lang =>
-            `<li class="detail-list-item">${escapeHTML(lang)}</li>`
-        ).join('') || '<li class="detail-list-item">No languages specified</li>'}
-                    </ul>
-                </div>
-   
-                <div class="genres-section">
-                    <h3 class="detail-section-header">Genres</h3>
-                    <ul class="genres-list">
-                        ${(movie.genres || []).map(genre =>
-            `<li class="detail-list-item">${escapeHTML(genre)}</li>`
-        ).join('') || '<li class="detail-list-item">No genres specified</li>'}
-                    </ul>
-                </div>
-            
-                <div class="actors-section">
-                    <h3 class="detail-section-header">Cast</h3>
-                    <ul class="actors-list">
-                        ${(movie.actors || []).map(actor =>
-            `<li class="detail-list-item">${escapeHTML(actor)}</li>`
-        ).join('') || '<li class="detail-list-item">No cast specified</li>'}
-                    </ul>
-                </div>
-            </div>
-        </div>
-        
-            <div class="reviews-section">
-            <h3>Reviews</h3>
-                <div id="reviews-list" class="reviews-list">
-                   ${formattedReviews.reviews && formattedReviews.reviews.length > 0 ? 
-                    formattedReviews.reviews.map(review => `
+        // Populate dynamic content
+        document.getElementById('detail-view-poster').src = movie.posterUrl;
+        document.getElementById('detail-view-poster').alt = `${movie.title} poster`;
+        document.getElementById('detail-view-title').innerHTML = `${escapeHTML(movie.title)} <span class="year">(${movie.year})</span>`;
+        document.getElementById('detail-view-rating').textContent = movie.rating;
+        document.getElementById('detail-view-minute').textContent = `${movie.minute} min`;
+        document.getElementById('detail-view-description').textContent = escapeHTML(movie.description);
+
+        const oscarIcon = document.getElementById('detail-view-oscar-icon');
+        if (movie.hasOscar) {
+            oscarIcon.style.display = 'inline-block';
+        } else {
+            oscarIcon.style.display = 'none';
+        }
+
+        const languagesList = document.getElementById('detail-view-languages-list');
+        languagesList.innerHTML = (movie.languages || [])
+            .map(lang => `<li class="detail-list-item">${escapeHTML(lang)}</li>`)
+            .join('') || '<li class="detail-list-item">No languages specified</li>';
+
+        const genresList = document.getElementById('detail-view-genres-list');
+        genresList.innerHTML = (movie.genres || [])
+            .map(genre => `<li class="detail-list-item">${escapeHTML(genre)}</li>`)
+            .join('') || '<li class="detail-list-item">No genres specified</li>';
+
+        const actorsList = document.getElementById('detail-view-actors-list');
+        actorsList.innerHTML = (movie.actors || [])
+            .map(actor => `<li class="detail-list-item">${escapeHTML(actor)}</li>`)
+            .join('') || '<li class="detail-list-item">No cast specified</li>';
+
+        const reviewsList = document.getElementById('reviews-list');
+        reviewsList.innerHTML = formattedReviews.reviews && formattedReviews.reviews.length > 0 ?
+            formattedReviews.reviews.map(review => `
                     <div class="review-item">
                         <p><strong>Critic:</strong> ${escapeHTML(review.critic_name || 'Anonymous')}</p>
                         <p><strong>Top Critic:</strong> ${review.top_critic ? 'Yes' : 'No'}</p>
-                        <!--<p><p><strong>Date:</strong> {review.review_date ? new Date(review.review_date).getFullYear() : 'N/A'}</p> -->
                         <p><strong>Score:</strong> ${review.normalized_score}/10</p>
                         <p><strong>Review:</strong> "${escapeHTML(review.review_content)}"</p>
                     </div>
-                    `).join('') : '<p>No reviews for this movie yet.</p>'    }
-                </div>
-            </div>
-        </div>
-    </div>   
-
-        
-        `;
+                    `).join('') : '<p>No reviews for this movie yet.</p>';
 
         document.getElementById('back-button').addEventListener('click', () =>
             showMainView(mainView, detailView)
@@ -174,7 +132,7 @@ export async function showDetailView(movieId, mainView, detailView) {
       <button id="back-button" class="back-button"><i class="fas fa-arrow-left"></i> Return to Movie List </button>
       <div class="error-container">
         <i class="fas fa-exclamation-triangle"></i>
-        <h2>Error while loading film detail </h2>
+        <h2>Error while loading film details </h2>
         <p>Please try again later</p>
         <p class="error-details">${error.message}</p>
       </div>
@@ -186,7 +144,7 @@ export async function showDetailView(movieId, mainView, detailView) {
     }
 }
 
-// function to render movie cards (now receives pre-paginated movies)
+// Function to render movie cards (now receives pre-paginated movies)
 export function renderMovies(movieList, movieGrid, mainView, detailView) {
     movieGrid.innerHTML = '';
 

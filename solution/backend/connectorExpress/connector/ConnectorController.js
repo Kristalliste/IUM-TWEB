@@ -149,46 +149,6 @@ router.get('/movies', async (req, res, next) => {
     }
 });
 
-/**
- * @swagger
- * /movies/search:
- *   get:
- *     summary: Search movies by title
- *     tags: [Connector]
- *     parameters:
- *       - in: query
- *         name: query
- *         required: true
- *         schema:
- *           type: string
- *         description: Search term
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           minimum: 0
- *           default: 0
- *         description: Page number (0-indexed)
- *       - in: query
- *         name: size
- *         schema:
- *           type: integer
- *           minimum: 1
- *           maximum: 100
- *           default: 10
- *         description: Number of items per page
- *     responses:
- *       200:
- *         description: Paginated search results
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/PaginatedMovies'
- *       400:
- *         description: Missing or invalid parameters
- *       500:
- *         description: Server error
- */
 /*router.get('/movies/search', async (req, res, next) => {
     try {
         const { query } = req.query;
@@ -246,44 +206,6 @@ router.get('/movies/:id', validateMovieId, async (req, res, next) => {
         next(error);
     }
 });
-
-/**
- * @ s
- * wagger
- * /movies/{id}/reviews:
- *   get:
- *     summary: Get reviews for a specific movie
- *     tags: [Connector]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Numeric ID of the movie
- *     responses:
- *       200:
- *         description: List of reviews
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Review'
- *       404:
- *         description: Movie not found
- *       500:
- *         description: Server error
- */
-/**router.get('/movies/:id/reviews', validateMovieId, async (req, res, next) => {
-    try {
-        const reviews = await connectorService.getReviewsByMovieId(req.validatedId);
-        res.json(reviews);
-    } catch (error) {
-        next(error);
-    }
-});*/
-
 
 /**
  * @swagger
@@ -355,85 +277,82 @@ router.get('/reviews/movies/:movie_title', async (req, res, next) => {
         res.json(reviews);
     } catch (error) {
         console.error('[ConnectorController ERROR] Failed to fetch reviews from Reviews Server:', error.message);
-        next(error); // Pass the error to the error handling middleware
-    }
-});
-
-
-
-
-
-
-/**
- * @swagger
- * /movies/{id}/full:
- *   get:
- *     summary: Get full movie details with reviews
- *     tags: [Connector]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Numeric ID of the movie
- *     responses:
- *       200:
- *         description: Complete movie data with reviews
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: integer
- *                 title:
- *                   type: string
- *                 year:
- *                   type: integer
- *                 description:
- *                   type: string
- *                 minute:
- *                   type: number
- *                 rating:
- *                   type: number
- *                 posterUrl:
- *                   type: string
- *                 reviews:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Review'
- *                 reviewCount:
- *                   type: integer
- *               example:
- *                 id: 1
- *                 title: "Inception"
- *                 year: 2010
- *                 description: "A mind-bending thriller..."
- *                 minute: 148
- *                 rating: 8.8
- *                 posterUrl: "https://example.com/poster.jpg"
- *                 reviews:
- *                   - _id: "62a1bc234f1b2c3d4e5f6789"
- *                     movie_title: "Inception"
- *                     normalized_score: 9.2
- *                     review_text: "Mind-blowing!"
- *                 reviewCount: 1
- *       404:
- *         description: Movie not found
- *       500:
- *         description: Server error
- */
-router.get('/movies/:id/full', validateMovieId, async (req, res, next) => {
-    try {
-        const movieWithReviews = await connectorService.getMovieWithReviews(req.validatedId);
-        res.json(movieWithReviews);
-    } catch (error) {
         next(error);
     }
 });
 
-//DA METTERE POI SWAGGER
+
+/**
+ * @swagger
+ * paths:
+ *   /filteredMovies/{title}:
+ *     get:
+ *       summary: Get filtered movies by title with pagination
+ *       description: Retrieve a paginated list of movies that match the given title.
+ *       tags:
+ *         - Movies
+ *       parameters:
+ *         - name: title
+ *           in: path
+ *           required: true
+ *           description: The title (or partial title) of the movie to search for
+ *           schema:
+ *             type: string
+ *         - name: page
+ *           in: query
+ *           required: false
+ *           description: The page number for pagination (defaults to 0)
+ *           schema:
+ *             type: integer
+ *             default: 0
+ *             minimum: 0
+ *         - name: size
+ *           in: query
+ *           required: false
+ *           description: Number of results per page (defaults to 10)
+ *           schema:
+ *             type: integer
+ *             default: 10
+ *             minimum: 1
+ *       responses:
+ *         '200':
+ *           description: A list of filtered movies
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   content:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                           example: 101
+ *                         title:
+ *                           type: string
+ *                           example: "The Matrix"
+ *                         release_year:
+ *                           type: integer
+ *                           example: 1999
+ *                         genre:
+ *                           type: string
+ *                           example: "Science Fiction"
+ *                   totalPages:
+ *                     type: integer
+ *                     example: 5
+ *                   totalElements:
+ *                     type: integer
+ *                     example: 50
+ *                   currentPage:
+ *                     type: integer
+ *                     example: 0
+ *         '400':
+ *           description: Missing or invalid title parameter
+ *         '500':
+ *           description: Internal server error
+ */
 router.get('/filteredMovies/:title', async (req, res, next) => {
     try {
         // Get the title from the query parameters
@@ -442,8 +361,6 @@ router.get('/filteredMovies/:title', async (req, res, next) => {
         const size = parseInt(req.query.size) || 10;
 
         if (!title) {
-            // Handle case where title is not provided, if it's required by your backend
-            // For example, you might want to return an error or fetch all movies
             return res.status(400).json({ error: 'Title query parameter is required.' });
         }
         let movies = await connectorService.getFilteredByTitleMovies(title, page, size);

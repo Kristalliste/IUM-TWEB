@@ -26,12 +26,12 @@ app.use(cors());
 app.use(express.json());
 
 
-// Serve static files (like demo.html) from the "client_server" folder
+// Serve static files (like mainView.html) from the "client_server" folder
 app.use(express.static(path.join(__dirname, '../../../frontend/client_server')));
 
 // Default route to access directly
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../../frontend/client_server', 'demo.html'));
+    res.sendFile(path.join(__dirname, '../../../frontend/client_server', 'mainView.html'));
 });
 
 // Gestione delle stanze per film

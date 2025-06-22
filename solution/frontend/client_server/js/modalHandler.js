@@ -83,7 +83,7 @@ function populateModal(movie) {
         if (movieData.hasOscar) {
             detailOscarIcon.className = 'bi bi-award'; // Bootstrap Icons class
             detailOscarIcon.style.display = 'inline-block';
-            detailOscarIcon.style.color = '#f5c518'; // Gold color
+            detailOscarIcon.style.color = '#f5c518';
             detailOscarIcon.style.marginLeft = '10px';
             detailOscarIcon.style.fontSize = '1.2em';
             detailOscarIcon.title = 'Oscar Nominated';
@@ -108,8 +108,6 @@ function populateModal(movie) {
             }
         };
     }
-
-
 }
 
 export function showModal(movieId) {

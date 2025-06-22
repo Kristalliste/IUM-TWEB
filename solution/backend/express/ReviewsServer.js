@@ -31,8 +31,6 @@ app.use((req, res) => {
 });
 
 // Connecting to MongoDB
-// This line imports and executes the mongoConnect.js module,
-// which establishes the MongoDB connection without deprecated options.
 import './mongoConnect.js';
 
 // Error handling middleware

@@ -162,30 +162,59 @@ router.get('/score/:normalized_score', async (req, res, next) => {
     }
 });
 
-// GET /reviews?movieTitle=someTitle
-router.get('/reviews', async (req, res, next) => {
-    try {
-        const movieTitle = req.query.movieTitle;
-
-        if (!movieTitle || typeof movieTitle !== 'string' || movieTitle.trim() === '') {
-            return res.status(400).json({ error: 'Invalid or missing movieTitle query parameter' });
-        }
-
-        const reviews = await reviewsService.getReviewsByMovieTitle(movieTitle.trim());
-        res.json(reviews);
-    } catch (error) {
-        next(error);
-    }
-});
-
+/**
+ * @swagger
+ * paths:
+ *   /movies/{movie_title}:
+ *     get:
+ *       summary: Get reviews by movie title
+ *       description: Retrieve all reviews associated with the specified movie title.
+ *       tags:
+ *         - Reviews
+ *       parameters:
+ *         - name: movie_title
+ *           in: path
+ *           required: true
+ *           description: Title of the movie to fetch reviews for
+ *           schema:
+ *             type: string
+ *       responses:
+ *         '200':
+ *           description: A list of reviews for the given movie title
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "60d0fe4f5311236168a109ca"
+ *                     reviewer:
+ *                       type: string
+ *                       example: "John Doe"
+ *                     rating:
+ *                       type: number
+ *                       format: float
+ *                       example: 4.5
+ *                     comment:
+ *                       type: string
+ *                       example: "Great movie with excellent performances!"
+ *                     movie_title:
+ *                       type: string
+ *                       example: "Inception"
+ *         '400':
+ *           description: Invalid movie title supplied
+ *         '404':
+ *           description: No reviews found for the given movie title
+ *         '500':
+ *           description: Internal server error
+ */
 router.get('/movies/:movie_title', async (req, res, next) => {
     try {
         const movieTitle = req.params.movie_title;
-        console.log(`[ReviewsController] Received movie_title from request: "${movieTitle}"`); // ADD THIS LINE
-
-     /*   if (!movieTitle || typeof movieTitle !== 'string' || movieTitle.trim() === '') {
-            return res.status(400).json({ error: 'Invalid or missing movieTitle parameter' });
-        }*/
+        console.log(`[ReviewsController] Received movie_title from request: "${movieTitle}"`);
 
         const reviews = await reviewsService.getReviewsByMovieTitle(movieTitle.trim());
         res.status(200).json(reviews);

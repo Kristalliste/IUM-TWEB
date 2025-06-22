@@ -58,48 +58,6 @@ const getMovieById = async (id) => {
     }
 };
 
-const getReviewsByMovieId = async (movieId) => {
-    try {
-        const id = Number(movieId);
-        if (isNaN(id) || id <= 0 || !Number.isInteger(id)) {
-            throw new Error('Invalid movie ID');
-        }
-
-        return await ConnectorRepository.fetchReviewsByMovieId(id);
-    } catch (error) {
-        console.error('Error in getReviewsByMovieId:', error.message);
-        throw new Error(`Failed to fetch reviews: ${error.message}`);
-    }
-};
-
-const getReviewsByMovieTitle = async (movieTitle) => {
-    try {
-        if (!movieTitle || typeof movieTitle !== 'string' || movieTitle.trim() === '') {
-            throw new Error('Invalid movie title');
-        }
-
-        return await ConnectorRepository.fetchReviewsByMovieTitle(movieTitle.trim());
-    } catch (error) {
-        console.error('Error in getReviewsByMovieTitle:', error.message);
-        throw new Error(`Failed to fetch reviews: ${error.message}`);
-    }
-};
-
-const getMovieWithReviews = async (movieId) => {
-    try {
-        const id = Number(movieId);
-        if (isNaN(id) || id <= 0 || !Number.isInteger(id)) {
-            throw new Error('Invalid movie ID');
-        }
-
-        return await ConnectorRepository.fetchMovieWithReviews(id);
-    } catch (error) {
-        console.error('Error in getMovieWithReviews:', error.message);
-        throw new Error(`Failed to fetch movie with reviews: ${error.message}`);
-    }
-};
-
-
 const getReviewsFromReviewsServer = async (movieTitle) => {
     try {
         console.log(`[ConnectorService] Calling ConnectorRepository to proxy review request for: "${movieTitle}"`);
@@ -113,15 +71,10 @@ const getReviewsFromReviewsServer = async (movieTitle) => {
 };
 
 
-
-
 export default {
     getMoviesPaginated,
     //searchMoviesPaginated,
-    getReviewsByMovieTitle,
     getMovieById,
-    getReviewsByMovieId,
-    getMovieWithReviews,
     getFilteredByTitleMovies,
     getReviewsFromReviewsServer
 };

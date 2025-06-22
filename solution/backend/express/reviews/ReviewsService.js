@@ -9,14 +9,6 @@ const ReviewsService = {
         }
     },
 
-    /*getReviewsByMovieTitle: async (title) => {
-        try {
-            return await ReviewsRepository.findByMovieTitle(title);
-        } catch (err) {
-            throw new Error('Failed to fetch reviews by title');
-        }
-    },*/
-
     createReview: async (data) => {
         try {
             return await ReviewsRepository.save(data);

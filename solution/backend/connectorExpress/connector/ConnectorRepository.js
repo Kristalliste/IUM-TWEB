@@ -61,59 +61,6 @@ const fetchReviewsByMovieId = async (movieId) => {
     }
 };
 
-/**
-const fetchReviewsByMovieTitle = async (title) => {
-    const cacheKey = `reviews_movie_title_${title}`;
-    try {
-        const cachedReviews = cache.get(cacheKey);
-        if (cachedReviews) {
-            console.log(`Returning cached reviews for movie title ${title}`);
-            return cachedReviews;
-        }
-
-        // Corrected URL: Add the /api base path
-        const response = await axios.get(`${MONGO_API}/reviews?movieTitle=${encodeURIComponent(title)}`);
-        const transformedReviews = response.data.map(reviewDoc => new ReviewsDTO(reviewDoc));
-
-        cache.set(cacheKey, transformedReviews);
-        return transformedReviews;
-    } catch (error) {
-        console.error(`Failed to fetch reviews for movie title "${title}":`, {
-            url: `${MONGO_API}/api/reviews?movieTitle=${encodeURIComponent(title)}`, // Also update for error logging
-            error: error.message,
-            statusCode: error.response ? error.response.status : 'N/A',
-            data: error.response ? error.response.data : 'N/A',
-            stack: error.stack
-        });
-        throw new Error(`Failed to fetch reviews: ${error.response ? error.response.status : 'Server not reachable'}`);
-    }
-};*/
-
-
-
-const fetchMovieWithReviews = async (movieId) => {
-    try {
-        const [movie, reviews] = await Promise.all([
-            fetchMovieById(movieId),
-            fetchReviewsByMovieId(movieId)
-        ]);
-
-        return {
-            ...movie,
-            reviews,
-            reviewCount: reviews.length
-        };
-    } catch (error) {
-        if (error.response) {
-            throw new Error(`Server responded with ${error.response.status}`);
-        } else if (error.request) {
-            throw new Error('No response received from server');
-        } else {
-            throw new Error('Request setup error');
-        }
-    }
-};
-
 const fetchMoviesPaginated = async (type, page = 0, size = 10) => {
     const cacheKey = `movies_${type}_${page}_${size}`;
 
@@ -243,7 +190,6 @@ const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
         const response = await axios.get(`${SPRING_API}/movies/search/title`, {
             params: {
                 title: title,
-                // If you want pagination, include these:
                 size: size,
                 page: page  // Spring Data JPA pages are 0-indexed
             },
@@ -312,11 +258,7 @@ const getReviewsFromReviewsServer = async (movieTitle) => {
 export default {
     fetchMovieById,
     fetchReviewsByMovieId,
-    fetchMovieWithReviews,
-    //fetchReviewsByMovieTitle,
     fetchMoviesPaginated,
-    //searchMoviesPaginated,
-    // fetchAllMovies,
     fetchFilteredByTitleMovies,
     getReviewsFromReviewsServer
 };

@@ -15,7 +15,7 @@ export function showLoader(container) {
     container.innerHTML = `
         <div class="loader">
             <div class="spinner"></div>
-            <p>Caricamento in corso...</p>
+            <p>Loading...</p>
         </div>
     `;
 }
@@ -92,7 +92,7 @@ export const handleApiError = (error) => {
     console.error('API Error:', error);
     return {
         error: true,
-        message: error.message || 'Errore nel server'
+        message: error.message || 'Server Error'
     };
 };
 
