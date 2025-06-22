@@ -1,9 +1,8 @@
-import {API_BASE_URL, debounce, toTitleCase, capitalizeDescription } from './utils.js';
-import { fetchMovies, fetchMovieDetails } from './api.js';
+import { API_BASE_URL, debounce, toTitleCase, capitalizeDescription, moviesPerPage } from './utils.js';
 import { showMainView, showDetailView, renderMovies } from './views.js';
-import { displayMoviePage, renderPagination } from './pagination.js';
+import { displayMoviePage } from './pagination.js';
 import { populateGenres } from './genres.js';
-import {renderUsernamePrompt} from "./chat.js";
+import { renderUsernamePrompt } from "./chat.js";
 
 // DOM elements
 const movieGrid = document.getElementById('movie-grid');
@@ -20,34 +19,94 @@ const genresLink = document.getElementById('genres-link');
 
 // State
 let currentPage = 1;
-let allMovies = [];
+let currentView = 'recent'; // 'recent', 'top-rated', 'search'
+let currentSearchTerm = '';
+let totalPages = 1;
 
+// Funzione per formattare i dati del film
 function formatMovieData(movie) {
     return {
         id: movie.id,
-        title: toTitleCase(movie.title),
-        year: movie.year,
-        posterUrl: movie.posterUrl || 'https://placehold.co/300x450?text=No+Image',
+        title: movie.title ? toTitleCase(movie.title) : 'Untitled Movie',
+        year: movie.year || (movie.date ? new Date(movie.date).getFullYear() : 0),
+        posterUrl: movie.posterUrl || movie.link || 'https://placehold.co/300x450?text=No+Image',
         description: capitalizeDescription(movie.description),
-        rating: movie.rating || 0,
-        //actors: movie.actors || [],
-       // genres: movie.genres || [],
-       // language: movie.languages || [],
+        rating: movie.rating || 0, // Ensure rating defaults to 0
+        minute: movie.minute || 0,
         hasOscar: movie.hasOscar || false
     };
 }
 
-async function loadMovies() {
+// Funzioni per il fetching paginato
+async function fetchMovies(type, page = 0, query = '') {
     try {
-        const response = await fetch(`${API_BASE_URL}/movies`);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        let url = `${API_BASE_URL}/movies`;
+        const params = new URLSearchParams({
+            page,
+            size: moviesPerPage
+        });
 
+        if (type === 'search') {
+            url = `${API_BASE_URL}/movies/search`;
+            params.append('query', query);
+        } else {
+            params.append('type', type);
+        }
+
+        const response = await fetch(`${url}?${params}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Handle different response structures
         const data = await response.json();
-        return data.map(movie => formatMovieData(movie));
+
+        // If response is an array (for recent movies)
+        if (Array.isArray(data)) {
+            return {
+                content: data,
+                totalPages: Math.ceil(data.length / moviesPerPage),
+                totalElements: data.length
+            };
+        }
+        // If response is paginated object
+        else if (data.content) {
+            return data;
+        }
+        // Fallback for unexpected formats
+        return { content: [], totalPages: 1, totalElements: 0 };
     } catch (error) {
-        console.error('Could not load movies. Please try again.', error);
-        return [];
+        console.error(`Error fetching ${type} movies:`, error);
+        return { content: [], totalPages: 1, totalElements: 0 };
     }
+}
+
+// Carica e mostra una pagina di film
+async function loadAndDisplayMoviesPage(page = 0) {
+    currentPage = page + 1; // Converti in 1-indexed per UI
+
+    let data;
+    if (currentView === 'search') {
+        data = await fetchMovies('search', page, currentSearchTerm);
+    } else {
+        data = await fetchMovies(currentView, page);
+    }
+
+    const formattedMovies = data.content.map(movie => formatMovieData(movie));
+    totalPages = data.totalPages;
+
+    displayMoviePage(
+        formattedMovies,
+        paginationContainer,
+        movieGrid,
+        currentPage,
+        totalPages,
+        mainView,
+        detailView,
+        (pageIndex) => { // Callback per cambio pagina
+            loadAndDisplayMoviesPage(pageIndex);
+        }
+    );
 }
 
 // FUNZIONE AGGIUNTA: setActiveLink
@@ -58,56 +117,47 @@ function setActiveLink(activeLink) {
     }
 }
 
+// Gestori eventi
 topRatedLink.addEventListener('click', async (e) => {
     e.preventDefault();
     showMainView(mainView, detailView);
     searchInput.value = '';
 
-    if (allMovies.length === 0) {
-        allMovies = await loadMovies();
-    }
-
-    const topRatedMovies = [...allMovies].sort((a, b) => b.rating - a.rating);
+    currentView = 'top-rated';
     currentPage = 1;
     mainTitle.textContent = 'Film Top Rated';
     setActiveLink(topRatedLink);
-    displayMoviePage(topRatedMovies, paginationContainer, movieGrid, currentPage, mainView, detailView);
+
+    await loadAndDisplayMoviesPage(0);
 });
 
 searchInput.addEventListener('input', debounce(async (e) => {
     showMainView(mainView, detailView);
     setActiveLink(null);
 
-    if (allMovies.length === 0) allMovies = await loadMovies();
+    const searchTerm = e.target.value.trim();
+    currentSearchTerm = searchTerm;
 
-    const searchTerm = e.target.value.toLowerCase().trim();
     if (searchTerm) {
+        currentView = 'search';
         mainTitle.textContent = `Risultati per: "${searchTerm}"`;
-        const filteredMovies = allMovies.filter(movie =>
-            movie.title.toLowerCase().includes(searchTerm) ||
-            movie.year.toString().includes(searchTerm)
-        );
-        displayMoviePage(filteredMovies, paginationContainer, movieGrid, 1, mainView, detailView);
+        await loadAndDisplayMoviesPage(0);
     } else {
-        const recentMovies = [...allMovies].sort((a, b) => b.year - a.year);
+        currentView = 'recent';
         mainTitle.textContent = 'Film più recenti';
-        displayMoviePage(recentMovies, paginationContainer, movieGrid, 1, mainView, detailView);
+        await loadAndDisplayMoviesPage(0);
     }
 }, 300));
 
 logo.addEventListener('click', async () => {
     searchInput.value = '';
+    currentView = 'recent';
     currentPage = 1;
     showMainView(mainView, detailView);
-
-    if (allMovies.length === 0) {
-        allMovies = await loadMovies();
-    }
-
-    const recentMovies = [...allMovies].sort((a, b) => b.year - a.year);
     mainTitle.textContent = 'Film più recenti';
     setActiveLink(null);
-    displayMoviePage(recentMovies, paginationContainer, movieGrid, currentPage, mainView, detailView);
+
+    await loadAndDisplayMoviesPage(0);
 });
 
 advancedSearchLink.addEventListener('click', (e) => {
@@ -127,39 +177,54 @@ advancedSearchLink.addEventListener('click', (e) => {
     paginationContainer.innerHTML = '';
 });
 
-// Initial render
+// Inizializzazione
 async function init() {
     movieGrid.innerHTML = '<p class="loading">Caricamento film in corso...</p>';
 
-    allMovies = await loadMovies();
+    try {
+        // Carica prima pagina di film recenti
+        const initialData = await fetchMovies('recent', 0);
 
-    populateGenres(
-        allMovies,
-        mainView,
-        detailView,
-        searchInput,
-        currentPage,
-        mainTitle,
-        genresLink,
-        setActiveLink,
-        displayMoviePage,
-        paginationContainer,
-        movieGrid
-    );
+        // Estrai film per i generi (solo prima pagina)
+        const moviesForGenres = initialData.content.map(movie => formatMovieData(movie));
 
-    showMainView(mainView, detailView);
-    const recentMovies = [...allMovies].sort((a, b) => b.year - a.year);
-    mainTitle.textContent = 'Film più recenti';
-    setActiveLink(null);  // Nessun link attivo inizialmente
-    displayMoviePage(recentMovies, paginationContainer, movieGrid, currentPage, mainView, detailView);
+        populateGenres(
+            moviesForGenres,
+            mainView,
+            detailView,
+            searchInput,
+            currentPage,
+            mainTitle,
+            genresLink,
+            setActiveLink,
+            async (page) => {
+                await loadAndDisplayMoviesPage(page - 1);
+            },
+            paginationContainer,
+            movieGrid
+        );
 
+        showMainView(mainView, detailView);
+        mainTitle.textContent = 'Film più recenti';
+        setActiveLink(null);
+        await loadAndDisplayMoviesPage(0);
+    } catch (error) {
+        console.error('Initialization error:', error);
+        movieGrid.innerHTML = `
+            <div class="error" style="grid-column: 1 / -1; text-align: center; padding: 20px;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Errore durante il caricamento</h3>
+                <p>${error.message}</p>
+            </div>
+        `;
+    }
 }
 
+// Gestione chat
 document.getElementById('toggle-chat-btn').addEventListener('click', () => {
     const floatingChat = document.getElementById('floating-chat');
     floatingChat.classList.toggle('hidden');
 
-    // Initialize chat only when opening
     if (!floatingChat.classList.contains('hidden')) {
         const chatWrapper = document.getElementById('floating-chat-body');
         renderUsernamePrompt(chatWrapper, "homepage", 1);
@@ -170,8 +235,4 @@ document.getElementById('close-chat-btn').addEventListener('click', () => {
     document.getElementById('floating-chat').classList.add('hidden');
 });
 
-
-// Ensures all HTML is parsed before JS runs
-document.addEventListener('DOMContentLoaded', () => {
-    init(); // Now safe to access DOM
-});
+document.addEventListener('DOMContentLoaded', init);

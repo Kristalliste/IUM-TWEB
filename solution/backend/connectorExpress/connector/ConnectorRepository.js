@@ -18,7 +18,6 @@ const fetchMovieById = async (id) => {
             return cachedMovie;
         }
 
-        console.log(`Fetching from: ${SPRING_API}/movies/${id}`); // Debug URL
         // Fetch from API
         const response = await axios.get(`${SPRING_API}/movies/${id}`);
         const movieDTO = response.data;
@@ -26,7 +25,7 @@ const fetchMovieById = async (id) => {
         const transformedMovie = {
             id: movieDTO?.movieId || 0,
             title: movieDTO?.name || 'Unknown',
-            year: movieDTO?.date ? new Date(movieDTO.date).getFullYear() : 0,
+            year: movieDTO?.date ? new Date(movieDTO.date).getUTCFullYear() : 0,
             posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
             description: movieDTO.description || '',
             rating: movieDTO.rating || 'N/A',
@@ -84,80 +83,117 @@ const fetchMovieWithReviews = async (movieId) => {
     }
 };
 
-/**
-const fetchAllMovies = async () => {
-    const cacheKey = 'allMovies';
-    const cachedMovies = cache.get(cacheKey);
-
-    if (cachedMovies) {
-        console.log('Returning cached movies');
-        return cachedMovies;
-    }
+const fetchMoviesPaginated = async (type, page = 0, size = 10) => {
+    const cacheKey = `movies_${type}_${page}_${size}`;
 
     try {
-        const url = `${SPRING_API}/movies?size=1000`;
-        console.log(`Fetching movies from: ${url}`);
+        // Check cache first
+        const cachedData = cache.get(cacheKey);
+        if (cachedData) {
+            console.log(`Returning cached ${type} movies page ${page}`);
+            return cachedData;
+        }
 
-        const response = await axios.get(url);
-        console.log(`Response status: ${response.status}`);
-        console.log(`Movies count: ${response.data.content.length}`);
+        // Build URL based on type
+        let url;
+        switch(type) {
+            case 'recent':
+                url = `${SPRING_API}/movies/recent`;
+                break;
+            case 'top-rated':
+                url = `${SPRING_API}/movies/top-rated`;
+                break;
+            default:
+                throw new Error('Invalid movie type');
+        }
 
-        const movies = response.data.content;
+        // Make request with pagination parameters
+        const response = await axios.get(url, {
+            params: {
+                page,
+                size
+            },
+            timeout: 10000
+        });
 
-        // AGGIUNTO posterUrl e risolto il campo rating
-        const transformedMovies = movies.map(movie => ({
-            id: movie.movieId,
-            title: movie.name,
-            year: new Date(movie.date).getFullYear(),
-            posterUrl: movie.link, // Aggiunto campo posterUrl
-            description: movie.description,
-            minute: movie.minute,
-            rating: movie.rating || 0.0 // Risolto problema rating null
-        }));
+        const pageData = response.data;
 
-        cache.set(cacheKey, transformedMovies);
-        return transformedMovies;
-    } catch (error) {
-        console.error('Error fetching movies:', error);
-        throw error;
-    }
-};*/
-
-const fetchAllMovies = async () => {
-    const cacheKey = 'allMovies';
-    const cachedMovies = cache.get(cacheKey);
-    if (cachedMovies) {
-        console.log('Returning cached movies');
-        return cachedMovies;
-    }
-    try {
-        const response = await axios.get(`${SPRING_API}/movies?size=1000`, { timeout: 20000 });
-        console.log('Connection successful');
-        const moviesDTO = response.data.content;
-
-        const transformedMovies = moviesDTO.map(movieDTO => ({
+        // Transform movies to consistent format
+        const transformedMovies = pageData.content.map(movieDTO => ({
             id: movieDTO.movieId,
             title: movieDTO.name,
-            year: new Date(movieDTO.date).getFullYear(),
+            year: movieDTO.date ? new Date(movieDTO.date).getFullYear() : 0,
             posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
-            description: movieDTO.description || '',
-            rating: movieDTO.rating || 'N/A',
-            minute: movieDTO.minute || 0,
-            actors: movieDTO.actors || [],
-            genres: movieDTO.genres || [],
-            languages: movieDTO.languages || [],
-            hasOscar: movieDTO.hasOscar || false
+            description: movieDTO.description,
+            minute: movieDTO.minute,
+            rating: movieDTO.rating || 0.0
         }));
 
-        cache.set(cacheKey, transformedMovies);
-        return transformedMovies;
+        const result = {
+            content: transformedMovies,
+            totalPages: pageData.totalPages,
+            totalElements: pageData.totalElements
+        };
+
+        // Cache result
+        cache.set(cacheKey, result);
+        return result;
 
     } catch (error) {
-        console.error('Failed to fetch movies:', {
-            url: `${SPRING_API}/movies`,
-            error: error.message,
-            stack: error.stack
+        console.error(`Failed to fetch ${type} movies:`, error);
+        throw error;
+    }
+};
+
+const searchMoviesPaginated = async (query, page = 0, size = 10) => {
+    const cacheKey = `movies_search_${query}_${page}_${size}`;
+
+    try {
+        // Check cache first
+        const cachedData = cache.get(cacheKey);
+        if (cachedData) return cachedData;
+
+        // Make request to search endpoint
+        const response = await axios.get(`${SPRING_API}/movies/search/title`, {
+            params: {
+                title: query,
+                page,
+                size
+            },
+            timeout: 10000
         });
+
+        const pageData = response.data;
+
+        // Transform movies to consistent format
+        const transformedMovies = pageData.content.map(movieDTO => ({
+            id: movieDTO.movieId,
+            title: movieDTO.name,
+            year: movieDTO.date ? new Date(movieDTO.date).getFullYear() : 0,
+            posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
+            description: movieDTO.description || '',
+            minute: movieDTO.minute || 0,
+            rating: movieDTO.rating || 'N/A',
+            /**
+             * actors: movieDTO.actors || [],
+             * genres: movieDTO.genres || [],
+             * languages: movieDTO.languages || [],
+             * hasOscar: movieDTO.hasOscar || false
+             */
+        }));
+
+        const result = {
+            content: transformedMovies,
+            totalPages: pageData.totalPages,
+            totalElements: pageData.totalElements
+        };
+
+        // Cache result
+        cache.set(cacheKey, result);
+        return result;
+
+    } catch (error) {
+        console.error('Failed to search movies:', error);
         throw error;
     }
 };
@@ -166,5 +202,6 @@ export default {
     fetchMovieById,
     fetchReviewsByMovieId,
     fetchMovieWithReviews,
-    fetchAllMovies
+    fetchMoviesPaginated,
+    searchMoviesPaginated
 };
