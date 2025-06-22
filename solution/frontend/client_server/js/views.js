@@ -6,11 +6,12 @@ import { fetchMovieDetails } from './api.js';
 function formatMovieDetails(movieData) {
     return {
         id: movieData.id,
-        title: toTitleCase(movieData.title),
-        year: movieData.year,
+        title: toTitleCase(movieData.title) || 'Unkonwn',
+        year: movieData.year || 0,
+        minute: movieData.minute || 0,
         posterUrl: movieData.posterUrl || 'https://placehold.co/300x450?text=No+Image',
-        description: capitalizeDescription(movieData.description),
-        rating: movieData.rating || 0, // Ensure rating defaults to 0
+        description: capitalizeDescription(movieData.description) || '',
+        rating: movieData.rating || 'N/A',
         actors: movieData.actors || [],
         genres: movieData.genres || [],
         languages: movieData.languages || [],
@@ -49,19 +50,35 @@ export async function showDetailView(movieId, mainView, detailView) {
     <div class="container">
         <button id="back-button" class="back-button"><i class="fas fa-arrow-left"></i> Return to Movie List </button>
         <div id="MovieDetailsPage" class="detail-grid">
-             <div class="detail-poster">
-                 <img src="${movie.posterUrl}" alt=" ${movie.title} poster">
-             </div>
+            <div class="detail-poster-chat-container">
+                <div class="detail-poster">
+                    <img src="${movie.posterUrl}" alt=" ${movie.title} poster">
+                </div>
+                
+                <div class="chat-section">
+                    <h2>Chat Live</h2>
+                    <div id="chat-wrapper">
+                        <!-- Chat content will be rendered here -->
+                    </div>
+                </div>
+            </div>
+            
             
             <div class="detail-info">
-            <h1>${escapeHTML(movie.title)} 
-                ${movie.hasOscar ? `<span id="detailOscarIcon" class="bi bi-award" title="Nominated to the Oscar Awards"></span>` : ''}
-                <span class="year">(${movie.year})</span>
-            </h1>
+                <h1>${escapeHTML(movie.title)} 
+                    <span class="year">(${movie.year})</span>
+                </h1>
           
-            <div class="detail-rating">
-                <i class="fas fa-star icon-star"></i>
-                <span>${movie.rating.toFixed(1) ?? 'N/A'}</span>
+            <div class="detail-meta">
+                <div class="detail-rating">
+                    <i class="bi bi-star-fill"></i>
+                        <span>${movie.rating}</span>
+                </div>
+                <div class="detail-runtime">
+                    <i class="bi bi-clock"></i>
+                        <span>${movie.minute} min</span>
+                </div>
+                    ${movie.hasOscar ? `<span id="detailOscarIcon" class="bi bi-award" title="Nominated to the Oscar Awards"></span>` : ''}
             </div>
           
             <p class="description">${escapeHTML(movie.description)}</p>
@@ -95,14 +112,6 @@ export async function showDetailView(movieId, mainView, detailView) {
                 </div>
             </div>
         </div>
-
-        <div class="detail-sections-container">
-            <div class="chat-section">
-            <h2>Chat Live</h2>
-                <div id="chat-wrapper">
-                <!-- Chat content will be rendered here -->
-                </div>
-            </div>
         
             <div class="reviews-section">
             <h3>Reviews</h3>
@@ -116,6 +125,9 @@ export async function showDetailView(movieId, mainView, detailView) {
                 </div>
             </div>
         </div>
+    </div>   
+
+        
         `;
 
         document.getElementById('back-button').addEventListener('click', () =>
@@ -167,7 +179,7 @@ export function renderMovies(movieList, movieGrid, mainView, detailView) {
         // Handle missing data gracefully
         const title = movie.title ? escapeHTML(movie.title) : 'Untitled Movie';
         const year = movie.year || 'N/A';
-        const rating = movie.rating ? movie.rating.toFixed(1) : 'N/A';
+        const rating = movie.rating ? movie.rating : 'N/A';
         const description = movie.description ?
             escapeHTML(movie.description) :
             'No description available';
@@ -180,11 +192,11 @@ export function renderMovies(movieList, movieGrid, mainView, detailView) {
                     onerror="this.src='https://placehold.co/300x450?text=No+Image'" 
                     loading="lazy">
                 <div class="movie-overlay">
-                    <p class="movie-description">${description}</p>
+                    <p class="movie-description">${description}</p> <!-- escapeHTML(movie.description)  -->
                 </div>
             </div>
             <div class="movie-info">
-                <h3>${title} (${year})</h3>
+                <h3>${title} (${year})</h3> <!-- escapeHTML(movie.title) -->
                 <div class="movie-rating">
                     <i class="fas fa-star icon-star"></i>
                     <span>${rating}</span>

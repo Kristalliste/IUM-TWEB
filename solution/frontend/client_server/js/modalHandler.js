@@ -24,11 +24,12 @@ async function loadMovieDetails(movieId) {
         // Map backend DTO to frontend format
         return {
             id: movie.id,
-            title: toTitleCase(movie.title),
+            title: toTitleCase(movie.title) || 'Unknown',
             year: movie.year || 'N/A',
-            description: capitalizeDescription(movie.description),
-            rating: movie.rating,
-            posterUrl: movie.posterUrl,
+            minute: movie.minute || 0,
+            description: capitalizeDescription(movie.description) || '',
+            rating: movie.rating || 0,
+            posterUrl: movie.posterUrl || "https://placehold.co/300x450?text=Error+Loading",
             hasOscar: movie.hasOscar || false
         };
     } catch (error) {
@@ -53,10 +54,11 @@ function populateModal(movie) {
     const movieData = {
         id: movie.id || '',
         title: movie.title || 'Title not available',
-        posterUrl: movie.posterUrl || 'https://placehold.co/300x450?text=No+Image',
-        description: movie.description || 'No description available',
         year: movie.year || 'N/A',
+        minute: movie.minute || 0,
+        description: movie.description || 'No description available',
         rating: movie.rating ? movie.rating.toFixed(1) : 'N/A',
+        posterUrl: movie.posterUrl || 'https://placehold.co/300x450?text=No+Image',
         hasOscar: movie.hasOscar || false
     };
 
@@ -77,6 +79,8 @@ function populateModal(movie) {
     const detailYear = document.getElementById('detailYear');
     if (detailYear) detailYear.textContent = movieData.year;
 
+    const detailMinute = document.getElementById('detailMinute');
+    if (detailMinute) detailMinute.textContent = `${movieData.minute} min`;
     if (detailLink) {
         detailLink.href = '#'; // Kept as hash to prevent page reload
         detailLink.textContent = 'View Full Details and Reviews';

@@ -28,7 +28,7 @@ const fetchMovieById = async (id) => {
             year: movieDTO?.date ? new Date(movieDTO.date).getUTCFullYear() : 0,
             posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
             description: movieDTO.description || '',
-            rating: movieDTO.rating || 0.0,
+            rating: movieDTO.rating || 'N/A',
             minute: movieDTO.minute || 0,
             actors: movieDTO.actors || [],
             genres: movieDTO.genres || [],
@@ -171,9 +171,15 @@ const fetchMoviesPaginated = async (type, page = 0, size = 10) => {
             title: movieDTO.name,
             year: movieDTO.date ? new Date(movieDTO.date).getFullYear() : 0,
             posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
-            description: movieDTO.description,
-            minute: movieDTO.minute,
-            rating: movieDTO.rating || 0.0
+            description: movieDTO.description || '',
+            minute: movieDTO.minute || 0,
+            rating: movieDTO.rating || 'N/A',
+            /**
+             * actors: movieDTO.actors || [],
+             * genres: movieDTO.genres || [],
+             * languages: movieDTO.languages || [],
+             * hasOscar: movieDTO.hasOscar || false
+             */
         }));
 
         const result = {
