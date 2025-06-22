@@ -11,7 +11,7 @@ function hideFilmLoader() {
 
 // Inietto il loader nel DOM caricando loader.html
 (function loadFilmLoader() {
-    fetch('../../resources/loader/loader.html')
+    fetch('/client_server/loader/loader.html')
         .then(response => response.text())
         .then(html => {
             document.body.insertAdjacentHTML('beforeend', html);
