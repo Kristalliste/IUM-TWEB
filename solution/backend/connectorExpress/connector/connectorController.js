@@ -352,7 +352,72 @@ router.get('/movies/:id/full', validateMovieId, async (req, res, next) => {
     }
 });
 
-//DA METTERE POI SWAGGER
+/**
+ * @swagger
+ * /filteredMovies/{title}:
+ *   get:
+ *     summary: Get movies filtered by title
+ *     tags: [Movies]
+ *     parameters:
+ *       - in: path
+ *         name: title
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Partial or full title to filter movies by
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *           minimum: 0
+ *         description: Page number for pagination (default 0)
+ *       - in: query
+ *         name: size
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *           minimum: 1
+ *         description: Number of results per page (default 10)
+ *     responses:
+ *       200:
+ *         description: Paginated list of movies matching the title filter
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 content:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Movie'
+ *                 totalPages:
+ *                   type: integer
+ *                   example: 5
+ *                 totalElements:
+ *                   type: integer
+ *                   example: 47
+ *                 pageNumber:
+ *                   type: integer
+ *                   example: 0
+ *                 pageSize:
+ *                   type: integer
+ *                   example: 10
+ *       400:
+ *         description: Title parameter is missing or invalid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Title query parameter is required.
+ *       500:
+ *         description: Internal server error
+ */
 router.get('/filteredMovies/:title', async (req, res, next) => {
     try {
         // Get the title from the query parameters
