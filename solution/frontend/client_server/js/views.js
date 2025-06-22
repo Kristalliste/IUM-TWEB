@@ -28,7 +28,7 @@ function formatMovieReviews(movieReviews) {
             critic_name: review.criticName || 'Anonymous',
             top_critic: review.topCritic || false,
             review_date: review.reviewDate || '',
-            review_content: review.reviewContent || '',
+            review_content: review.reviewContent || "The critic didn't leave any comment.",
             normalized_score: review.normalizedScore || 'N/A'
         })) || [],
     };

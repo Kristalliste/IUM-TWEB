@@ -183,16 +183,12 @@ router.get('/movies/:movie_title', async (req, res, next) => {
         const movieTitle = req.params.movie_title;
         console.log(`[ReviewsController] Received movie_title from request: "${movieTitle}"`); // ADD THIS LINE
 
-        if (!movieTitle || typeof movieTitle !== 'string' || movieTitle.trim() === '') {
+     /*   if (!movieTitle || typeof movieTitle !== 'string' || movieTitle.trim() === '') {
             return res.status(400).json({ error: 'Invalid or missing movieTitle parameter' });
-        }
+        }*/
 
         const reviews = await reviewsService.getReviewsByMovieTitle(movieTitle.trim());
-        if (reviews.length > 0) {
-            res.status(200).json(reviews);
-        } else {
-            res.status(404).json({ message: 'No reviews found for this movie title' });
-        }
+        res.status(200).json(reviews);
     } catch (error) {
         next(error);
     }
