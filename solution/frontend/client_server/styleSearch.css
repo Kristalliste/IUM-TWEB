@@ -1,0 +1,417 @@
+/* Importa stili base da style.css per coerenza */
+@import url('style.css'); /* Assicurati che 'style.css' sia accessibile da qui */
+
+/* Potresti anche copiare e incollare il contenuto di style.css qui e modificarlo */
+/* In alternativa, se style.css si trova nella stessa directory di stylesMovie.css,
+   allora non avrai bisogno di "../" nel percorso.
+   Se style.css è a un livello superiore (come "../style.css"), aggiorna l'import. */
+
+/* ============== Regole specifiche per indexMovie.html (Ricerca Avanzata) ============== */
+
+body {
+    background-color: #121212; /* Sfondo scuro come in demo.html */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.6;
+}
+
+main h2 {
+    font-size: 1.8em;
+    border-bottom: 2px solid #f5c518;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+    color: #f5c518;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Assicurati che il resto degli stili nell'header siano come in style.css */
+header {
+    background-color: #1f1f1f;
+    padding: 10px 0;
+    border-bottom: 1px solid #333; /* Questa è la riga della homepage */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.logo {
+    text-decoration: none;
+    font-size: 2em;
+    font-weight: bold;
+    color: #f5c518; /* Giallo IMDB-like */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    cursor: pointer;
+}
+
+.main-nav {
+    flex-grow: 1;
+}
+
+.main-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.main-nav ul li {
+    position: relative;
+}
+
+.main-nav ul li a {
+    color: #eee;
+    text-decoration: none;
+    font-size: 1.1em;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    padding: 5px 0;
+    white-space: nowrap;
+}
+
+.main-nav ul li a:hover,
+.main-nav ul li a.active {
+    color: #f5c518;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #1f1f1f;
+    min-width: 180px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    z-index: 1001;
+    border-radius: 5px;
+    padding: 10px 0;
+    border: 1px solid #333;
+    margin-top: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a {
+    color: #eee;
+    padding: 8px 15px;
+    text-decoration: none;
+    display: block;
+    font-size: 1em;
+    font-weight: normal;
+    white-space: normal;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dropdown-content a:hover {
+    background-color: #000;
+    color: #f5c518;
+}
+
+.dropdown-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dropdown-content::-webkit-scrollbar-track {
+    background: #2a2a2a;
+    border-radius: 0 5px 5px 0;
+}
+
+.dropdown-content::-webkit-scrollbar-thumb {
+    background: #f5c518;
+    border-radius: 4px;
+}
+
+/* Contenitore dei controlli di ricerca */
+.search-controls-container {
+    background-color: #1f1f1f; /* Sfondo leggermente più scuro */
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    margin-bottom: 40px;
+}
+
+.search-form {
+    display: flex;
+    flex-wrap: wrap; /* Permette agli elementi di andare a capo */
+    gap: 20px; /* Spazio tra gli elementi del form */
+    align-items: flex-end; /* Allinea gli elementi alla base */
+    justify-content: center; /* Centra gli elementi orizzontalmente */
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Spazio tra label e input */
+    flex-basis: 200px; /* Base per la larghezza degli elementi, si espanderanno/restringeranno */
+    flex-grow: 1; /* Permette agli elementi di crescere */
+}
+
+.form-group label {
+    font-size: 0.9em;
+    color: #ccc;
+    margin-bottom: 5px;
+}
+
+/* Stili per select e input testuale */
+.search-form select,
+.search-form input[type="text"] {
+    padding: 12px 15px;
+    border-radius: 6px;
+    border: 1px solid #3a3a3a;
+    background-color: #2a2a2a; /* Sfondo scuro per i campi */
+    color: #ffffff;
+    font-size: 1em;
+    outline: none;
+    appearance: none; /* Rimuove lo stile di default delle select */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-form select:focus,
+.search-form input[type="text"]:focus {
+    border-color: #f5c518;
+    box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.3); /* Effetto glow */
+}
+
+/* Stile per il placeholder */
+.search-form input[type="text"]::placeholder {
+    color: #aaa;
+    opacity: 0.7;
+}
+
+/* Pulsante Cerca */
+.search-button {
+    background-color: #f5c518; /* Giallo */
+    color: #121212; /* Testo scuro */
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    flex-shrink: 0; /* Non si restringe */
+    margin-top: 15px; /* Spazio sopra il bottone per allineamento */
+}
+
+.search-button:hover {
+    background-color: #e6b800; /* Giallo più scuro al hover */
+    transform: translateY(-2px); /* Lieve effetto di sollevamento */
+}
+
+/* Nascondi gli elementi con classe 'hidden' */
+.hidden {
+    display: none !important;
+}
+
+/* Stili per la griglia dei film e la paginazione - Copiati da style.css */
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 25px;
+}
+
+.movie-card {
+    background-color: #1a1a1a;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    border: 1px solid #2a2a2a;
+    display: flex;
+    flex-direction: column;
+}
+
+.movie-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.7);
+}
+
+.movie-poster-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    border-bottom: 1px solid #333;
+}
+
+.movie-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.movie-info {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.movie-info h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.1em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movie-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #f5c518;
+    margin-top: auto;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.movie-rating .icon-star {
+    font-size: 1.1em;
+}
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 40px;
+    padding: 10px;
+    flex-wrap: wrap;
+}
+
+.pagination-container button {
+    background-color: #2a2a2a;
+    color: #eee;
+    border: 1px solid #444;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-weight: bold;
+    min-width: 45px;
+    text-align: center;
+}
+
+.pagination-container button:hover:not(:disabled) {
+    background-color: #f5c518;
+    color: #121212;
+    border-color: #f5c518;
+}
+
+.pagination-container button.active {
+    background-color: #f5c518;
+    color: #121212;
+    border-color: #f5c518;
+    cursor: default;
+}
+
+.pagination-container button:disabled {
+    background-color: #1f1f1f;
+    color: #555;
+    cursor: not-allowed;
+    border-color: #333;
+}
+
+/* Footer - Copiato da style.css */
+footer {
+    background-color: #1f1f1f;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+    border-top: 1px solid #333;
+    color: #888;
+}
+
+/* Media Queries per la responsività */
+@media (max-width: 992px) {
+    .search-form {
+        flex-direction: column; /* Stack vertically on smaller screens */
+        align-items: stretch; /* Stretch items */
+    }
+
+    .form-group {
+        flex-basis: auto; /* Allow full width */
+        width: 100%;
+    }
+
+    .search-button {
+        width: 100%; /* Full width button */
+    }
+}
+
+@media (max-width: 768px) {
+    header .container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .main-nav ul {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .search-bar input {
+        width: 90%;
+    }
+    .chat-toggle-btn {
+        width: 90%;
+        margin-top: 15px;
+    }
+}
+
+/* Stili per il loader e gli errori */
+.loading {
+    color: #f5c518;
+    text-align: center;
+    grid-column: 1 / -1;
+    font-size: 1.2em;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(245, 197, 24, 0.3);
+    border-radius: 50%;
+    border-top-color: #f5c518;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.error {
+    color: #ff4d4d;
+    text-align: center;
+    padding: 20px;
+    background: rgba(255, 77, 77, 0.1);
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.error i {
+    font-size: 2em;
+    margin-bottom: 10px;
+    display: block;
+}
