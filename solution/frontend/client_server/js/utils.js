@@ -33,6 +33,7 @@ export function escapeHTML(str) {
 }
 
 export function toTitleCase(str) {
+    if (!str) return ''; // Handle undefined/null
     return str
         .toLowerCase()
         .split(' ')

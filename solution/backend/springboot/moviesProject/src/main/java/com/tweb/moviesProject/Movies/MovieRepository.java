@@ -43,4 +43,14 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     @Override
     @Query(value = "SELECT * FROM \"Movies\" WHERE id = :id", nativeQuery = true)
     Optional<Movie> findById(@Param("id") Long id); //integer
+
+    @Query(value = "SELECT * FROM \"Movies\" ORDER BY date DESC",
+            countQuery = "SELECT count(*) FROM \"Movies\"",
+            nativeQuery = true)
+    Page<Movie> findAllMoviesOrderedByDateDesc(Pageable pageable);
+
+    @Query(value = "SELECT * FROM \"Movies\" WHERE rating IS NOT NULL ORDER BY rating DESC",
+            countQuery = "SELECT count(*) FROM \"Movies\" WHERE rating IS NOT NULL",
+            nativeQuery = true)
+    Page<Movie> findAllMoviesOrderedByRatingDesc(Pageable pageable);
 }

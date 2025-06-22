@@ -68,4 +68,18 @@ public class MovieController {
             return ResponseEntity.internalServerError().build();  // Remove .body(null)
         }
     }
+
+    @Operation(summary = "Get paginated recent movies")
+    @GetMapping("/recent")
+    public ResponseEntity<Page<MovieDTO>> getRecentMovies(Pageable pageable) {
+        Page<MovieDTO> movies = movieService.getAllMoviesOrderedByDateDescDTO(pageable);
+        return ResponseEntity.ok(movies);
+    }
+
+    @Operation(summary = "Get paginated top rated movies")
+    @GetMapping("/top-rated")
+    public ResponseEntity<Page<MovieDTO>> getTopRatedMovies(Pageable pageable) {
+        Page<MovieDTO> movies = movieService.getAllMoviesOrderedByRatingDescDTO(pageable);
+        return ResponseEntity.ok(movies);
+    }
 }

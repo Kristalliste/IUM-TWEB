@@ -1,49 +1,94 @@
-import { moviesPerPage } from './utils.js';
 import { renderMovies } from './views.js';
 
 // Main function to display a page of movies with pagination controls
-export function displayMoviePage(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView) {
-    renderMovies(movieList, movieGrid, currentPage, mainView, detailView);
-    renderPagination(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView);
+export function displayMoviePage(
+    movieList,
+    paginationContainer,
+    movieGrid,
+    currentPage,
+    totalPages,  // Now passed from backend
+    mainView,
+    detailView,
+    onPageChange  // Callback function for page changes
+) {
+    renderMovies(movieList, movieGrid, mainView, detailView);
+    renderPagination(
+        totalPages,
+        paginationContainer,
+        currentPage,
+        onPageChange
+    );
     window.scrollTo(0, 0);
 }
 
-// Improve pagination rendering
-export function renderPagination(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView) {
+// Improved pagination rendering
+export function renderPagination(
+    totalPages,  // Total pages from backend
+    paginationContainer,
+    currentPage,
+    onPageChange  // Callback function (pageNumber: 0-indexed)
+) {
     paginationContainer.innerHTML = '';
-    const totalPages = Math.ceil(movieList.length / moviesPerPage);
     if (totalPages <= 1) return;
 
-    // Create pagination container
     const pagination = document.createElement('div');
     pagination.className = 'pagination';
 
     // Previous button
     if (currentPage > 1) {
-        const prevButton = createPaginationButton('«', () => {
-            currentPage--;
-            displayMoviePage(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView);
+        const prevButton = createPaginationButton('←', () => {
+            // Convert to 0-indexed for backend
+            onPageChange(currentPage - 2);
         });
         pagination.appendChild(prevButton);
     }
 
-    // Page numbers
-    const startPage = Math.max(1, currentPage - 2);
-    const endPage = Math.min(totalPages, currentPage + 2);
+    // Always show first page
+    const firstPageButton = createPaginationButton(1, () => {
+        onPageChange(0);  // Page 0 for backend
+    }, currentPage === 1);
+    pagination.appendChild(firstPageButton);
 
+    // Calculate page range to show
+    let startPage = Math.max(2, currentPage - 3);
+    let endPage = Math.min(totalPages - 1, currentPage + 3);
+
+    // Show ellipsis if needed before middle pages
+    if (startPage > 2) {
+        const ellipsis = document.createElement('span');
+        ellipsis.className = 'ellipsis';
+        ellipsis.textContent = '…';
+        pagination.appendChild(ellipsis);
+    }
+
+    // Middle pages (current page ±3)
     for (let i = startPage; i <= endPage; i++) {
         const pageButton = createPaginationButton(i, () => {
-            currentPage = i;
-            displayMoviePage(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView);
+            onPageChange(i - 1);  // Convert to 0-indexed
         }, i === currentPage);
         pagination.appendChild(pageButton);
     }
 
+    // Show ellipsis if needed after middle pages
+    if (endPage < totalPages - 1) {
+        const ellipsis = document.createElement('span');
+        ellipsis.className = 'ellipsis';
+        ellipsis.textContent = '…';
+        pagination.appendChild(ellipsis);
+    }
+
+    // Always show last page if there is more than one page
+    if (totalPages > 1) {
+        const lastPageButton = createPaginationButton(totalPages, () => {
+            onPageChange(totalPages - 1);  // Last page 0-indexed
+        }, currentPage === totalPages);
+        pagination.appendChild(lastPageButton);
+    }
+
     // Next button
     if (currentPage < totalPages) {
-        const nextButton = createPaginationButton('»', () => {
-            currentPage++;
-            displayMoviePage(movieList, paginationContainer, movieGrid, currentPage, mainView, detailView);
+        const nextButton = createPaginationButton('→', () => {
+            onPageChange(currentPage);  // currentPage is 1-indexed, so next is same as current
         });
         pagination.appendChild(nextButton);
     }
