@@ -35,6 +35,9 @@
                         <option value="TITLE">Titolo</option>
                         <option value="YEAR">Anno</option>
                         <option value="GENRE">Genere</option>
+                        <option value="LANGUAGE">Lingua</option>
+                        <option value="ACTOR">Attore</option>
+                        <option value="REGIST">Regist</option>
                     </select>
                 </div>
 
@@ -53,13 +56,16 @@
                     </select>
                 </div>
 
-                <button onclick="" class="search-button" id="search-button">Cerca</button>
+                <button class="search-button" id="search-button">Cerca</button>
             </div>
         </div>
 
-        <div id="results" class="movie-grid">
+        <div id="movie-grid" class="movie-grid">
         </div>
         <div id="pagination-container" class="pagination-container">
+        </div>
+        <div id="movie-detail-view" class="container">
+            <!-- Film details will be inserted here -->
         </div>
     </div>
 </main>
@@ -70,7 +76,37 @@
     </div>
 </footer>
 
-<!--<script src="../loader/loader.js"></script>-->
+<!-- Adding film modal (pop-up) and reference to dedicated view -->
+<div id="movieModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="modal-header">
+            <img id="detailPoster" src="" alt="Movie Poster" class="modal-poster" />
+
+            <div class="movie-details">
+                <h2 id="detailTitle"></h2>
+                <div class="detail-rating">
+                    <span id="detailYear"></span>
+                    <i class="fas fa-clock"></i>
+                    <span id="detailMinute"></span>
+                    <i class="fas fa-star icon-star"></i>
+                    <span id="detailRating"></span>
+                    <span id="detailOscarIcon" class="bi bi-award" title="Nominated to the Oscar Awards"></span>
+                </div>
+
+                <p id="detailDescription"></p>
+
+                <div style="margin-top: 1cm; text-align: center;">
+                    <a id="detailLink" href="#" class="details-link">
+                        <i class="fas fa-info-circle"></i> View Full Details and Reviews
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="loader/loader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="js/searchMain.js" type="module"></script>
 <!--<script src="js/modalHandler.js" type="module"></script> -->
