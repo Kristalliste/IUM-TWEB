@@ -3,6 +3,7 @@ package com.tweb.moviesProject.Movies;
 import com.tweb.moviesProject.Languages.Language;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class Movie {
     private String name;
 
     @Column(name = "date")
-    private Date date;
+    private LocalDate date;
 
     @Column(name = "tagline")
     private String tagline;
@@ -34,7 +35,7 @@ public class Movie {
 
     public Movie() {}
 
-    public Movie( Long movieId, String name, Date date, String tagline, String description, Double minute, Double rating) {
+    public Movie( Long movieId, String name, LocalDate date, String tagline, String description, Double minute, Double rating) {
         this.movieId = movieId;
         this.name = name;
         this.date = date;
@@ -62,7 +63,7 @@ public class Movie {
         return name;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 

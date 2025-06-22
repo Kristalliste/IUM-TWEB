@@ -3,6 +3,7 @@ package com.tweb.moviesProject.Movies;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.List;
@@ -18,7 +19,7 @@ public class MovieDTO {
 
     @Schema(description = "Release date of the movie", example = "1994-09-23")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date date;
+    private LocalDate date;
 
     /*@Schema(description = "Tagline of the movie", example = "Fear can hold you prisoner. Hope can set you free.")
     private String tagline;*/
@@ -52,7 +53,7 @@ public class MovieDTO {
     // Constructors
     public MovieDTO() {}
 
-    public MovieDTO(Long movieId, String name, Date date,/*String tagline,*/
+    public MovieDTO(Long movieId, String name, LocalDate date,/*String tagline,*/
                     String description, Double minute, Double rating, String link,
                     List<String> genres, List<String> actors, List<String> languages,
                     Boolean hasOscar) {
@@ -85,10 +86,10 @@ public class MovieDTO {
         this.name = name;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

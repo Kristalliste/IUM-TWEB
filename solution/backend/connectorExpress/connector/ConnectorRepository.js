@@ -219,7 +219,7 @@ const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
         const transformedMovies = pageData.content.map(movieDTO => ({
             id: movieDTO.movieId,
             title: movieDTO.name,
-            year: new Date(movieDTO.date).getFullYear(),
+            year: new Date(movieDTO.date).getUTCFullYear(),
             posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
             description: movieDTO.description || '',
             rating: movieDTO.rating || 0.0,

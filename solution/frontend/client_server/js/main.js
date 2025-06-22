@@ -25,10 +25,11 @@ let totalPages = 1;
 
 // Funzione per formattare i dati del film
 function formatMovieData(movie) {
+    console.log(movie.date);
     return {
         id: movie.id,
         title: movie.title ? toTitleCase(movie.title) : 'Untitled Movie',
-        year: movie.year || (movie.date ? new Date(movie.date).getFullYear() : 0),
+        year: movie.year || (movie.date ? new Date(movie.date).getUTCFullYear() : 0),
         posterUrl: movie.posterUrl || movie.link || 'https://placehold.co/300x450?text=No+Image',
         description: capitalizeDescription(movie.description),
         rating: movie.rating || 0, // Ensure rating defaults to 0
@@ -84,8 +85,6 @@ async function fetchMovies(type, page = 0, query = '') {
 // Carica e mostra una pagina di film
 async function loadAndDisplayMoviesPage(page = 0) {
     currentPage = page + 1; // Converti in 1-indexed per UI
-    console.log(`Loading movies page: ${page}`);
-    console.log(`Current movies page: ${currentPage}`);
     let data;
     if (currentView === 'search') {
         //data = await fetchMovies('search', page, currentSearchTerm);
@@ -142,20 +141,9 @@ async function loadFilteredByTitleMovies(page = 0) {
         }
         // Fallback for unexpected formats
         return { content: [], totalPages: 1, totalElements: 0 };
-
-        // --- THE FIX ---
-        // Access the 'content' array from the received 'data' object
-       /* const moviesToFormat = data.content;
-
-        if (!Array.isArray(moviesToFormat)) {
-            console.error('Expected "content" to be an array of movies, but received:', moviesToFormat);
-            throw new TypeError('Received data content is not an array.');
-        }
-
-        return moviesToFormat.map(movie => formatMovieData(movie)); // Map on the actual array*/
     } catch (error) {
         console.error('Movies not found. Please try again.', error);
-        return [];
+        return { content: [], totalPages: 1, totalElements: 0 };
     }
 }
 
