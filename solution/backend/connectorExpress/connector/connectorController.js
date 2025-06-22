@@ -75,13 +75,13 @@ const validateMovieId = (req, res, next) => {
  *           type: string
  *         normalized_score:
  *           type: number
- *         review_text:
+ *         review_content:
  *           type: string
  *       example:
  *         _id: "62a1bc234f1b2c3d4e5f6789"
  *         movie_title: "Inception"
  *         normalized_score: 9.2
- *         review_text: "Mind-blowing!"
+ *         review_content: "Mind-blowing!"
  */
 
 /**

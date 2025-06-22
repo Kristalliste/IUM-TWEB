@@ -1,5 +1,5 @@
 import { API_BASE_URL, debounce, toTitleCase, capitalizeDescription, moviesPerPage } from './utils.js';
-import { showMainView, showDetailView, renderMovies } from './views.js';
+import { showMainView, renderMovies } from './views.js';
 import { displayMoviePage } from './pagination.js';
 import { populateGenres } from './genres.js';
 import { renderUsernamePrompt } from "./chat.js";
