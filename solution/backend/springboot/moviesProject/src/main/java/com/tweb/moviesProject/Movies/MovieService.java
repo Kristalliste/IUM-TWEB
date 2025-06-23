@@ -113,6 +113,10 @@ public class MovieService {
         return convertToDTOPage(movieRepository.findByGenreIgnoreCase(genre, pageable));
     }
 
+    public Page<MovieDTO> findByLanguageIgnoreCaseDTO(String language, Pageable pageable) {
+        return convertToDTOPage(movieRepository.findByLanguageIgnoreCase(language, pageable));
+    }
+
     public Page<MovieDTO> getAllMoviesDTO(Pageable pageable) {
         return convertToDTOPage(movieRepository.findAllMovies(pageable));
     }

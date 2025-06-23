@@ -186,10 +186,10 @@ async function loadFilteredMovies(page = 0, currentView) {
             url = `${API_BASE_URL}/filteredByYearMovies/${encoded}?page=${page}&size=${size}`;
 
         } else if (currentView === "language") {
-            const year = document.getElementById("search-input").value;
-            if(year == null || year === "") { return; }
-            const encoded = encodeURIComponent(year);
-            url = `${API_BASE_URL}/filteredByYearMovies/${encoded}?page=${page}&size=${size}`;
+            const language = document.getElementById("search-input").value;
+            if(language == null || language === "") { return; }
+            const encoded = encodeURIComponent(language);
+            url = `${API_BASE_URL}/filteredByLanguageMovies/${encoded}?page=${page}&size=${size}`;
             console.log(encoded);
 
         }
@@ -237,16 +237,15 @@ async function searchMovies(page) {
         if (type === "TITLE") {
             currentView = 'title';
             data = await loadFilteredMovies(page, currentView);
-            // url = `http://localhost:8080/api/movies/search/title?title=${encodeURIComponent(query)}&page=${page}&size=${size}`;
         } else if (type === "YEAR") {
             currentView = 'year';
             data = await loadFilteredMovies(page, currentView);
-            // url = `http://localhost:8080/api/movies/search/year?year=${encodeURIComponent(query)}&page=${page}&size=${size}`;
         } else if (type === "GENRE") {
-            console.log("qua");
             currentView = 'genre';
             data = await loadFilteredMovies(page, currentView);
-            // url = `http://localhost:8080/api/movies/search/genre?genre=${encodeURIComponent(query)}&page=${page}&size=${size}`;
+        } else if (type === "LANGUAGE") {
+            currentView = 'language';
+            data = await loadFilteredMovies(page, currentView);
         }
 
         const formattedMovies = data.content.map(movie => formatMovieData(movie));

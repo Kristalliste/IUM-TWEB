@@ -51,4 +51,9 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             countQuery = "SELECT count(*) FROM \"Movies\" WHERE rating IS NOT NULL",
             nativeQuery = true)
     Page<Movie> findAllMoviesOrderedByRatingDesc(Pageable pageable);
+
+    @Query(value = "SELECT * FROM \"Movies\" m JOIN \"Languages\" l ON m.id = l.movie_id WHERE l.language ILIKE '%' || :lang || '%' AND l.type LIKE 'Primary language' ",
+            countQuery = "SELECT count(*) FROM \"Movies\" m JOIN \"Languages\" l ON m.id = l.movie_id WHERE l.language ILIKE '%' || :lang || '%' AND l.type LIKE 'Primary language' ",
+            nativeQuery = true)
+    Page<Movie> findByLanguageIgnoreCase(@Param("lang")String language, Pageable pageable);
 }

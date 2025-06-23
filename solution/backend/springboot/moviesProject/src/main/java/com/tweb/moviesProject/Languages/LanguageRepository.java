@@ -19,4 +19,5 @@ public interface LanguageRepository extends JpaRepository<Language, Long> {
 
     @Query(value = "SELECT * FROM \"Languages\" WHERE genre ILIKE :language", nativeQuery = true)
     List<Language> findByLanguageName(@Param("language") String genre);
+
 }

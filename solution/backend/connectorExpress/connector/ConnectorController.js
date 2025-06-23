@@ -395,9 +395,26 @@ router.get('/filteredByYearMovies/:year', async (req, res, next) => {
         const size = parseInt(req.query.size) || 10;
 
         if (!year) {
-            return res.status(400).json({ error: 'Genre query parameter is required.' });
+            return res.status(400).json({ error: 'Year parameter is required.' });
         }
         let movies = await connectorService.getFilteredByYearMovies(year, page, size);
+        res.json(movies);
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.get('/filteredByLanguageMovies/:language', async (req, res, next) => {
+    try {
+        // Get the title from the query parameters
+        const language = req.params.language; // 'title' will be the value of ?title=... in the URL
+        const page = parseInt(req.query.page) || 0;
+        const size = parseInt(req.query.size) || 10;
+
+        if (!language) {
+            return res.status(400).json({ error: 'Language parameter is required.' });
+        }
+        let movies = await connectorService.getFilteredByLanguageMovies(language, page, size);
         res.json(movies);
     } catch (error) {
         next(error);

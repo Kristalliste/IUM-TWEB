@@ -57,6 +57,15 @@ const getFilteredByYearMovies = async (year, page, size) => {
     }
 };
 
+const getFilteredByLanguageMovies = async (language, page, size) => {
+    try {
+        return await ConnectorRepository.fetchFilteredByLanguageMovies(language, page, size);
+    } catch (error) {
+        console.error('Error in getFilteredByYearMovies:', error);
+        throw new Error('Failed to fetch movies');
+    }
+};
+
 const getMovieById = async (id) => {
     try {
         // Converte l'ID in numero e valida
@@ -106,4 +115,5 @@ export default {
     getReviewsFromReviewsServer,
     getFilteredByGenreMovies,
     getFilteredByYearMovies,
+    getFilteredByLanguageMovies
 };
