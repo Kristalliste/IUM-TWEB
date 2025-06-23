@@ -1,5 +1,6 @@
 import { API_BASE_URL, debounce, toTitleCase, capitalizeDescription, moviesPerPage } from './utils.js';
 import { displayMoviePage } from './pagination.js';
+import {loadTemplate} from "./templateLoader";
 import { renderUsernamePrompt } from "./chat.js";
 //import {formatMovieData, loadAndDisplayMoviesPage} from "./main.js";
 import { renderMovies } from './views.js';
@@ -21,6 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const searchGenre = document.getElementById("search-genre"); // ✅ CORRETTO
     let genresList = []; // Array per salvare i generi
     genresList.push("Select a genre");
+
     // Carica i generi una sola volta al caricamento della pagina
 /*    function loadGenres() {
         fetch ("http://localhost:8080/api/movies/genres") // Cambia endpoint se necessario

@@ -1,8 +1,6 @@
 import { API_BASE_URL, debounce, toTitleCase, capitalizeDescription, moviesPerPage } from './utils.js';
 import { showMainView} from './views.js';
 import { displayMoviePage } from './pagination.js';
-import { renderUsernamePrompt } from "./chat.js";
-import { populateGenres } from './genres.js';
 import { renderUsernamePrompt, disconnectChat } from "./chat.js"; // Import disconnectChat
 import { loadTemplate } from './templateLoader.js';
 
@@ -326,7 +324,7 @@ async function init() {
 
         movieGrid.innerHTML = '<p class="loading">Loading Films...</p>';
 
-    try {
+    //try {
         const urlParams = new URLSearchParams(window.location.search);
         const requestedView = urlParams.get('view'); // Ottiene il valore del parametro 'view'
         //let initialData;
