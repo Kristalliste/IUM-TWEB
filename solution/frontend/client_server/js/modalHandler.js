@@ -1,5 +1,5 @@
 import { API_BASE_URL } from './utils.js';
-import { showDetailView } from './views.js';
+import {showAdvancedSearch, showDetailView} from './views.js';
 import { loadTemplate } from './templateLoader.js';
 
 const modal = document.getElementById('movieModal');
@@ -69,6 +69,7 @@ export async function showModal(movieId) {
 
         const detailLink = document.getElementById('detailLink');
         if (detailLink) {
+            console.log("detailLink:", detailLink);
             detailLink.onclick = (e) => {
                 e.preventDefault();
                 hideModal();
@@ -79,6 +80,17 @@ export async function showModal(movieId) {
                 }
             };
         }
+
+        const advanceSearchLink = document.getElementById('advanced-search-link');
+        if (advanceSearchLink) {
+            console.log("advanced search:", advanceSearchLink);
+            advanceSearchLink.onclick = (e) => {
+                e.preventDefault();
+                showAdvancedSearch();
+            };
+        }
+
+
     } catch (error) {
         console.error('Error showing modal:', error);
         modalContent.innerHTML = `<div class="error">Error loading movie details: ${error.message}</div>`;

@@ -44,10 +44,17 @@ public class MovieController {
         return ResponseEntity.ok(movies);
     }
 
-    @Operation(summary = "Get paginated movies by genre")
+    @Operation(summary = "Get paginated movies by language")
     @GetMapping("/search/language")
     public ResponseEntity<Page<MovieDTO>> getMoviesByLanguage(@RequestParam String language, Pageable pageable) {
         Page<MovieDTO> movies = movieService.findByLanguageIgnoreCaseDTO(language, pageable);
+        return ResponseEntity.ok(movies);
+    }
+
+    @Operation(summary = "Get paginated movies by actor")
+    @GetMapping("/search/actor")
+    public ResponseEntity<Page<MovieDTO>> getMoviesByActor(@RequestParam String actor, Pageable pageable) {
+        Page<MovieDTO> movies = movieService.findByActorIgnoreCase(actor, pageable);
         return ResponseEntity.ok(movies);
     }
 

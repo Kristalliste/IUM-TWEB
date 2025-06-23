@@ -1,120 +1,28 @@
-import { API_BASE_URL, debounce, toTitleCase, capitalizeDescription, moviesPerPage } from './utils.js';
+// searchMain.js
+import { API_BASE_URL, toTitleCase, capitalizeDescription, moviesPerPage } from './utils.js';
 import { displayMoviePage } from './pagination.js';
-import {loadTemplate} from "./templateLoader";
-import { renderUsernamePrompt } from "./chat.js";
-//import {formatMovieData, loadAndDisplayMoviesPage} from "./main.js";
-import { renderMovies } from './views.js';
-// import {formatMovieData, loadAndDisplayMoviesPage} from "./main.js";
-// DA VALUTARE SE METTERE IN UTILS
-
-
+import { loadTemplate } from './templateLoader.js';
 
 let currentPage = 1;
 let currentView = '';
-let currentSearchTerm = '';
 let totalPages = 1;
 
+// Initialize the search functionality when the DOM content is fully loaded.
+/*document.addEventListener("DOMContentLoaded", async () => {
+    await initSearch();
+});*/
 
-document.addEventListener("DOMContentLoaded", async () => {
-    const logoElement = document.getElementById("logo");
-    const searchType = document.getElementById("search-type");
-    const searchInput = document.getElementById("search-input"); // ✅ CORRETTO
-    const searchGenre = document.getElementById("search-genre"); // ✅ CORRETTO
-    let genresList = []; // Array per salvare i generi
-    genresList.push("Select a genre");
-
-    // Carica i generi una sola volta al caricamento della pagina
-/*    function loadGenres() {
-        fetch ("http://localhost:8080/api/movies/genres") // Cambia endpoint se necessario
-            .then(response => {
-                genresList = response.data || []; // Salva i generi nell'array
-            })
-            .catch(error => {
-                console.error("Errore caricamento generi:", error);
-            });
-    }*/
-    async function loadGenres() {
-        try {
-            let genres = await fetchAllGenres(); // Wait for genres to load
-            genresList.push(...genres);
-            populateGenreDropdown(); // Populate dropdown immediately after
-        } catch (error) {
-            console.error("Error loading genres:", error);
-            // Optionally show error to user
-        }
-    }
-
-
-
-/*    function loadAllMovies(page){
-        // showFilmLoader();
-        const size = parseInt(document.getElementById("page-size").value);
-
-        //axios.get(`http://localhost:8080/api/movies/all/${page}/${size}`) // Cambia endpoint se necessario
-        axios.get(`http://localhost:8080/api/movies?page=${page}&size=${size}`)
-            .then(response => {
-                displayResults(response.data.content);
-                setupPagination(response.data.totalPages, page, size, loadAllMovies);
-            })
-            .catch(error => {
-                console.error("Errore nella richiesta:", error);
-            })
-    }*/
-
-    // Popola il menu a tendina usando l'array genresList
-    function populateGenreDropdown() {
-        searchGenre.innerHTML = "";
-
-        genresList.forEach(genre => {
-            const option = document.createElement("option");
-            option.value = genre;
-            option.textContent = genre;
-            searchGenre.appendChild(option);
-        });
-    }
-
-    searchType.addEventListener("change", () => {
-        const type = searchType.value;
-        if (type === "GENRE") {
-            searchInput.style.display = "none";
-            searchGenre.style.display = "inline-block";
-            populateGenreDropdown(); // Usa l'array già caricato
-        } else {
-            searchGenre.style.display = "none";
-            searchInput.style.display = "inline-block";
-        }
-    });
-
-
-    if (logoElement) {
-        logoElement.addEventListener('click', (e) => {
-            e.preventDefault();
-            // Reindirizza alla homepage con parametro che indica 'film più recenti'
-            window.location.href = 'mainView.html?view=recent';
-        });
-    }
-
-    // Carica i generi all'avvio della pagina
-    await loadGenres();
-    //loadAllMovies(0);
-    document.getElementById('search-button').addEventListener('click', () => {
-        searchMovies(0); // Start with page 0
-    });
-});
-
-async function fetchAllGenres(){
+async function fetchAllGenres() {
     try {
         const response = await fetch(`${API_BASE_URL}/genres`);
-
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.message || 'Failed to fetch genres');
         }
-
         return await response.json();
     } catch (error) {
-        console.error('API Error:', error);
-        throw error; // Rethrow for component handling
+        console.error('API Error: Failed to fetch genres', error);
+        throw error;
     }
 }
 
@@ -131,113 +39,57 @@ function formatMovieData(movie) {
     };
 }
 
-const paginationContainer = document.getElementById('pagination-container');
-const movieGrid = document.getElementById('movie-grid');
-const mainView = document.querySelector('main');
-const detailView = document.getElementById('movie-detail-view');
+export async function initSearch() {
+    const searchType = document.getElementById("search-type");
+    const searchInput = document.getElementById("search-input");
+    const searchGenre = document.getElementById("search-genre");
+    let genresList = ["Select a genre"];
 
-async function loadAndDisplayMoviesPage(page = 0) {
-    currentPage = page + 1; // Converti in 1-indexed per UI
-    let data;
-    if (currentView === 'title') {
-        //data = await fetchMovies('search', page, currentSearchTerm);
-        data = await loadFilteredMovies(page, currentView);
-    } else if (currentView === 'genre') {
-        data = await loadFilteredMovies(page, currentView);
-
-    } else {
-        data = await fetchMovies(currentView, page);
+    async function loadGenres() {
+        try {
+            let genres = await fetchAllGenres();
+            genresList.push(...genres);
+            populateGenreDropdown();
+        } catch (error) {
+            console.error("Error loading genres:", error);
+        }
     }
 
-    const formattedMovies = data.content.map(movie => formatMovieData(movie));
-    totalPages = data.totalPages;
+    function populateGenreDropdown() {
+        searchGenre.innerHTML = "";
+        genresList.forEach(genre => {
+            const option = document.createElement("option");
+            option.value = genre;
+            option.textContent = genre;
+            searchGenre.appendChild(option);
+        });
+    }
 
-    displayMoviePage(
-        formattedMovies,
-        paginationContainer,
-        movieGrid,
-        currentPage,
-        totalPages,
-        mainView,
-        detailView,
-        (pageIndex) => { // Callback per cambio pagina
-            loadAndDisplayMoviesPage(pageIndex);
+    searchType.addEventListener("change", () => {
+        const type = searchType.value;
+        if (type === "GENRE") {
+            searchInput.style.display = "none";
+            searchGenre.style.display = "inline-block";
+            populateGenreDropdown();
+        } else {
+            searchGenre.style.display = "none";
+            searchInput.style.display = "inline-block";
         }
-    );
+    });
+
+    document.getElementById('search-button').addEventListener('click', () => {
+        searchMovies(0);
+    });
+
+    await loadGenres();
 }
 
-async function loadFilteredMovies(page = 0) {
+async function searchMovies(page = 0) {
     try {
-        const title = document.getElementById("search-input").value;
-        const size = document.getElementById("page-size").value;
-        let url;
-        if(currentView === "title") {
-            const title = document.getElementById("search-input").value;
-            if(title == null || title === "") { return; }
-            const encoded = encodeURIComponent(title);
-            url = `${API_BASE_URL}/filteredMovies/${encoded}?page=${page}&size=${size}`;
-
-        } else if (currentView === "genre") {
-            const genre = document.getElementById("search-genre").value;
-            if(genre == null || genre === "Select a genre") { return; }
-            const encoded = encodeURIComponent(genre);
-            url = `${API_BASE_URL}/filteredByGenreMovies/${encoded}?page=${page}&size=${size}`;
-
-        } else if (currentView === "year") {
-            const year = document.getElementById("search-input").value;
-            if(year == null || year === "") { return; }
-            const encoded = encodeURIComponent(year);
-            url = `${API_BASE_URL}/filteredByYearMovies/${encoded}?page=${page}&size=${size}`;
-
-        } else if (currentView === "language") {
-            const language = document.getElementById("search-input").value;
-            if(language == null || language === "") { return; }
-            const encoded = encodeURIComponent(language);
-            url = `${API_BASE_URL}/filteredByLanguageMovies/${encoded}?page=${page}&size=${size}`;
-            console.log(encoded);
-
-        }
-
-/*        const title = document.getElementById("search-input").value;
-        if(title == null || title === "") { return; }
-        const encodedTitle = encodeURIComponent(title);*/
-
-        //const response = await fetch(`${API_BASE_URL}/filteredMovies/${encodedTitle}?page=${page}&size=${size}`);
-        const response = await fetch(url);
-        const data = await response.json();
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-        // If response is an array (for recent movies)
-        if (Array.isArray(data)) {
-            return {
-                content: data,
-                totalPages: Math.ceil(data.length / moviesPerPage),
-                totalElements: data.length
-            };
-        }
-        // If response is paginated object
-        else if (data.content) {
-            return data;
-        }
-        // Fallback for unexpected formats
-        return { content: [], totalPages: 1, totalElements: 0 };
-    } catch (error) {
-        console.error('Movies not found. Please try again.', error);
-        return { content: [], totalPages: 1, totalElements: 0 };
-    }
-}
-
-async function searchMovies(page) {
-    showFilmLoader();
-    try{
         const type = document.getElementById("search-type").value;
-        let query = document.getElementById("search-input").value;
+        currentPage = page + 1;
+
         let data;
-        currentPage = page + 1; // Converti in 1-indexed per UI
-
-        const size = parseInt(document.getElementById("page-size").value);
-        let url;
-
         if (type === "TITLE") {
             currentView = 'title';
             data = await loadFilteredMovies(page, currentView);
@@ -250,43 +102,110 @@ async function searchMovies(page) {
         } else if (type === "LANGUAGE") {
             currentView = 'language';
             data = await loadFilteredMovies(page, currentView);
+        } else if (type === "ACTOR") {
+            currentView = 'actor';
+            data = await loadFilteredMovies(page, currentView);
+        }
+
+        if (!data || !data.content || data.content.length === 0) {
+            document.getElementById('movie-grid').innerHTML = '<p class="no-results">No films found</p>';
+            document.getElementById('pagination-container').innerHTML = '';
+            return;
         }
 
         const formattedMovies = data.content.map(movie => formatMovieData(movie));
         totalPages = data.totalPages;
 
+        const movieGrid = document.getElementById('movie-grid');
+        const template = await loadTemplate('movie-card');
+
+        if (template) {
+            movieGrid.innerHTML = '';
+            formattedMovies.forEach(movie => {
+                const html = template(movie);
+                movieGrid.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
         displayMoviePage(
             formattedMovies,
-            paginationContainer,
+            document.getElementById('pagination-container'),
             movieGrid,
             currentPage,
             totalPages,
-            mainView,
-            detailView,
-            (pageIndex) => { // Callback per cambio pagina
-                loadAndDisplayMoviesPage(pageIndex);
+            document.querySelector('main'),
+            document.getElementById('movie-detail-view'),
+            (pageIndex) => {
+                searchMovies(pageIndex);
             }
         );
+    } catch (error) {
+        console.error('Error during movie search:', error);
+        document.getElementById('movie-grid').innerHTML = '<p class="error-message">Failed to load movies. Please try again.</p>';
     }
-    catch(error){
-        throw error;
-    }
-    finally{
-        hideFilmLoader();
-    }
-
- /*   await fetch (url)
-        .then(response => {
-            displayResults(response.data.content);
-            setupPagination(response.data.totalPages, page, size, searchMovies);
-        })
-        .catch(error => {
-            console.error("Errore nella richiesta:", error);
-            document.getElementById("results").innerHTML = "<p>Errore nel caricamento dei dati</p>";
-        })
-        .finally(() => {
-            hideFilmLoader();
-        });*/
-
 }
 
+async function loadFilteredMovies(page = 0, currentView) {
+    try {
+        const size = document.getElementById("page-size").value;
+        let url;
+        let searchValue;
+
+        if (currentView === "title") {
+            const title = document.getElementById("search-input").value;
+            console.log(title);
+            if (!title) return { content: [], totalPages: 1, totalElements: 0 };
+            console.log(title);
+            const encoded = encodeURIComponent(title);
+            console.log(encoded);
+            url = `${API_BASE_URL}/filteredMovies/${encoded}?page=${page}&size=${size}`;
+        } else if (currentView === "genre") {
+            const genre = document.getElementById("search-genre").value;
+            if (!genre || genre === "Select a genre") return { content: [], totalPages: 1, totalElements: 0 };
+            const encoded = encodeURIComponent(genre);
+            url = `${API_BASE_URL}/filteredByGenreMovies/${encoded}?page=${page}&size=${size}`;
+        } else if (currentView === "year") {
+            searchValue = document.getElementById("search-input").value;
+            if (!searchValue) return { content: [], totalPages: 1, totalElements: 0 };
+            const encoded = encodeURIComponent(searchValue);
+            url = `${API_BASE_URL}/filteredByYearMovies/${encoded}?page=${page}&size=${size}`;
+        } else if (currentView === "language") {
+            searchValue = document.getElementById("search-input").value;
+            if (!searchValue) return { content: [], totalPages: 1, totalElements: 0 };
+            const encoded = encodeURIComponent(searchValue);
+            url = `${API_BASE_URL}/filteredByLanguageMovies/${encoded}?page=${page}&size=${size}`;
+        } else if (currentView === "actor") {
+            searchValue = document.getElementById("search-input").value;
+            if (!searchValue) return { content: [], totalPages: 1, totalElements: 0 };
+            const encoded = encodeURIComponent(searchValue);
+            url = `${API_BASE_URL}/filteredByActorMovies/${encoded}?page=${page}&size=${size}`;
+        }
+
+        console.log(url);
+        const response = await fetch(url);
+        console.log(response.body);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        if (Array.isArray(data)) {
+            return {
+                content: data,
+                totalPages: Math.ceil(data.length / moviesPerPage),
+                totalElements: data.length
+            };
+        } else if (data.content) {
+            return data;
+        }
+        return { content: [], totalPages: 1, totalElements: 0 };
+    } catch (error) {
+        console.error('Error fetching filtered movies:', error);
+        return { content: [], totalPages: 1, totalElements: 0 };
+    }
+}
+
+// Export the searchMovies function to be called from views.js
+export async function performSearch() {
+    await searchMovies(0);
+}

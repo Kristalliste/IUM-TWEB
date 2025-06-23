@@ -399,7 +399,7 @@ const fetchFilteredByYearMovies = async (year, page = 0, size = 10) => {
 
     } catch (error) {
         console.error('Failed to fetch movies:', {
-            url: `${SPRING_API}/search/genre?year=${year}`,
+            url: `${SPRING_API}/search/year?year=${year}`,
             error: error.message,
             stack: error.stack
         });
@@ -457,7 +457,65 @@ const fetchFilteredByLanguageMovies = async (language, page = 0, size = 10) => {
 
     } catch (error) {
         console.error('Failed to fetch movies:', {
-            url: `${SPRING_API}/search/genre?genre=${genre}`,
+            url: `${SPRING_API}/search/language?language=${language}`,
+            error: error.message,
+            stack: error.stack
+        });
+        throw error;
+    }
+};
+
+const fetchFilteredByActorMovies = async (actor, page = 0, size = 10) => {
+    const cacheKey = `filteredMovies_actor_${actor}_page_${page}_size_${size}`;
+    const cachedMovies = cache.get(cacheKey);
+    if (cachedMovies) {
+        console.log('Returning cached movies');
+        return cachedMovies;
+    }
+    try {
+        const response = await axios.get(`${SPRING_API}/movies/search/actor`, {
+            params: {
+                actor: actor,
+                size: size,
+                page: page  // Spring Data JPA pages are 0-indexed
+            },
+            timeout: 10000
+        });
+        console.log('Connection successful');
+        const pageData = response.data;
+        //const moviesDTO = response.data.content;
+
+        const transformedMovies = pageData.content.map(movieDTO => ({
+            id: movieDTO.movieId,
+            title: movieDTO.name,
+            year: new Date(movieDTO.date).getUTCFullYear(),
+            posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
+            description: movieDTO.description || '',
+            rating: movieDTO.rating || 0.0,
+            minute: movieDTO.minute || 0,
+            actors: movieDTO.actors || [],
+            genres: movieDTO.genres || [],
+            languages: movieDTO.languages || [],
+            hasOscar: movieDTO.hasOscar || false
+        }));
+
+        const result = {
+            content: transformedMovies,
+            totalPages: pageData.totalPages,
+            totalElements: pageData.totalElements,
+            currentPage: pageData.number, // Add current page number from Spring response
+            pageSize: pageData.size       // Add page size from Spring response
+        };
+
+        // Cache result
+        cache.set(cacheKey, result);
+        return result;
+        /*cache.set(cacheKey, transformedMovies);
+        return transformedMovies;*/
+
+    } catch (error) {
+        console.error('Failed to fetch movies:', {
+            url: `${SPRING_API}/search/actor?actor=${actor}`,
             error: error.message,
             stack: error.stack
         });
@@ -476,5 +534,6 @@ export default {
     fetchAllGenres,
     fetchFilteredByGenreMovies,
     fetchFilteredByYearMovies,
-    fetchFilteredByLanguageMovies
+    fetchFilteredByLanguageMovies,
+    fetchFilteredByActorMovies
 };
