@@ -71,16 +71,21 @@
     <div class="reviews-section">
         <h3>Reviews</h3>
         <div class="reviews-list">
-            {{#each reviews}}
-                <div class="review-item">
-                    <p><strong>Critic:</strong> {{critic_name}}</p>
-                    <p><strong>Top Critic:</strong> {{#if top_critic}}Yes{{else}}No{{/if}}</p>
-                    <p><strong>Score:</strong> {{normalized_score}}/10</p>
-                    <p><strong>Review:</strong> "{{review_content}}"</p>
-                </div>
+            {{#if reviews.reviews.length}}
+                {{#each reviews.reviews}}
+                    <div class="review-item">
+                        <p><strong>Critic:</strong> {{critic_name}}</p>{{#if top_critic}}
+                            <p><strong>Top Critic:</strong> Yes</p>
+                        {{else}}
+                            <p><strong>Top Critic:</strong> No</p>
+                        {{/if}}
+                        <p><strong>Score:</strong> {{normalized_score}}/10</p>
+                        <p><strong>Review:</strong> "{{review_content}}"</p>
+                    </div>
+                {{/each}}
             {{else}}
                 <p>No reviews for this movie yet.</p>
-            {{/each}}
+            {{/if}}
         </div>
     </div>
 </div>

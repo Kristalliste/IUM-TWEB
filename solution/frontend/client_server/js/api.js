@@ -21,7 +21,6 @@ export async function fetchMovieReviews(movieTitle) {
         }
         const movieDetail = await response.json();
 
-        // **Crucial part:** Ensure 'reviews' is an array, even if the API sends null or undefined
         if (!movieDetail.reviews || !Array.isArray(movieDetail.reviews)) {
             movieDetail.reviews = [];
         }

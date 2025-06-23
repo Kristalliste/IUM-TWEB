@@ -2,7 +2,7 @@ import { API_BASE_URL, debounce, toTitleCase, capitalizeDescription, moviesPerPa
 import { showMainView} from './views.js';
 import { displayMoviePage } from './pagination.js';
 import { populateGenres } from './genres.js';
-import { renderUsernamePrompt } from "./chat.js";
+import { renderUsernamePrompt, disconnectChat } from "./chat.js"; // Import disconnectChat
 import { loadTemplate } from './templateLoader.js';
 
 // DOM elements
@@ -17,6 +17,13 @@ const topRatedLink = document.getElementById('top-rated-link');
 const advancedSearchLink = document.getElementById('advanced-search-link');
 const navLinks = document.querySelectorAll('.main-nav ul > li > a');
 const genresLink = document.getElementById('genres-link');
+
+// Chat elements
+const toggleChatBtn = document.getElementById('toggle-chat-btn');
+const floatingChat = document.getElementById('floating-chat');
+const closeChatBtn = document.getElementById('close-chat-btn');
+const floatingChatBody = document.getElementById('floating-chat-body');
+
 
 // State
 let currentPage = 1;
@@ -47,11 +54,11 @@ async function fetchMovies(type, page = 0, query = '') {
             size: moviesPerPage
         });
 
-/*        if (type === 'search') {
-            url = `${API_BASE_URL}/movies/search`;
-            params.append('query', query);
-        } else {*/
-            params.append('type', type);
+        /* if (type === 'search') {
+                    url = `${API_BASE_URL}/movies/search`;
+                    params.append('query', query);
+                } else {*/
+        params.append('type', type);
         //}
 
         const response = await fetch(`${url}?${params}`);
@@ -154,7 +161,7 @@ function setActiveLink(activeLink) {
     }
 }
 
-// Even Listeners
+// Event Listeners
 topRatedLink.addEventListener('click', async (e) => {
     e.preventDefault();
     showMainView(mainView, detailView);
@@ -184,10 +191,10 @@ searchInput.addEventListener('input', debounce(async (e) => {
 
     if (searchTerm) {
         mainTitle.textContent = `Results for: "${searchTerm}"`;
-/*        const filteredMovies = allMovies.filter(movie =>
-            movie.title.toLowerCase().includes(searchTerm) ||
-            movie.year.toString().includes(searchTerm)
-        );*/
+        /* const filteredMovies = allMovies.filter(movie =>
+                    movie.title.toLowerCase().includes(searchTerm) ||
+                    movie.year.toString().includes(searchTerm)
+                );*/
         //displayMoviePage(filteredMovies, paginationContainer, movieGrid, 1, mainView, detailView);
         await loadAndDisplayMoviesPage(0);
     } else {
@@ -225,6 +232,24 @@ advancedSearchLink.addEventListener('click', (e) => {
     paginationContainer.innerHTML = '';
 });
 
+// Chat event listeners
+toggleChatBtn.addEventListener('click', () => {
+    floatingChat.classList.toggle('hidden');
+    if (!floatingChat.classList.contains('hidden')) {
+        // Chat is now visible, initialize the username prompt for the general chat
+        renderUsernamePrompt(floatingChatBody, 'Generale', 1); // roomId 1 for general chat
+    } else {
+        // Chat is hidden, disconnect from the chat
+        disconnectChat();
+    }
+});
+
+closeChatBtn.addEventListener('click', () => {
+    floatingChat.classList.add('hidden');
+    disconnectChat(); // Disconnect when closing the chat
+});
+
+
 // Inizialization
 async function init() {
     try {
@@ -237,47 +262,47 @@ async function init() {
 
         movieGrid.innerHTML = '<p class="loading">Loading Films...</p>';
 
-            const initialData = await fetchMovies('recent', 0);
+        const initialData = await fetchMovies('recent', 0);
 
-            const moviesForGenres = initialData.content.map(movie => formatMovieData(movie));
+        const moviesForGenres = initialData.content.map(movie => formatMovieData(movie));
 
-            populateGenres(
-                moviesForGenres,
-                mainView,
-                detailView,
-                searchInput,
-                currentPage,
-                mainTitle,
-                genresLink,
-                setActiveLink,
-                async (page) => {
-                    await loadAndDisplayMoviesPage(page - 1);
-                },
-                paginationContainer,
-                movieGrid
-            );
+        populateGenres(
+            moviesForGenres,
+            mainView,
+            detailView,
+            searchInput,
+            currentPage,
+            mainTitle,
+            genresLink,
+            setActiveLink,
+            async (page) => {
+                await loadAndDisplayMoviesPage(page - 1);
+            },
+            paginationContainer,
+            movieGrid
+        );
 
-            showMainView(mainView, detailView);
-            mainTitle.textContent = 'Most Recent Films';
-            setActiveLink(null);
-            await loadAndDisplayMoviesPage(0);
-        } catch (error) {
-            console.error('Initialization error:', error);
-            movieGrid.innerHTML = `
+        showMainView(mainView, detailView);
+        mainTitle.textContent = 'Most Recent Films';
+        setActiveLink(null);
+        await loadAndDisplayMoviesPage(0);
+    } catch (error) {
+        console.error('Initialization error:', error);
+        movieGrid.innerHTML = `
             <div class="error" style="grid-column: 1 / -1; text-align: center; padding: 20px;">
                 <i class="fas fa-exclamation-triangle"></i>
                 <h3>Errore durante il caricamento</h3>
                 <p>${error.message}</p>
             </div>
         `;
-        }
     }
+}
 
 
 // Update your DOMContentLoaded event listener
-    document.addEventListener('DOMContentLoaded', () => {
-        // No need to make this async since init is already async
-        init().catch(error => {
-            console.error('Unhandled initialization error:', error);
-        });
+document.addEventListener('DOMContentLoaded', () => {
+    // No need to make this async since init is already async
+    init().catch(error => {
+        console.error('Unhandled initialization error:', error);
     });
+});

@@ -164,9 +164,16 @@ function scrollToBottom() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// Cleanup quando si lascia la pagina
-window.addEventListener('beforeunload', () => {
+export function disconnectChat() {
     if (socket) {
         socket.disconnect();
+        socket = null;
+        currentRoom = null;
+        currentUsername = null;
     }
+}
+
+// Cleanup quando si lascia la pagina
+window.addEventListener('beforeunload', () => {
+    disconnectChat();
 });

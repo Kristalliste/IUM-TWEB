@@ -22,16 +22,15 @@ function formatMovieDetails(movieData) {
 }
 
 // Format movie reviews response to a consistent structure
-function formatMovieReviews(movieReviews) {
-    // Directly map over movieReviews as it's already an array of review objects
+function formatMovieReviews(movieReviewsData) {
     return {
-        reviews: movieReviews.map(review => ({
+        reviews: movieReviewsData.map(review => ({
             critic_name: review.criticName || 'Anonymous',
             top_critic: review.topCritic || false,
             review_date: review.reviewDate || '',
             review_content: review.reviewContent || "The critic didn't leave any comment.",
             normalized_score: review.normalizedScore || 'N/A'
-        })) || [],
+        }))
     };
 }
 
@@ -65,21 +64,22 @@ export async function showDetailView(movieId, mainView, detailView) {
   `;
 
     try {
-        const [movieData, movieReviews] = await Promise.all([
-            fetchMovieDetails(movieId),
-            fetchMovieReviews(movieId),
-        ]);
+        const movieData = await fetchMovieDetails(movieId);
+        const formattedMovie = formatMovieDetails(movieData);
 
-        const movie = formatMovieDetails(movieData);
-        const reviews = formatMovieReviews(movieReviews);
+        const movieReviews = await fetchMovieReviews(formattedMovie.originalTitle);
+        const formattedReviews = formatMovieReviews(movieReviews);
+        console.log("Reviews data passed to template:", formattedReviews); // <-- Add this line
+
+
         const detailTemplate = await loadTemplate('movie-detail');
 
         if (!detailTemplate) throw new Error('Could not load detail template');
 
         // Prepare data for template
         const templateData = {
-            ...movie,
-            reviews: reviews
+            ...formattedMovie,
+            reviews: formattedReviews
         };
 
         // Render with Handlebars
@@ -92,10 +92,10 @@ export async function showDetailView(movieId, mainView, detailView) {
 
         // Initialize chat
         const chatWrapper = document.getElementById('chat-wrapper');
-        const movieIdSlug = movie.title.toLowerCase()
+        const movieIdSlug = formattedMovie.title.toLowerCase()
             .replace(/\s+/g, '-')
             .replace(/[^a-z0-9-]/g, '');
-        renderUsernamePrompt(chatWrapper, movie.title, movieIdSlug);
+        renderUsernamePrompt(chatWrapper, formattedMovie.title, movieIdSlug);
 
     } catch (error) {
         console.error('Error loading film details:', error);
