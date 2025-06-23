@@ -72,19 +72,31 @@ function populateModal(movie) {
     }
     if (detailDescription) detailDescription.textContent = movieData.description;
     if (detailRating) detailRating.textContent = movieData.rating;
-    if (detailOscarIcon) {
-        detailOscarIcon.style.display = movieData.hasOscar ? 'inline-block' : 'none';
-        detailOscarIcon.title = movieData.hasOscar ? 'Oscar nominated' : '';
-    }
+
     const detailYear = document.getElementById('detailYear');
     if (detailYear) detailYear.textContent = movieData.year;
 
     const detailMinute = document.getElementById('detailMinute');
     if (detailMinute) detailMinute.textContent = `${movieData.minute} min`;
+
+    if (detailOscarIcon) {
+        if (movieData.hasOscar) {
+            detailOscarIcon.className = 'bi bi-award'; // Bootstrap Icons class
+            detailOscarIcon.style.display = 'inline-block';
+            detailOscarIcon.style.color = '#f5c518';
+            detailOscarIcon.style.marginLeft = '10px';
+            detailOscarIcon.style.fontSize = '1.2em';
+            detailOscarIcon.title = 'Oscar Nominated';
+        } else {
+            detailOscarIcon.style.display = 'none';
+            detailOscarIcon.title = '';
+        }
+    }
+
     if (detailLink) {
         detailLink.href = '#'; // Kept as hash to prevent page reload
         detailLink.textContent = 'View Full Details and Reviews';
-        // Add click handler to show detail view
+            // Click handler to show detail view
         detailLink.onclick = (e) => {
             e.preventDefault();
             hideModal();
@@ -96,19 +108,6 @@ function populateModal(movie) {
             }
         };
     }
-    if (detailOscarIcon) {
-        if (movie.hasOscar) {
-            detailOscarIcon.className = 'bi bi-award'; // Set Bootstrap Icons class
-            detailOscarIcon.style.display = 'inline-block';
-            detailOscarIcon.style.color = '#f5c518'; // Gold color
-            detailOscarIcon.style.marginLeft = '10px';
-            detailOscarIcon.style.fontSize = '1.2em';
-            detailOscarIcon.title = 'Oscar Winner';
-        } else {
-            detailOscarIcon.style.display = 'none';
-        }
-    }
-
 }
 
 export function showModal(movieId) {

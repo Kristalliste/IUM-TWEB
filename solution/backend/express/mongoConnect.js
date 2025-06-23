@@ -1,6 +1,7 @@
-require('dotenv').config();
-const mongoose = require('mongoose');
-const Reviews = require('./reviews/Reviews'); // Only if you need to create indexes
+import dotenv from 'dotenv';
+dotenv.config();
+import mongoose from 'mongoose';
+import Reviews from './reviews/Reviews.js';
 
 const mongo_url = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/MongoDB_TWEB";
 
@@ -10,7 +11,9 @@ async function connectToMongoDB() {
 
         console.log('Successfully connected to MongoDB');
 
-        await Reviews.createIndexes(); // Ensure indexes are created for performance
+        // Ensure indexes are created for performance
+        // This is typically done once or on model definition.
+        await Reviews.createIndexes();
 
     } catch (error) {
         console.error('Failed to connect to MongoDB:', error.message);
@@ -21,5 +24,5 @@ async function connectToMongoDB() {
 // Connect immediately when this module is imported
 connectToMongoDB();
 
-// Export connection or function for re-use
-module.exports = mongoose;
+// Export mongoose instance for re-use if needed by other modules
+export default mongoose;

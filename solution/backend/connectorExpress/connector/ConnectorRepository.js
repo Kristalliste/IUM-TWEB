@@ -1,7 +1,8 @@
 import axios from 'axios';
+import ReviewsDTO from '../../express/reviews/ReviewsDTO.js';
 import NodeCache from 'node-cache';
 
-const MONGO_API = process.env.MONGO_SERVER_URL || 'http://localhost:3000';
+const MONGO_API = process.env.MONGO_SERVER_URL || 'http://localhost:3000/api';
 const SPRING_API = process.env.SPRING_SERVER_URL || 'http://localhost:8080/api';
 
 // Create cache instance, for 5 minutes
@@ -49,29 +50,6 @@ const fetchReviewsByMovieId = async (movieId) => {
     try {
         const response = await axios.get(`${MONGO_API}/reviews?movieId=${movieId}`, { timeout: 5000 });
         return response.data;
-    } catch (error) {
-        if (error.response) {
-            throw new Error(`Server responded with ${error.response.status}`);
-        } else if (error.request) {
-            throw new Error('No response received from server');
-        } else {
-            throw new Error('Request setup error');
-        }
-    }
-};
-
-const fetchMovieWithReviews = async (movieId) => {
-    try {
-        const [movie, reviews] = await Promise.all([
-            fetchMovieById(movieId),
-            fetchReviewsByMovieId(movieId)
-        ]);
-
-        return {
-            ...movie,
-            reviews,
-            reviewCount: reviews.length
-        };
     } catch (error) {
         if (error.response) {
             throw new Error(`Server responded with ${error.response.status}`);
@@ -212,7 +190,6 @@ const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
         const response = await axios.get(`${SPRING_API}/movies/search/title`, {
             params: {
                 title: title,
-                // If you want pagination, include these:
                 size: size,
                 page: page  // Spring Data JPA pages are 0-indexed
             },
@@ -260,6 +237,24 @@ const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
     }
 };
 
+const getReviewsFromReviewsServer = async (movieTitle) => {
+    try {
+        if (!movieTitle || typeof movieTitle !== 'string' || movieTitle.trim() === '') {
+            throw new Error('Invalid movie title for reviews');
+        }
+        const encodedTitle = encodeURIComponent(movieTitle.trim());
+        // Use MONGO_API which is already defined in this repository
+        console.log(`[ConnectorRepository] Proxying review request for "${movieTitle}" to Reviews Server: ${MONGO_API}/reviews/movies/${encodedTitle}`);
+        const response = await axios.get(`${MONGO_API}/reviews/movies/${encodedTitle}`);
+        console.log(`[ConnectorRepository] Received response from ReviewsServer for "${movieTitle}".`);
+        return response.data; // Return the data received from the ReviewsServer
+    } catch (error) {
+        console.error('[ConnectorRepository ERROR] Failed to proxy review request to Reviews Server:', error.message);
+        // Rethrow or return a specific error to the controller
+        throw new Error(`Failed to fetch reviews from Reviews Server: ${error.message}`);
+    }
+};
+
 const fetchAllGenres = async () => {
     const cacheKey = 'all_genres';
 
@@ -302,8 +297,8 @@ const fetchAllGenres = async () => {
 export default {
     fetchMovieById,
     fetchReviewsByMovieId,
-    fetchMovieWithReviews,
     fetchMoviesPaginated,
+    getReviewsFromReviewsServer,
     //searchMoviesPaginated,
     // fetchAllMovies,
     fetchFilteredByTitleMovies,

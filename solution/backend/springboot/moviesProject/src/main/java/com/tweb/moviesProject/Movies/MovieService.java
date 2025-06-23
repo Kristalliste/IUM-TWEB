@@ -2,11 +2,9 @@ package com.tweb.moviesProject.Movies;
 
 import com.tweb.moviesProject.Actors.ActorService;
 import com.tweb.moviesProject.Genres.GenreService;
-import com.tweb.moviesProject.Languages.Language;
 import com.tweb.moviesProject.Languages.LanguageService;
 import com.tweb.moviesProject.Posters.PosterService;
 import com.tweb.moviesProject.OscarAwards.OscarAwardService;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

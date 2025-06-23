@@ -20,7 +20,7 @@ function displayResults(movies) {
         // Poster
         const poster = document.createElement("img");
         poster.className = "movie-poster";
-        poster.src = movie.link || 'default-poster.jpg'; // Immagine di default
+        poster.src = movie.link || 'https://placehold.co/300x450?text=No+Image'; // Immagine di default
         poster.alt = movie.title + ' poster';
 
         // Info film

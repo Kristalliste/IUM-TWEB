@@ -1,5 +1,5 @@
 import { API_BASE_URL, debounce, toTitleCase, capitalizeDescription, moviesPerPage } from './utils.js';
-import { showMainView, showDetailView, renderMovies } from './views.js';
+import { showMainView} from './views.js';
 import { displayMoviePage } from './pagination.js';
 import { populateGenres } from './genres.js';
 import { renderUsernamePrompt } from "./chat.js";
@@ -23,7 +23,7 @@ let currentView = 'recent'; // 'recent', 'top-rated', 'search'
 let currentSearchTerm = '';
 let totalPages = 1;
 
-// Funzione per formattare i dati del film
+// Function to format movie data
 function formatMovieData(movie) {
     return {
         id: movie.id,
@@ -37,7 +37,7 @@ function formatMovieData(movie) {
     };
 }
 
-// Funzioni per il fetching paginato
+// Functions for paginated fetching
 async function fetchMovies(type, page = 0, query = '') {
     try {
         let url = `${API_BASE_URL}/movies`;
@@ -81,7 +81,7 @@ async function fetchMovies(type, page = 0, query = '') {
     }
 }
 
-// Carica e mostra una pagina di film
+// Loads and shows a page of films
 async function loadAndDisplayMoviesPage(page = 0) {
     currentPage = page + 1; // Converti in 1-indexed per UI
     let data;
@@ -147,7 +147,6 @@ async function loadFilteredByTitleMovies(page = 0) {
     }
 }
 
-// FUNZIONE AGGIUNTA: setActiveLink
 function setActiveLink(activeLink) {
     navLinks.forEach(link => link.classList.remove('active'));
     if (activeLink) {
@@ -155,8 +154,10 @@ function setActiveLink(activeLink) {
     }
 }
 
-// Gestori eventi
+// Even Listeners
 /*topRatedLink.addEventListener('click', async (e) => {
+// Gestori eventi
+topRatedLink.addEventListener('click', async (e) => {
     e.preventDefault();
     showMainView(mainView, detailView);
     searchInput.value = '';
@@ -202,7 +203,7 @@ searchInput.addEventListener('input', debounce(async (e) => {
     const searchTerm = e.target.value.toLowerCase().trim();
 
     if (searchTerm) {
-        mainTitle.textContent = `Risultati per: "${searchTerm}"`;
+        mainTitle.textContent = `Results for: "${searchTerm}"`;
 /*        const filteredMovies = allMovies.filter(movie =>
             movie.title.toLowerCase().includes(searchTerm) ||
             movie.year.toString().includes(searchTerm)
@@ -211,7 +212,7 @@ searchInput.addEventListener('input', debounce(async (e) => {
         await loadAndDisplayMoviesPage(0);
     } else {
         currentView = 'recent';
-        mainTitle.textContent = 'Film più recenti';
+        mainTitle.textContent = 'Most Recent Films';
         await loadAndDisplayMoviesPage(0);
     }
 }, 300));
@@ -221,7 +222,7 @@ searchInput.addEventListener('input', debounce(async (e) => {
     currentView = 'recent';
     currentPage = 1;
     showMainView(mainView, detailView);
-    mainTitle.textContent = 'Film più recenti';
+    mainTitle.textContent = 'Most Recent Films';
     setActiveLink(null);
 
     await loadAndDisplayMoviesPage(0);
@@ -239,6 +240,8 @@ if (logo) { // Verifica che l'elemento esista
 /*advancedSearchLink.addEventListener('click', (e) => {
     e.preventDefault();
     showMainView(mainView, detailView);
+    searchInput.value = '';
+    mainTitle.textContent = 'Advanced Research';
 /!*    searchInput.value = '';
     mainTitle.textContent = 'Ricerca Avanzata';*!/
     setActiveLink(advancedSearchLink);
@@ -262,9 +265,9 @@ if (advancedSearchLink) { // Verifica che l'elemento esista
     });
 }
 
-// Inizializzazione
+// Inizialization
 async function init() {
-    movieGrid.innerHTML = '<p class="loading">Caricamento film in corso...</p>';
+    movieGrid.innerHTML = '<p class="loading">Loading Films...</p>';
 
     try {
         const urlParams = new URLSearchParams(window.location.search);
@@ -292,7 +295,6 @@ async function init() {
         // Carica prima pagina di film recenti
         const initialData = await fetchMovies('recent', 0);
 
-        // Estrai film per i generi (solo prima pagina)
         const moviesForGenres = initialData.content.map(movie => formatMovieData(movie));
 
         populateGenres(
@@ -313,6 +315,7 @@ async function init() {
 
         showMainView(mainView, detailView);
 
+        mainTitle.textContent = 'Most Recent Films';
         setActiveLink(null);
         await loadAndDisplayMoviesPage(0);
     } catch (error) {
@@ -327,7 +330,7 @@ async function init() {
     }
 }
 
-// Gestione chat
+// Chat
 document.getElementById('toggle-chat-btn').addEventListener('click', () => {
     const floatingChat = document.getElementById('floating-chat');
     floatingChat.classList.toggle('hidden');

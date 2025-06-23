@@ -20,7 +20,7 @@ public class PosterService {
         String link = posterRepository.findPosterLinkByMovieId(movieId);
         if (link == null || link.isEmpty()) {
             // Default poster URL
-            link = "default-poster.jpg";
+            link = "https://placehold.co/300x450?text=No+Image";
             //throw new PosterNotFoundException("Poster not found for movie with ID: " + movieId);
         }
         return link;
@@ -32,7 +32,7 @@ public class PosterService {
 
         for (Long movieId : movieIds) {
             String link = posterRepository.findPosterLinkByMovieId(movieId);
-            postersMap.put(movieId, (link != null && !link.isEmpty()) ? link : "default-poster.jpg");
+            postersMap.put(movieId, (link != null && !link.isEmpty()) ? link : "https://placehold.co/300x450?text=No+Image");
         }
 
         return postersMap;

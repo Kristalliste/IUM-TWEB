@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
-    @Query(value = "SELECT * FROM \"Movies\" m WHERE m.name ILIKE '%' || :title || '%'",
+    @Query(value = "SELECT * FROM \"Movies\" m WHERE m.name ILIKE '%' || :title || '%' ORDER BY rating DESC NULLS LAST, id DESC",
             countQuery = "SELECT count(*) FROM \"Movies\" m WHERE m.name ILIKE '%' || :title || '%'",
             nativeQuery = true)
     Page<Movie> findByTitleIgnoreCase(@Param("title") String title, Pageable pageable);
@@ -42,7 +42,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     @Query(value = "SELECT * FROM \"Movies\" WHERE id = :id", nativeQuery = true)
     Optional<Movie> findById(@Param("id") Long id); //integer
 
-    @Query(value = "SELECT * FROM \"Movies\" ORDER BY date DESC",
+    @Query(value = "SELECT * FROM \"Movies\" ORDER BY date DESC, rating DESC NULLS LAST, id DESC",
             countQuery = "SELECT count(*) FROM \"Movies\"",
             nativeQuery = true)
     Page<Movie> findAllMoviesOrderedByDateDesc(Pageable pageable);

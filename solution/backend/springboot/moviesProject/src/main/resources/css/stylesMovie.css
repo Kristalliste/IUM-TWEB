@@ -72,7 +72,7 @@ input, select, button {
     position: relative;
 }
 
-.movie-poster[src="default-poster.jpg"]::after {
+.movie-poster[src="https://placehold.co/300x450?text=No+Image"]::after {
     content: "Poster non disponibile";
     position: absolute;
     top: 0;
@@ -143,11 +143,11 @@ input, select, button {
 }
 
 /* Corregge il placeholder per il poster mancante */
-.movie-poster[src="default-poster.jpg"] {
+.movie-poster[src="https://placehold.co/300x450?text=No+Image"] {
     position: relative;
 }
 
-.movie-poster[src="default-poster.jpg"]::after {
+.movie-poster[src="https://placehold.co/300x450?text=No+Image"]::after {
     content: "Poster non disponibile";
     position: absolute;
     top: 0;

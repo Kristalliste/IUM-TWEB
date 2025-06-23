@@ -1,10 +1,10 @@
 {
   "name": "connectorexpress",
   "version": "1.0.0",
-  "main": "connectorServer.js",
+  "main": "ConnectorServer.js",
   "type": "module",
   "scripts": {
-    "start": "node --experimental-json-modules connectorServer.js"
+    "start": "node --experimental-json-modules ConnectorServer.js"
   },
   "keywords": [],
   "author": "",

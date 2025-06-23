@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.Calendar;
 import java.util.List;
 
 @Schema(description = "Data Transfer Object for movie details")
