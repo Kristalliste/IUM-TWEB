@@ -57,9 +57,12 @@
 
             <div class="actors-section">
                 <h3 class="detail-section-header">Cast</h3>
-                <ul class="actors-list">
+                <ul id="detail-view-actors-list" class="actors-list">
                     {{#each actors}}
-                        <li class="detail-list-item">{{this}}</li>
+                        <li class="detail-list-item">
+                            <strong>{{name}}</strong>
+                            <span class="actor-role">{{role}}</span>
+                        </li>
                     {{else}}
                         <li class="detail-list-item">No cast specified</li>
                     {{/each}}

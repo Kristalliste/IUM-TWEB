@@ -1071,3 +1071,21 @@ footer {
     justify-content: center;
     min-height: 300px;
 }
+
+/* Aggiungi questo nel tuo file CSS */
+.actor-role {
+    display: block;
+    font-size: 0.85em;
+    color: #aaa;
+    margin-top: 3px;
+    font-style: italic;
+    padding-left: 15px;
+    position: relative;
+}
+
+.actor-role::before {
+    content: "»";
+    position: absolute;
+    left: 5px;
+    color: #f5c518;
+}

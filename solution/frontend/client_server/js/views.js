@@ -88,17 +88,6 @@ export async function showDetailView(movieId, mainView, detailView) {
         // Render with Handlebars
         detailView.innerHTML = detailTemplate(templateData);
 
-
-        //DA METTERE IN HANDLEBARS
-       /* const actorsList = document.getElementById('detail-view-actors-list');
-        actorsList.innerHTML = (movie.actors || [])
-            .map(actor => `
-        <li class="detail-list-item">
-            <strong>${escapeHTML(actor.name)}</strong> [ ${escapeHTML(actor.role)} ]
-        </li>`
-            )
-            .join('') || '<li class="detail-list-item">No cast specified</li>';
-*/
         // Set up back button
         document.getElementById('back-button').addEventListener('click', () => {
             showMainView(mainView, detailView);
