@@ -70,11 +70,20 @@ const getReviewsFromReviewsServer = async (movieTitle) => {
     }
 };
 
+const getAllGenres = async () => {
+    try {
+        return await ConnectorRepository.fetchAllGenres();
+    } catch (error) {
+        console.error('Error in fetchAllGenres:', error);
+        throw new Error('Failed to fetch genres');
+    }
+};
 
 export default {
     getMoviesPaginated,
     //searchMoviesPaginated,
     getMovieById,
     getFilteredByTitleMovies,
-    getReviewsFromReviewsServer
+    getReviewsFromReviewsServer,
+    getAllGenres,
 };
