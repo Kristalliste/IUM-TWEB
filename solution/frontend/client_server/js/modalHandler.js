@@ -1,11 +1,10 @@
-import {API_BASE_URL, capitalizeDescription, toTitleCase, formatMovieDetails} from './utils.js';
+import {API_BASE_URL, formatMovieDetails} from './utils.js';
 import { showDetailView } from './views.js';
 import { loadTemplate } from './templateLoader.js';
 import { disconnectChat, isGeneralChat } from './chat.js';
 
 const modal = document.getElementById('movieModal');
 const modalContent = modal?.querySelector('.modal-content');
-
 
 async function loadMovieDetails(movieId) {
     try {
@@ -128,9 +127,6 @@ export function attachModalListeners() {
         });
     }
 }
-
-
-
 
 // Initialize once when DOM is loaded
 document.addEventListener('DOMContentLoaded', attachModalListeners);

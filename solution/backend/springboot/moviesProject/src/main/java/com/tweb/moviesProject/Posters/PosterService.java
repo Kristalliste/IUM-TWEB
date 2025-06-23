@@ -19,10 +19,8 @@ public class PosterService {
     public String getPosterByMovieId(Long movieId) {
         String link = posterRepository.findPosterLinkByMovieId(movieId);
         if (link == null || link.isEmpty()) {
-            // Default poster URL
             link = "https://placehold.co/300x450?text=No+Image";
-            //throw new PosterNotFoundException("Poster not found for movie with ID: " + movieId);
-        }
+            }
         return link;
     }
 

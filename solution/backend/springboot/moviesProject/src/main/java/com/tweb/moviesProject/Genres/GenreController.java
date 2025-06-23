@@ -18,18 +18,21 @@ public class GenreController {
         this.genreService = genreService;
     }
 
+    @Operation(summary = "Get all Genre entities for a specific movie")
     @GetMapping("/movie/{movieId}")
     public ResponseEntity<List<Genre>> getGenresByMovieId(@PathVariable Long movieId) {
         List<Genre> genres = genreService.getGenresByMovieId(movieId);
         return genres.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(genres);
     }
 
+    @Operation(summary = "Get all genre names for a specific movie")
     @GetMapping("/names/movie/{movieId}")
     public ResponseEntity<List<String>> getGenreNamesByMovieId(@PathVariable Long movieId) {
         List<String> genreNames = genreService.getGenreNamesByMovieId(movieId);
         return genreNames.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(genreNames);
     }
 
+    @Operation(summary = "Get all Genre entities by genre name")
     @GetMapping("/{genreName}")
     public ResponseEntity<List<Genre>> getGenresByName(@PathVariable String genreName) {
         List<Genre> genres = genreService.getGenresByName(genreName);

@@ -65,7 +65,6 @@ public class MovieService {
     /**
      * Converts a Page of Movie entities to a Page of MovieDTOs
      */
-    // Optimize DTO conversion
     private Page<MovieDTO> convertToDTOPage(Page<Movie> moviePage) {
         // Get all movie IDs
         List<Long> movieIds = moviePage.getContent().stream()

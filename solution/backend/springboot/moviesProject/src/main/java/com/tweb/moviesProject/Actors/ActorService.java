@@ -57,13 +57,4 @@ public class ActorService {
                 .map(ActorRoleDTO::getName)
                 .collect(Collectors.toList());
     }
-
-    // New method to get actor names by a list of movie IDs
-    public Map<Long, List<String>> getActorNamesByMovieIds(List<Long> movieIds) {
-        Map<Long, List<String>> result = new HashMap<>();
-        for (Long movieId : movieIds) {
-            result.put(movieId, getActorNamesByMovieId(movieId));
-        }
-        return result;
-    }
 }

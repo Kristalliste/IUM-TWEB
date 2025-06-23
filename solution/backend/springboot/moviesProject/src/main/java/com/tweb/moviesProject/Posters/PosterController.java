@@ -1,7 +1,7 @@
 package com.tweb.moviesProject.Posters;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,18 +16,13 @@ public class PosterController {
         this.posterService = posterService;
     }
 
+    @Operation(summary = "Get poster link URL for a specific movie by its ID")
     @GetMapping("/movie/{movieId}")
     public ResponseEntity<String> getPosterByMovieId(@PathVariable Long movieId) {
-        try {
-            String posterLink = posterService.getPosterByMovieId(movieId);
-            return ResponseEntity.ok(posterLink);
-        } catch (PosterNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
+        String posterLink = posterService.getPosterByMovieId(movieId);
 
-    @ExceptionHandler(PosterNotFoundException.class)
-    public ResponseEntity<String> handlePosterNotFound(PosterNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        return (posterLink == null || posterLink.isEmpty())
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(posterLink);
     }
 }

@@ -19,8 +19,7 @@ public class MovieDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate date;
 
-    @Schema(description = "Detailed description of the movie",
-            example = "Two imprisoned men bond over a number of years...")
+    @Schema(description = "Detailed description of the movie")
     private String description;
 
     @Schema(description = "Duration in minutes", example = "142.0")
@@ -29,15 +28,13 @@ public class MovieDTO {
     @Schema(description = "Average rating", example = "9.3")
     private Double rating;
 
-    @Schema(description = "URL to the movie poster image",
-            example = "https://example.com/posters/shawshank.jpg")
+    @Schema(description = "URL to the movie poster image")
     private String link;
 
     @Schema(description = "List of genres", example = "[\"Drama\", \"Crime\"]")
     private List<String> genres;
 
-    @Schema(description = "List of actors with their roles",
-            example = "[{\"name\": \"Tim Robbins\", \"role\": \"Andy Dufresne\"}]")
+    @Schema(description = "List of actors with their roles")
     private List<ActorRoleDTO> actors;
 
     @Schema(description = "All spoken languages for the movie", example = "[\"English\", \"French\"]")
@@ -67,24 +64,34 @@ public class MovieDTO {
     // Getters and Setters
     public Long getMovieId() { return movieId; }
     public void setMovieId(Long movieId) { this.movieId = movieId; }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
     public LocalDate getDate() { return date; }
     public void setDate(LocalDate date) { this.date = date; }
+
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
     public Double getMinute() { return minute; }
     public void setMinute(Double minute) { this.minute = minute; }
+
     public Double getRating() { return rating; }
     public void setRating(Double rating) { this.rating = rating; }
+
     public String getLink() { return link; }
     public void setLink(String link) { this.link = link; }
+
     public List<String> getGenres() { return genres; }
     public void setGenres(List<String> genres) { this.genres = genres; }
+
     public List<ActorRoleDTO> getActors() { return actors; }
     public void setActors(List<ActorRoleDTO> actors) { this.actors = actors; }
+
     public List<String> getLanguages() { return languages; }
     public void setLanguages(List<String> languages) { this.languages = languages; }
+
     public Boolean getHasOscar() { return hasOscar; }
     public void setHasOscar(Boolean hasOscar) { this.hasOscar = hasOscar; }
 }

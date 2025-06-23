@@ -1,4 +1,4 @@
-import {capitalizeDescription, escapeHTML, toTitleCase, formatMovieDetails} from './utils.js';
+import { formatMovieDetails} from './utils.js';
 import { renderUsernamePrompt } from './chat.js';
 import { fetchMovieDetails, fetchMovieReviews } from './api.js';
 import { loadTemplate } from './templateLoader.js';

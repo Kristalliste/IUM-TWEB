@@ -30,16 +30,6 @@ export function formatMovieDetails(movieData) {
     };
 }
 
-// Add loading indicator
-export function showLoader(container) {
-    container.innerHTML = `
-        <div class="loader">
-            <div class="spinner"></div>
-            <p>Loading...</p>
-        </div>
-    `;
-}
-
 export function escapeHTML(str) {
     return str.replace(/[&<>"']/g, function(match) {
         return {
@@ -60,31 +50,26 @@ export function toTitleCase(str) {
 
     return str
         .toLowerCase()
-        .split(/(\s+|:|\s+–\s+)/) // Dividi preservando spazi, due punti e trattini
+        .split(/(\s+|:|\s+–\s+)/)
         .map((segment, index, array) => {
-            // Gestisci segmenti speciali (due punti, trattini)
             if (segment === ':' || segment === ' – ') {
                 return segment;
             }
 
-            // Gestisci numeri romani
             if (romanNumerals.includes(segment.toUpperCase())) {
                 return segment.toUpperCase();
             }
 
-            // Gestisci parole dopo due punti o trattini
             const prevSegment = array[index - 1];
             if (prevSegment === ':' || prevSegment === ' – ') {
                 return segment.charAt(0).toUpperCase() + segment.slice(1);
             }
 
-            // Gestisci parole comuni (non capitalizzare se non all'inizio)
             if (index > 0 && index < array.length - 1 &&
                 specialWords.includes(segment.charAt(0).toUpperCase() + segment.slice(1))) {
                 return segment;
             }
 
-            // Capitalizza normalmente
             return segment.charAt(0).toUpperCase() + segment.slice(1);
         })
         .join('');
@@ -107,32 +92,35 @@ export function capitalizeDescription(str) {
         .trim();
 }
 
-// Add new utility functions
-export const handleApiError = (error) => {
-    console.error('API Error:', error);
-    return {
-        error: true,
-        message: error.message || 'Server Error'
-    };
-};
-
-export const validateResponse = (response) => {
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-};
-
 export const moviesPerPage = 10;
 
-export function initHandlebars() {
-    // Register helper for checking oscar nomination
-    Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
-        return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
-    });
+/**
+ export const handleApiError = (error) => {
+ console.error('API Error:', error);
+ return {
+ error: true,
+ message: error.message || 'Server Error'
+ };
+ };
 
-    // Escape HTML helper
-    Handlebars.registerHelper('escape', function(context) {
-        return escapeHTML(context);
-    });
-}
+ export const validateResponse = (response) => {
+ if (!response.ok) {
+ throw new Error(`HTTP error! status: ${response.status}`);
+ }
+ return response.json();
+ };
+
+
+
+ export function initHandlebars() {
+ // Register helper for checking oscar nomination
+   Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+ return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+ });
+
+ // Escape HTML helper
+  Handlebars.registerHelper('escape', function(context) {
+ return escapeHTML(context);
+ });
+ }
+ */
