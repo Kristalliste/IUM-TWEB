@@ -74,7 +74,8 @@ public class MovieService {
         // Batch fetch all related data
         Map<Long, String> posters = getPostersByMovieIds(movieIds);
         Map<Long, List<String>> genresMap = genreService.getGenreNamesByMovieIds(movieIds);
-        Map<Long, List<String>> actorsMap = actorService.getActorNamesByMovieIds(movieIds);
+        // Changed to use getActorsByMovieIds which returns Map<Long, List<ActorRoleDTO>>
+        Map<Long, List<ActorRoleDTO>> actorsMap = actorService.getActorsByMovieIds(movieIds);
         Map<Long, List<String>> languagesMap = languageService.getLanguageNamesByMovieIds(movieIds);
 
         // Get movie names for Oscar check
@@ -94,7 +95,7 @@ public class MovieService {
                     movie.getRating(),
                     posters.getOrDefault(movieId, "https://placehold.co/300x450?text=No+Image"),
                     genresMap.getOrDefault(movieId, Collections.emptyList()),
-                    actorsMap.getOrDefault(movieId, Collections.emptyList()),
+                    actorsMap.getOrDefault(movieId, Collections.emptyList()), // This now correctly passes List<ActorRoleDTO>
                     languagesMap.getOrDefault(movieId, Collections.emptyList()),
                     oscarMap.getOrDefault(movie.getName(), false)
             );
@@ -131,10 +132,10 @@ public class MovieService {
         try {
             String posterUrl = posterService.getPosterByMovieId(movieId); // also no exception thrown here
             List<String> genres = genreService.getGenreNamesByMovieId(movieId);
-            List<String> actors = actorService.getActorNamesByMovieId(movieId);
+            List<ActorRoleDTO> actors = actorService.getActorsByMovieId(movieId); // Changed to get ActorRoleDTO
             //List<Review> reviews = reviewRepository.findByMovieId(movieId);
             List<String> languages = languageService.getLanguageNamesByMovieId(movieId);
-                   // .stream().map(Language::getLanguage).distinct().toList();
+            // .stream().map(Language::getLanguage).distinct().toList();
 
             boolean hasOscar = oscarAwardService.hasOscar(movie.getName());
 
@@ -148,7 +149,7 @@ public class MovieService {
                     movie.getRating(),
                     posterUrl != null ? posterUrl : "https://placehold.co/300x450?text=No+Image",
                     genres,
-                    actors,
+                    actors, // This now correctly passes List<ActorRoleDTO>
                     languages,
                     hasOscar
                     //reviews.stream().map(review ->new ReviewDTO(review.getUser(), review.getComment())).collect(Collectors.toList())

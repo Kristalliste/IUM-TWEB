@@ -13,14 +13,16 @@ import java.util.List;
 public class ActorController {
     private final ActorService actorService;
 
+    // Constructor injection for ActorService dependency
     public ActorController(ActorService actorService) {this.actorService = actorService;}
 
+    // Returns a list of actors whose names contain the given string (case-insensitive)
     @GetMapping("/filterByName/{name}")
     public List<Actor> findByNameContainingIgnoreCase(@PathVariable String name) {
         return actorService.findByNameContainingIgnoreCase(name);
     }
 
-
+    // Returns a paginated list of actors filtered by name
     @GetMapping("/paged")
     public ResponseEntity<Page<Actor>> getPagedActors(
             @RequestParam String name,
@@ -32,6 +34,7 @@ public class ActorController {
         return ResponseEntity.ok(result);
     }
 
+    // Returns a list of movie titles for a given actor name (case-insensitive)
     @GetMapping("/movieTitlesByActorName/{name}")
     public ResponseEntity<List<String>> getMovieTitlesByActorName(@PathVariable String name) {
         List<String> movieTitles = actorService.findMovieNameByActorNameIgnoreCase(name);
@@ -41,6 +44,7 @@ public class ActorController {
         return ResponseEntity.ok(movieTitles);
     }
 
+    // Returns an actor by ID, or NOT_FOUND if not present
     @GetMapping("/findActorById/{id}")
     public ResponseEntity<?> findActorById(@PathVariable Long id) {
         try {
@@ -51,6 +55,7 @@ public class ActorController {
         }
     }
 
+    // Returns a list of actor names for a given movie ID, or NOT_FOUND if not present
     @GetMapping("/namesByMovieId/{movieId}")
     public ResponseEntity<?> getActorNamesByMovieId(@PathVariable Long movieId) {
         try {
@@ -62,4 +67,3 @@ public class ActorController {
     }
 
 }
-
