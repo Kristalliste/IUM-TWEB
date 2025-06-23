@@ -2,6 +2,8 @@ import { API_BASE_URL, debounce, toTitleCase, capitalizeDescription, moviesPerPa
 import { displayMoviePage } from './pagination.js';
 import { renderUsernamePrompt } from "./chat.js";
 //import {formatMovieData, loadAndDisplayMoviesPage} from "./main.js";
+import { renderMovies } from './views.js';
+// import {formatMovieData, loadAndDisplayMoviesPage} from "./main.js";
 // DA VALUTARE SE METTERE IN UTILS
 
 
@@ -162,9 +164,9 @@ async function loadAndDisplayMoviesPage(page = 0) {
     );
 }
 
-async function loadFilteredMovies(page = 0, currentView) {
+async function loadFilteredByTitleMovies(page = 0) {
     try {
-
+        const title = document.getElementById("search-input").value;
         const size = document.getElementById("page-size").value;
         let url;
         if(currentView === "title") {

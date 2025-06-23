@@ -57,8 +57,8 @@ export async function showDetailView(movieId, mainView, detailView) {
 
     detailView.innerHTML = `
         <div class="loading-container">
-        <div class="loading-spinner"></div>
-        <p>Loading details...</p>
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Loading details...</p>
         </div>
     `;
 

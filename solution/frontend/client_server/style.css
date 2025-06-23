@@ -1055,3 +1055,19 @@ footer {
     color: #888;
     user-select: none;
 }
+
+.loading-text {
+    color: #f5c518; /* Colore giallo del tema */
+    font-size: 1.2em;
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+}
