@@ -1,0 +1,91 @@
+<button id="back-button" class="back-button">
+    <i class="fas fa-arrow-left"></i> Return to Movie List
+</button>
+<div class="detail-grid">
+    <div class="detail-poster-chat-container">
+        <div class="detail-poster">
+            <img src="{{posterUrl}}" alt="{{title}} poster" />
+        </div>
+
+        <div class="chat-section">
+            <h2>Chat Live</h2>
+            <div id="chat-wrapper"></div>
+        </div>
+    </div>
+
+    <div class="detail-info">
+        <h1>{{title}} <span class="year">({{year}})</span></h1>
+
+        <div class="detail-meta">
+            <div class="detail-rating">
+                <i class="bi bi-star-fill"></i>
+                <span>{{rating}}</span>
+            </div>
+            <div class="detail-runtime">
+                <i class="bi bi-clock"></i>
+                <span>{{minute}} min</span>
+            </div>
+            {{#if hasOscar}}
+                <span class="bi bi-award" title="Nominated to the Oscar Awards"></span>
+            {{/if}}
+        </div>
+
+        <p class="description">{{description}}</p>
+
+        <div class="detail-list-container">
+            <div class="languages-section">
+                <h3 class="detail-section-header">Languages</h3>
+                <ul class="languages-list">
+                    {{#each languages}}
+                        <li class="detail-list-item">{{this}}</li>
+                    {{else}}
+                        <li class="detail-list-item">No languages specified</li>
+                    {{/each}}
+                </ul>
+            </div>
+
+            <div class="genres-section">
+                <h3 class="detail-section-header">Genres</h3>
+                <ul class="genres-list">
+                    {{#each genres}}
+                        <li class="detail-list-item">{{this}}</li>
+                    {{else}}
+                        <li class="detail-list-item">No genres specified</li>
+                    {{/each}}
+                </ul>
+            </div>
+
+            <div class="actors-section">
+                <h3 class="detail-section-header">Cast</h3>
+                <ul class="actors-list">
+                    {{#each actors}}
+                        <li class="detail-list-item">{{this}}</li>
+                    {{else}}
+                        <li class="detail-list-item">No cast specified</li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="reviews-section">
+        <h3>Reviews</h3>
+        <div class="reviews-list">
+            {{#if reviews.reviews.length}}
+                {{#each reviews.reviews}}
+                    <div class="review-item">
+                        <p><strong>Critic:</strong> {{critic_name}}</p>{{#if top_critic}}
+                            <p><strong>Top Critic:</strong> Yes</p>
+                        {{else}}
+                            <p><strong>Top Critic:</strong> No</p>
+                        {{/if}}
+                        <p><strong>Score:</strong> {{normalized_score}}/10</p>
+                        <p><strong>Review:</strong> "{{review_content}}"</p>
+                    </div>
+                {{/each}}
+            {{else}}
+                <p>No reviews for this movie yet.</p>
+            {{/if}}
+        </div>
+    </div>
+</div>

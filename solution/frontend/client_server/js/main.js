@@ -2,6 +2,9 @@ import { API_BASE_URL, debounce, toTitleCase, capitalizeDescription, moviesPerPa
 import { showMainView} from './views.js';
 import { displayMoviePage } from './pagination.js';
 import { renderUsernamePrompt } from "./chat.js";
+import { populateGenres } from './genres.js';
+import { renderUsernamePrompt, disconnectChat } from "./chat.js"; // Import disconnectChat
+import { loadTemplate } from './templateLoader.js';
 
 // DOM elements
 const movieGrid = document.getElementById('movie-grid');
@@ -14,6 +17,13 @@ const mainTitle = document.getElementById('main-title');
 const topRatedLink = document.getElementById('top-rated-link');
 const advancedSearchLink = document.getElementById('advanced-search-link');
 const navLinks = document.querySelectorAll('.main-nav ul > li > a');
+
+// Chat elements
+const toggleChatBtn = document.getElementById('toggle-chat-btn');
+const floatingChat = document.getElementById('floating-chat');
+const closeChatBtn = document.getElementById('close-chat-btn');
+const floatingChatBody = document.getElementById('floating-chat-body');
+
 
 // State
 let currentPage = 1;
@@ -44,11 +54,11 @@ async function fetchMovies(type, page = 0, query = '') {
             size: moviesPerPage
         });
 
-/*        if (type === 'search') {
-            url = `${API_BASE_URL}/movies/search`;
-            params.append('query', query);
-        } else {*/
-            params.append('type', type);
+        /* if (type === 'search') {
+                    url = `${API_BASE_URL}/movies/search`;
+                    params.append('query', query);
+                } else {*/
+        params.append('type', type);
         //}
 
         const response = await fetch(`${url}?${params}`);
@@ -155,6 +165,7 @@ function setActiveLink(activeLink) {
 
 
 /*// Gestori eventi
+// Event Listeners
 topRatedLink.addEventListener('click', async (e) => {
     e.preventDefault();
     showMainView(mainView, detailView);
@@ -225,10 +236,10 @@ searchInput.addEventListener('input', debounce(async (e) => {
 
     if (searchTerm) {
         mainTitle.textContent = `Results for: "${searchTerm}"`;
-/*        const filteredMovies = allMovies.filter(movie =>
-            movie.title.toLowerCase().includes(searchTerm) ||
-            movie.year.toString().includes(searchTerm)
-        );*/
+        /* const filteredMovies = allMovies.filter(movie =>
+                    movie.title.toLowerCase().includes(searchTerm) ||
+                    movie.year.toString().includes(searchTerm)
+                );*/
         //displayMoviePage(filteredMovies, paginationContainer, movieGrid, 1, mainView, detailView);
         await loadAndDisplayMoviesPage(0);
     } else {
@@ -285,17 +296,44 @@ if (advancedSearchLink) { // Verifica che l'elemento esista
     });
 }
 
+// Chat event listeners
+toggleChatBtn.addEventListener('click', () => {
+    floatingChat.classList.toggle('hidden');
+    if (!floatingChat.classList.contains('hidden')) {
+        // Chat is now visible, initialize the username prompt for the general chat
+        renderUsernamePrompt(floatingChatBody, 'Generale', 1); // roomId 1 for general chat
+    } else {
+        // Chat is hidden, disconnect from the chat
+        disconnectChat();
+    }
+});
+
+closeChatBtn.addEventListener('click', () => {
+    floatingChat.classList.add('hidden');
+    disconnectChat(); // Disconnect when closing the chat
+});
+
+
 // Inizialization
 async function init() {
-    movieGrid.innerHTML = '<p class="loading">Loading Films...</p>';
+    try {
+        // Preload templates if needed
+        await Promise.all([
+            loadTemplate('movie-card'),
+            loadTemplate('modal-template'),
+            loadTemplate('movie-detail')
+        ]);
+
+        movieGrid.innerHTML = '<p class="loading">Loading Films...</p>';
 
     try {
         const urlParams = new URLSearchParams(window.location.search);
         const requestedView = urlParams.get('view'); // Ottiene il valore del parametro 'view'
-        let initialData;
+        //let initialData;
         currentPage = 1; // Resetta sempre la paginazione all'avvio
+        const initialData = await fetchMovies('recent', 0);
 
-        if (requestedView === 'top-rated') {
+        /*if (requestedView === 'top-rated') {
             currentView = 'top-rated';
             // Imposta lo stato attivo del link nella navbar
             const topRatedLinkElement = document.getElementById('top-rated-link');
@@ -312,15 +350,27 @@ async function init() {
             if (mainTitle)mainTitle.textContent = 'Most Recent Films';
             setActiveLink(null); // Nessun link specifico attivo per la vista di default 'recenti'
             initialData = await fetchMovies('recent', 0);
-        }
+        }*/
 
-        // Carica prima pagina di film recenti
-       // const
+        /*populateGenres(
+            moviesForGenres,
+            mainView,
+            detailView,
+            searchInput,
+            currentPage,
+            mainTitle,
+            genresLink,
+            setActiveLink,
+            async (page) => {
+                await loadAndDisplayMoviesPage(page - 1);
+            },
+            paginationContainer,
+            movieGrid
+        );*/
 
         showMainView(mainView, detailView);
-
-
-        setActiveLink(null);
+        //mainTitle.textContent = 'Most Recent Films';
+        //setActiveLink(null);
         await loadAndDisplayMoviesPage(0);
     } catch (error) {
         console.error('Initialization error:', error);
@@ -334,19 +384,11 @@ async function init() {
     }
 }
 
-// Chat
-document.getElementById('toggle-chat-btn').addEventListener('click', () => {
-    const floatingChat = document.getElementById('floating-chat');
-    floatingChat.classList.toggle('hidden');
 
-    if (!floatingChat.classList.contains('hidden')) {
-        const chatWrapper = document.getElementById('floating-chat-body');
-        renderUsernamePrompt(chatWrapper, "homepage", 1);
-    }
+// Update your DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', () => {
+    // No need to make this async since init is already async
+    init().catch(error => {
+        console.error('Unhandled initialization error:', error);
+    });
 });
-
-document.getElementById('close-chat-btn').addEventListener('click', () => {
-    document.getElementById('floating-chat').classList.add('hidden');
-});
-
-document.addEventListener('DOMContentLoaded', init);

@@ -1,0 +1,17 @@
+<div class="movie-card" data-movie-id="{{id}}">
+    <div class="movie-poster-container">
+        <img src="{{posterUrl}}" alt="{{title}} poster"
+             onerror="this.src='https://placehold.co/300x450?text=No+Image'"
+             loading="lazy">
+        <div class="movie-overlay">
+            <p class="movie-description">{{description}}</p>
+        </div>
+    </div>
+    <div class="movie-info">
+        <h3>{{title}} ({{year}})</h3>
+        <div class="movie-rating">
+            <i class="fas fa-star icon-star"></i>
+            <span>{{rating}}</span>
+        </div>
+    </div>
+</div>
