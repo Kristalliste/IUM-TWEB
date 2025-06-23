@@ -85,6 +85,7 @@ async function fetchMovies(type, page = 0, query = '') {
 async function loadAndDisplayMoviesPage(page = 0) {
     currentPage = page + 1; // Converti in 1-indexed per UI
     let data;
+    console.log('Fetching movies page...');
     if (currentView === 'search') {
         //data = await fetchMovies('search', page, currentSearchTerm);
         data = await loadFilteredByTitleMovies(page);
@@ -154,9 +155,8 @@ function setActiveLink(activeLink) {
     }
 }
 
-// Even Listeners
-/*topRatedLink.addEventListener('click', async (e) => {
-// Gestori eventi
+
+/*// Gestori eventi
 topRatedLink.addEventListener('click', async (e) => {
     e.preventDefault();
     showMainView(mainView, detailView);
@@ -168,14 +168,13 @@ topRatedLink.addEventListener('click', async (e) => {
     setActiveLink(topRatedLink);
 
     await loadAndDisplayMoviesPage(0);
-});*/
-//const topRatedLink = document.getElementById('top-rated-link');
+});
 
 if (topRatedLink) {
     topRatedLink.addEventListener('click', async (e) => {
         e.preventDefault(); // <-- QUESTO È IL PUNTO CHIAVE!
-        window.history.pushState({}, '', 'mainView.html'); // Questa riga potrebbe non essere necessaria se sei già su demo.html e non vuoi ricaricare
-
+        window.history.pushState({}, '', 'mainView?view=top-rated.html'); // Questa riga potrebbe non essere necessaria se sei già su demo.html e non vuoi ricaricare
+        console.log("ciao");
         // Imposta la UI per i film Top Rated
         // showMainView(mainView, detailView); // Se hai queste variabili globali
         // searchInput.value = ''; // Pulisce la barra di ricerca
@@ -185,6 +184,30 @@ if (topRatedLink) {
         setActiveLink(topRatedLink); // Rende attivo il link "Film Top Rated" nella navbar
 
         await loadAndDisplayMoviesPage(0); // <-- CHIAMA LA FUNZIONE DI CARICAMENTO DEI FILM
+    });
+}*/
+
+if (topRatedLink) {
+    topRatedLink.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        // Cambia l'URL senza ricaricare la pagina
+        window.history.pushState({}, '', 'mainView?view=top-rated.html');
+
+        console.log("Navigazione: Top Rated");
+
+        // Mostra vista principale e resetta la ricerca
+        showMainView(mainView, detailView);
+        searchInput.value = '';
+
+        // Imposta stato interno
+        currentView = 'top-rated';
+        currentPage = 1;
+        mainTitle.textContent = 'Film Top Rated';
+        setActiveLink(topRatedLink);
+
+        // Carica la prima pagina di film top-rated
+        await loadAndDisplayMoviesPage(0);
     });
 }
 
@@ -231,9 +254,8 @@ searchInput.addEventListener('input', debounce(async (e) => {
 if (logo) { // Verifica che l'elemento esista
     logo.addEventListener('click', async (e) => {
         e.preventDefault(); // Impedisce il comportamento predefinito del link (se il logo fosse un <a>)
-        window.location.href = 'mainView.html'; // Reindirizza il browser alla homepage (demo.html)
-        // Una volta caricata demo.html, la logica iniziale del DOMContentLoaded in main.js
-        // si occuperà di caricare i film di default (es. "Film più recenti")
+        mainTitle.textContent = 'Most Recent Films';
+        window.location.href = 'mainView.html';
     });
 }
 
@@ -272,28 +294,30 @@ async function init() {
     try {
         const urlParams = new URLSearchParams(window.location.search);
         const requestedView = urlParams.get('view'); // Ottiene il valore del parametro 'view'
-
+        let initialData;
         currentPage = 1; // Resetta sempre la paginazione all'avvio
 
         if (requestedView === 'top-rated') {
             currentView = 'top-rated';
-            if (mainTitle) mainTitle.textContent = 'Film Top Rated';
             // Imposta lo stato attivo del link nella navbar
             const topRatedLinkElement = document.getElementById('top-rated-link');
             if (topRatedLinkElement) { // Verifica che l'elemento esista nel DOM
                 setActiveLink(topRatedLinkElement);
+                initialData = await fetchMovies('top-rated', 0);
+                if (mainTitle)mainTitle.textContent = 'Film Top Rated';
             } else {
                 console.warn("Element with ID 'top-rated-link' not found in DOM.");
             }
         } else  {
             // Comportamento di default: carica i film più recenti
             currentView = 'recent';
-            if (mainTitle) mainTitle.textContent = 'Film più recenti';
+            if (mainTitle)mainTitle.textContent = 'Most Recent Films';
             setActiveLink(null); // Nessun link specifico attivo per la vista di default 'recenti'
+            initialData = await fetchMovies('recent', 0);
         }
 
         // Carica prima pagina di film recenti
-        const initialData = await fetchMovies('recent', 0);
+       // const
 
         const moviesForGenres = initialData.content.map(movie => formatMovieData(movie));
 
@@ -315,7 +339,7 @@ async function init() {
 
         showMainView(mainView, detailView);
 
-        mainTitle.textContent = 'Most Recent Films';
+
         setActiveLink(null);
         await loadAndDisplayMoviesPage(0);
     } catch (error) {
