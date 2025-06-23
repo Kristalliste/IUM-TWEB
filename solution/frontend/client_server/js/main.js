@@ -1,7 +1,6 @@
 import { API_BASE_URL, debounce, toTitleCase, capitalizeDescription, moviesPerPage } from './utils.js';
 import { showMainView} from './views.js';
 import { displayMoviePage } from './pagination.js';
-import { populateGenres } from './genres.js';
 import { renderUsernamePrompt } from "./chat.js";
 
 // DOM elements
@@ -15,7 +14,6 @@ const mainTitle = document.getElementById('main-title');
 const topRatedLink = document.getElementById('top-rated-link');
 const advancedSearchLink = document.getElementById('advanced-search-link');
 const navLinks = document.querySelectorAll('.main-nav ul > li > a');
-const genresLink = document.getElementById('genres-link');
 
 // State
 let currentPage = 1;
@@ -294,24 +292,6 @@ async function init() {
 
         // Carica prima pagina di film recenti
         const initialData = await fetchMovies('recent', 0);
-
-        const moviesForGenres = initialData.content.map(movie => formatMovieData(movie));
-
-        populateGenres(
-            moviesForGenres,
-            mainView,
-            detailView,
-            searchInput,
-            currentPage,
-            mainTitle,
-            genresLink,
-            setActiveLink,
-            async (page) => {
-                await loadAndDisplayMoviesPage(page - 1);
-            },
-            paginationContainer,
-            movieGrid
-        );
 
         showMainView(mainView, detailView);
 
