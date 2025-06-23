@@ -1,9 +1,4 @@
 /**
- * @file ReviewDTO.js
- * @description Data Transfer Object for movie reviews.
- */
-
-/**
  * Data Transfer Object for a movie review.
  */
 class ReviewDTO {
@@ -87,5 +82,4 @@ class ReviewDTO {
     }
 }
 
-// Export the ReviewDTO class as the default export
 export default ReviewDTO;

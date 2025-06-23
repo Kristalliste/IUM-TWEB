@@ -25,14 +25,6 @@ const ReviewsService = {
         }
     },
 
-    getReviewsByScore: async (score) => {
-        try {
-            return await ReviewsRepository.findByScore(score);
-        } catch (err) {
-            throw new Error('Failed to fetch reviews by score');
-        }
-    },
-
     getReviewsByMovieTitle: async (movieTitle) => {
         try {
             return await ReviewsRepository.findByMovieTitle(movieTitle);

@@ -27,14 +27,6 @@ const ReviewsRepository = {
         }
     },
 
-    findByScore: async (score) => {
-        try {
-            return await Reviews.find({ normalized_score: score });
-        } catch (err) {
-            throw new Error(`Error fetching reviews with score ${score}: ` + err.message);
-        }
-    },
-
     findByMovieTitle: async (title) => {
         try {
             const reviews = await Reviews.find({ movie_title: new RegExp(title, 'i') });
@@ -42,7 +34,7 @@ const ReviewsRepository = {
             if (!Array.isArray(reviews)) {
                 return []; // Return an empty array if reviews is not an array
             }
-            return reviews.map(review => new ReviewsDTO(review)); // Transform with DTO
+            return reviews.map(review => new ReviewsDTO(review));
         } catch (err) {
             throw new Error(`Error fetching reviews for movie title "${title}": ` + err.message);
         }
