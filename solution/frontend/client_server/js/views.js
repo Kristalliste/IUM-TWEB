@@ -1,28 +1,7 @@
-import {capitalizeDescription, escapeHTML, toTitleCase} from './utils.js';
+import {capitalizeDescription, escapeHTML, toTitleCase, formatMovieDetails} from './utils.js';
 import { renderUsernamePrompt } from './chat.js';
 import { fetchMovieDetails, fetchMovieReviews } from './api.js';
 import { loadTemplate } from './templateLoader.js';
-
-// Format movie details response to a consistent structure
-function formatMovieDetails(movieData) {
-    return {
-        id: movieData.id,
-        title: toTitleCase(movieData.title) || 'Unkonwn',
-        originalTitle: movieData.title || 'Unknown', // we keep the original titles to look for its reviews
-        year: movieData.year || 0,
-        minute: movieData.minute || 0,
-        posterUrl: movieData.posterUrl || 'https://placehold.co/300x450?text=No+Image',
-        description: capitalizeDescription(movieData.description) || '',
-        rating: movieData.rating || 'N/A',
-        actors: movieData.actors?.map(a => ({
-            name: a.name || 'Unknown actor',
-            role: a.role || 'Unknown role'
-        })) || [],
-        genres: movieData.genres || [],
-        languages: movieData.languages || [],
-        hasOscar: movieData.hasOscar || false,
-    };
-}
 
 // Format movie reviews response to a consistent structure
 function formatMovieReviews(movieReviewsData) {

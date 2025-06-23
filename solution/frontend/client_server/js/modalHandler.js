@@ -1,10 +1,11 @@
-import { API_BASE_URL } from './utils.js';
+import {API_BASE_URL, capitalizeDescription, toTitleCase, formatMovieDetails} from './utils.js';
 import { showDetailView } from './views.js';
 import { loadTemplate } from './templateLoader.js';
 import { disconnectChat, isGeneralChat } from './chat.js';
 
 const modal = document.getElementById('movieModal');
 const modalContent = modal?.querySelector('.modal-content');
+
 
 async function loadMovieDetails(movieId) {
     try {
@@ -54,13 +55,14 @@ export async function showModal(movieId) {
 
     try {
         const movie = await loadMovieDetails(movieId);
+        const formatteedmovies = formatMovieDetails(movie);
         const template = await loadTemplate('modal-template');
 
         if (!template) {
             throw new Error('Could not load modal template');
         }
 
-        modalContent.innerHTML = template(movie);
+        modalContent.innerHTML = template(formatteedmovies);
 
         // Set up event listeners
         const closeBtn = modalContent.querySelector('.close');
@@ -87,7 +89,7 @@ export async function showModal(movieId) {
                 const mainView = document.querySelector('main');
                 const detailView = document.getElementById('movie-detail-view');
                 if (mainView && detailView) {
-                    showDetailView(movie.id, mainView, detailView);
+                    showDetailView(formatteedmovies.id, mainView, detailView);
                 }
             };
         }
