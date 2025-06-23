@@ -164,7 +164,7 @@ async function loadAndDisplayMoviesPage(page = 0) {
     );
 }
 
-async function loadFilteredByTitleMovies(page = 0) {
+async function loadFilteredMovies(page = 0) {
     try {
         const title = document.getElementById("search-input").value;
         const size = document.getElementById("page-size").value;
