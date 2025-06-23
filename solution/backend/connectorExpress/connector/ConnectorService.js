@@ -84,6 +84,5 @@ export default {
     //searchMoviesPaginated,
     getMovieById,
     getFilteredByTitleMovies,
-    getReviewsFromReviewsServer,
     getAllGenres,
 };
