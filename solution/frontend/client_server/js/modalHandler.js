@@ -124,6 +124,8 @@ export function showModal(movieId) {
     console.log(movieId);
     if (!modal) return;
 
+    resetModal();
+
     // Show loading state
     if (detailTitle) detailTitle.textContent = 'Loading...';
     if (detailDescription) detailDescription.textContent = 'Loading movie details...';
@@ -186,6 +188,34 @@ export function attachModalListeners() {
         }
     });
 }
+
+function resetModal() {
+    if (detailTitle) detailTitle.textContent = '';
+    if (detailPoster) {
+        detailPoster.src = '';
+        detailPoster.alt = '';
+    }
+    if (detailDescription) detailDescription.textContent = '';
+    if (detailRating) detailRating.textContent = '';
+
+    const detailYear = document.getElementById('detailYear');
+    if (detailYear) detailYear.textContent = '';
+
+    const detailMinute = document.getElementById('detailMinute');
+    if (detailMinute) detailMinute.textContent = '';
+
+    if (detailOscarIcon) {
+        detailOscarIcon.style.display = 'none';
+        detailOscarIcon.title = '';
+    }
+
+    if (detailLink) {
+        detailLink.href = '#';
+        detailLink.textContent = '';
+        detailLink.onclick = null; // Rimuove il vecchio handler
+    }
+}
+
 
 // Initialize once when DOM is loaded
 document.addEventListener('DOMContentLoaded', attachModalListeners);
