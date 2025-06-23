@@ -39,9 +39,9 @@ def countries_oscar_merge(countries_df, oscar_df):
     temp_oscar_df = oscar_df.dropna(subset=['film'], how='all')
     countries_wins_merged_df = pd.merge(
         countries_df[['name', 'country', 'date']],
-        temp_oscar_df[['film','winner']],
-        left_on='name',
-        right_on='film')
+        temp_oscar_df[['film','winner', 'year_film']],
+        left_on=['name', 'date'],
+        right_on=['film', 'year_film'])
     return countries_wins_merged_df
 
 # Merges country-movie data with Oscar data (including ceremony year) for analysis by year
@@ -50,10 +50,10 @@ def countries_oscar_year_merge(countries_movies_df, oscar_df):
     # Dropping the entries with null `film` values
     temp_oscar_df = oscar_df.dropna(subset=['film'], how='all')
     countries_wins_merged_df = pd.merge(
-        countries_movies_df[['name', 'country']],
-        temp_oscar_df[['film', 'winner', 'year_ceremony']],
-        left_on='name',
-        right_on='film')
+        countries_movies_df[['name', 'country', 'date']],
+        temp_oscar_df[['film', 'winner', 'year_film', 'year_ceremony']],
+        left_on=['name', 'date'],
+        right_on=['film', 'year_film'])
     return countries_wins_merged_df
 
 # Merges country data with reviews, keeping only entries that have both movie title and review score
@@ -74,10 +74,10 @@ def genres_oscar_merge(genres_movies_df, oscar_df):
     temp_oscar_df = oscar_df.dropna(subset=['film'])
 
     genres_merged_df = pd.merge(
-        genres_movies_df[['name', 'genre']],
-        temp_oscar_df[['film', 'winner']],
-        left_on='name',
-        right_on='film')
+        genres_movies_df[['name', 'genre', 'date']],
+        temp_oscar_df[['film', 'winner', 'year_film']],
+        left_on=['name', 'date'],
+        right_on=['film', 'year_film'])
     return genres_merged_df
 
 # Calculates total Oscar nominations and wins per country
@@ -166,7 +166,11 @@ def map_data_rev(oscar_df, reviews_df):
 
     # Merge datasets
     merged = pd.merge(oscar_nominations, oscar_wins, on='film', how='left')
-    merged = pd.merge(merged, review_scores, left_on='film', right_on='movie_title', how='outer')
+    merged = pd.merge(merged,
+                      review_scores,
+                      left_on=['name', 'date'],
+                      right_on=['film', 'year_film'],
+                      how='outer')
     merged['wins'] = merged['wins'].fillna(0)
     merged['nominations'] = merged['nominations'].fillna(0)
     merged['film'] = merged['film'].fillna(merged['movie_title'])
