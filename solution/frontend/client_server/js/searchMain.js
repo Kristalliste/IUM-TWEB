@@ -1,7 +1,7 @@
 import { API_BASE_URL, debounce, toTitleCase, capitalizeDescription, moviesPerPage } from './utils.js';
 import { displayMoviePage } from './pagination.js';
 import { renderUsernamePrompt } from "./chat.js";
-// import {formatMovieData, loadAndDisplayMoviesPage} from "./main.js";
+//import {formatMovieData, loadAndDisplayMoviesPage} from "./main.js";
 // DA VALUTARE SE METTERE IN UTILS
 
 
@@ -10,6 +10,7 @@ let currentPage = 1;
 let currentView = '';
 let currentSearchTerm = '';
 let totalPages = 1;
+
 
 document.addEventListener("DOMContentLoaded", async () => {
     const logoElement = document.getElementById("logo");
@@ -97,13 +98,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 });
 
-function setActiveLink(activeLink) {
-    navLinks.forEach(link => link.classList.remove('active'));
-    if (activeLink) {
-        activeLink.classList.add('active');
-    }
-}
-
 async function fetchAllGenres(){
     try {
         const response = await fetch(`${API_BASE_URL}/genres`);
@@ -143,7 +137,10 @@ async function loadAndDisplayMoviesPage(page = 0) {
     let data;
     if (currentView === 'title') {
         //data = await fetchMovies('search', page, currentSearchTerm);
-        data = await loadFilteredByTitleMovies(page);
+        data = await loadFilteredMovies(page, currentView);
+    } else if (currentView === 'genre') {
+        data = await loadFilteredMovies(page, currentView);
+
     } else {
         data = await fetchMovies(currentView, page);
     }
@@ -165,16 +162,44 @@ async function loadAndDisplayMoviesPage(page = 0) {
     );
 }
 
-async function loadFilteredByTitleMovies(page = 0) {
+async function loadFilteredMovies(page = 0, currentView) {
     try {
-        const title = document.getElementById("search-input").value;
+
         const size = document.getElementById("page-size").value;
+        let url;
+        if(currentView === "title") {
+            const title = document.getElementById("search-input").value;
+            if(title == null || title === "") { return; }
+            const encoded = encodeURIComponent(title);
+            url = `${API_BASE_URL}/filteredMovies/${encoded}?page=${page}&size=${size}`;
 
+        } else if (currentView === "genre") {
+            const genre = document.getElementById("search-genre").value;
+            if(genre == null || genre === "Select a genre") { return; }
+            const encoded = encodeURIComponent(genre);
+            url = `${API_BASE_URL}/filteredByGenreMovies/${encoded}?page=${page}&size=${size}`;
+
+        } else if (currentView === "year") {
+            const year = document.getElementById("search-input").value;
+            if(year == null || year === "") { return; }
+            const encoded = encodeURIComponent(year);
+            url = `${API_BASE_URL}/filteredByYearMovies/${encoded}?page=${page}&size=${size}`;
+
+        } else if (currentView === "language") {
+            const year = document.getElementById("search-input").value;
+            if(year == null || year === "") { return; }
+            const encoded = encodeURIComponent(year);
+            url = `${API_BASE_URL}/filteredByYearMovies/${encoded}?page=${page}&size=${size}`;
+            console.log(encoded);
+
+        }
+
+/*        const title = document.getElementById("search-input").value;
         if(title == null || title === "") { return; }
+        const encodedTitle = encodeURIComponent(title);*/
 
-        const encodedTitle = encodeURIComponent(title);
-
-        const response = await fetch(`${API_BASE_URL}/filteredMovies/${encodedTitle}?page=${page}&size=${size}`);
+        //const response = await fetch(`${API_BASE_URL}/filteredMovies/${encodedTitle}?page=${page}&size=${size}`);
+        const response = await fetch(url);
         const data = await response.json();
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
@@ -211,12 +236,17 @@ async function searchMovies(page) {
 
         if (type === "TITLE") {
             currentView = 'title';
-            data = await loadFilteredByTitleMovies(page);
+            data = await loadFilteredMovies(page, currentView);
             // url = `http://localhost:8080/api/movies/search/title?title=${encodeURIComponent(query)}&page=${page}&size=${size}`;
         } else if (type === "YEAR") {
-            url = `http://localhost:8080/api/movies/search/year?year=${encodeURIComponent(query)}&page=${page}&size=${size}`;
+            currentView = 'year';
+            data = await loadFilteredMovies(page, currentView);
+            // url = `http://localhost:8080/api/movies/search/year?year=${encodeURIComponent(query)}&page=${page}&size=${size}`;
         } else if (type === "GENRE") {
-            url = `http://localhost:8080/api/movies/search/genre?genre=${encodeURIComponent(query)}&page=${page}&size=${size}`;
+            console.log("qua");
+            currentView = 'genre';
+            data = await loadFilteredMovies(page, currentView);
+            // url = `http://localhost:8080/api/movies/search/genre?genre=${encodeURIComponent(query)}&page=${page}&size=${size}`;
         }
 
         const formattedMovies = data.content.map(movie => formatMovieData(movie));

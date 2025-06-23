@@ -184,9 +184,6 @@ const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
         return cachedMovies;
     }
     try {
-        // let size = 10;
-        //let page = 1;
-
         const response = await axios.get(`${SPRING_API}/movies/search/title`, {
             params: {
                 title: title,
@@ -294,6 +291,121 @@ const fetchAllGenres = async () => {
     }
 };
 
+const fetchFilteredByGenreMovies = async (genre, page = 0, size = 10) => {
+    const cacheKey = `filteredMovies_genre_${genre}_page_${page}_size_${size}`;
+    const cachedMovies = cache.get(cacheKey);
+    if (cachedMovies) {
+        console.log('Returning cached movies');
+        return cachedMovies;
+    }
+    try {
+        const response = await axios.get(`${SPRING_API}/movies/search/genre`, {
+            params: {
+                genre: genre,
+                size: size,
+                page: page  // Spring Data JPA pages are 0-indexed
+            },
+            timeout: 10000
+        });
+        console.log('Connection successful');
+        const pageData = response.data;
+        //const moviesDTO = response.data.content;
+
+        const transformedMovies = pageData.content.map(movieDTO => ({
+            id: movieDTO.movieId,
+            title: movieDTO.name,
+            year: new Date(movieDTO.date).getUTCFullYear(),
+            posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
+            description: movieDTO.description || '',
+            rating: movieDTO.rating || 0.0,
+            minute: movieDTO.minute || 0,
+            actors: movieDTO.actors || [],
+            genres: movieDTO.genres || [],
+            languages: movieDTO.languages || [],
+            hasOscar: movieDTO.hasOscar || false
+        }));
+
+        const result = {
+            content: transformedMovies,
+            totalPages: pageData.totalPages,
+            totalElements: pageData.totalElements,
+            currentPage: pageData.number, // Add current page number from Spring response
+            pageSize: pageData.size       // Add page size from Spring response
+        };
+
+        // Cache result
+        cache.set(cacheKey, result);
+        return result;
+        /*cache.set(cacheKey, transformedMovies);
+        return transformedMovies;*/
+
+    } catch (error) {
+        console.error('Failed to fetch movies:', {
+            url: `${SPRING_API}/search/genre?genre=${genre}`,
+            error: error.message,
+            stack: error.stack
+        });
+        throw error;
+    }
+};
+const fetchFilteredByYearMovies = async (year, page = 0, size = 10) => {
+    const cacheKey = `filteredMovies_year_${year}_page_${page}_size_${size}`;
+    const cachedMovies = cache.get(cacheKey);
+    if (cachedMovies) {
+        console.log('Returning cached movies');
+        return cachedMovies;
+    }
+    try {
+        const response = await axios.get(`${SPRING_API}/movies/search/year`, {
+            params: {
+                year: year,
+                size: size,
+                page: page  // Spring Data JPA pages are 0-indexed
+            },
+            timeout: 10000
+        });
+        console.log('Connection successful');
+        const pageData = response.data;
+        //const moviesDTO = response.data.content;
+
+        const transformedMovies = pageData.content.map(movieDTO => ({
+            id: movieDTO.movieId,
+            title: movieDTO.name,
+            year: new Date(movieDTO.date).getUTCFullYear(),
+            posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
+            description: movieDTO.description || '',
+            rating: movieDTO.rating || 0.0,
+            minute: movieDTO.minute || 0,
+            actors: movieDTO.actors || [],
+            genres: movieDTO.genres || [],
+            languages: movieDTO.languages || [],
+            hasOscar: movieDTO.hasOscar || false
+        }));
+
+        const result = {
+            content: transformedMovies,
+            totalPages: pageData.totalPages,
+            totalElements: pageData.totalElements,
+            currentPage: pageData.number, // Add current page number from Spring response
+            pageSize: pageData.size       // Add page size from Spring response
+        };
+
+        // Cache result
+        cache.set(cacheKey, result);
+        return result;
+        /*cache.set(cacheKey, transformedMovies);
+        return transformedMovies;*/
+
+    } catch (error) {
+        console.error('Failed to fetch movies:', {
+            url: `${SPRING_API}/search/genre?year=${year}`,
+            error: error.message,
+            stack: error.stack
+        });
+        throw error;
+    }
+};
+
 export default {
     fetchMovieById,
     fetchReviewsByMovieId,
@@ -302,5 +414,7 @@ export default {
     //searchMoviesPaginated,
     // fetchAllMovies,
     fetchFilteredByTitleMovies,
-    fetchAllGenres
+    fetchAllGenres,
+    fetchFilteredByGenreMovies,
+    fetchFilteredByYearMovies
 };

@@ -359,11 +359,45 @@ router.get('/filteredMovies/:title', async (req, res, next) => {
         const title = req.params.title; // 'title' will be the value of ?title=... in the URL
         const page = parseInt(req.query.page) || 0;
         const size = parseInt(req.query.size) || 10;
-
+        console.log("hei");
         if (!title) {
             return res.status(400).json({ error: 'Title query parameter is required.' });
         }
         let movies = await connectorService.getFilteredByTitleMovies(title, page, size);
+        res.json(movies);
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.get('/filteredByGenreMovies/:genre', async (req, res, next) => {
+    try {
+        // Get the title from the query parameters
+        const genre = req.params.genre; // 'title' will be the value of ?title=... in the URL
+        const page = parseInt(req.query.page) || 0;
+        const size = parseInt(req.query.size) || 10;
+
+        if (!genre) {
+            return res.status(400).json({ error: 'Genre query parameter is required.' });
+        }
+        let movies = await connectorService.getFilteredByGenreMovies(genre, page, size);
+        res.json(movies);
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.get('/filteredByYearMovies/:year', async (req, res, next) => {
+    try {
+        // Get the title from the query parameters
+        const year = req.params.year; // 'title' will be the value of ?title=... in the URL
+        const page = parseInt(req.query.page) || 0;
+        const size = parseInt(req.query.size) || 10;
+
+        if (!year) {
+            return res.status(400).json({ error: 'Genre query parameter is required.' });
+        }
+        let movies = await connectorService.getFilteredByYearMovies(year, page, size);
         res.json(movies);
     } catch (error) {
         next(error);

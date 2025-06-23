@@ -39,6 +39,24 @@ const getFilteredByTitleMovies = async (title, page, size) => {
     }
 };
 
+const getFilteredByGenreMovies = async (genre, page, size) => {
+    try {
+        return await ConnectorRepository.getFilteredByGenreMovies(genre, page, size);
+    } catch (error) {
+        console.error('Error in fetchFilteredByGenreMovies:', error);
+        throw new Error('Failed to fetch movies');
+    }
+};
+
+const getFilteredByYearMovies = async (year, page, size) => {
+    try {
+        return await ConnectorRepository.fetchFilteredByYearMovies(year, page, size);
+    } catch (error) {
+        console.error('Error in getFilteredByYearMovies:', error);
+        throw new Error('Failed to fetch movies');
+    }
+};
+
 const getMovieById = async (id) => {
     try {
         // Converte l'ID in numero e valida
@@ -85,5 +103,7 @@ export default {
     getMovieById,
     getFilteredByTitleMovies,
     getAllGenres,
-    getReviewsFromReviewsServer
+    getReviewsFromReviewsServer,
+    getFilteredByGenreMovies,
+    getFilteredByYearMovies,
 };
