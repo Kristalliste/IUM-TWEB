@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         logoElement.addEventListener('click', (e) => {
             e.preventDefault();
             // Reindirizza alla homepage con parametro che indica 'film più recenti'
-            window.location.href = 'demo.html?view=recent';
+            window.location.href = 'mainView.html?view=recent';
         });
     }
 

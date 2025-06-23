@@ -174,7 +174,7 @@ topRatedLink.addEventListener('click', async (e) => {
 if (topRatedLink) {
     topRatedLink.addEventListener('click', async (e) => {
         e.preventDefault(); // <-- QUESTO È IL PUNTO CHIAVE!
-        window.history.pushState({}, '', 'demo.html'); // Questa riga potrebbe non essere necessaria se sei già su demo.html e non vuoi ricaricare
+        window.history.pushState({}, '', 'mainView.html'); // Questa riga potrebbe non essere necessaria se sei già su demo.html e non vuoi ricaricare
 
         // Imposta la UI per i film Top Rated
         // showMainView(mainView, detailView); // Se hai queste variabili globali
@@ -231,7 +231,7 @@ searchInput.addEventListener('input', debounce(async (e) => {
 if (logo) { // Verifica che l'elemento esista
     logo.addEventListener('click', async (e) => {
         e.preventDefault(); // Impedisce il comportamento predefinito del link (se il logo fosse un <a>)
-        window.location.href = 'demo.html'; // Reindirizza il browser alla homepage (demo.html)
+        window.location.href = 'mainView.html'; // Reindirizza il browser alla homepage (demo.html)
         // Una volta caricata demo.html, la logica iniziale del DOMContentLoaded in main.js
         // si occuperà di caricare i film di default (es. "Film più recenti")
     });
