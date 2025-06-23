@@ -1,5 +1,4 @@
 import axios from 'axios';
-import ReviewsDTO from '../../express/reviews/ReviewsDTO.js';
 import NodeCache from 'node-cache';
 
 const MONGO_API = process.env.MONGO_SERVER_URL || 'http://localhost:3000/api';
@@ -43,21 +42,6 @@ const fetchMovieById = async (id) => {
     } catch (error) {
         console.error(`Failed to fetch movie ${id}:`, error);
         throw error;
-    }
-};
-
-const fetchReviewsByMovieId = async (movieId) => {
-    try {
-        const response = await axios.get(`${MONGO_API}/reviews?movieId=${movieId}`, { timeout: 5000 });
-        return response.data;
-    } catch (error) {
-        if (error.response) {
-            throw new Error(`Server responded with ${error.response.status}`);
-        } else if (error.request) {
-            throw new Error('No response received from server');
-        } else {
-            throw new Error('Request setup error');
-        }
     }
 };
 
@@ -113,7 +97,6 @@ const fetchMoviesPaginated = async (type, page = 0, size = 10) => {
             totalElements: pageData.totalElements
         };
 
-        // Cache result
         cache.set(cacheKey, result);
         return result;
 
@@ -123,58 +106,23 @@ const fetchMoviesPaginated = async (type, page = 0, size = 10) => {
     }
 };
 
-/*const searchMoviesPaginated = async (query, page = 0, size = 10) => {
-    const cacheKey = `movies_search_${query}_${page}_${size}`;
-
+const getReviewsFromReviewsServer = async (movieTitle) => {
     try {
-        // Check cache first
-        const cachedData = cache.get(cacheKey);
-        if (cachedData) return cachedData;
+        if (!movieTitle || typeof movieTitle !== 'string' || movieTitle.trim() === '') {
+            throw new Error('Invalid movie title for reviews');
+        }
 
-        // Make request to search endpoint
-        const response = await axios.get(`${SPRING_API}/movies/search/title`, {
-            params: {
-                title: query,
-                page,
-                size
-            },
-            timeout: 10000
-        });
-
-        const pageData = response.data;
-
-        // Transform movies to consistent format
-        const transformedMovies = pageData.content.map(movieDTO => ({
-            id: movieDTO.movieId,
-            title: movieDTO.name,
-            year: movieDTO.date ? new Date(movieDTO.date).getFullYear() : 0,
-            posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
-            description: movieDTO.description || '',
-            minute: movieDTO.minute || 0,
-            rating: movieDTO.rating || 'N/A',
-            /**
-             * actors: movieDTO.actors || [],
-             * genres: movieDTO.genres || [],
-             * languages: movieDTO.languages || [],
-             * hasOscar: movieDTO.hasOscar || false
-
-        }));
-
-        const result = {
-            content: transformedMovies,
-            totalPages: pageData.totalPages,
-            totalElements: pageData.totalElements
-        };
-
-        // Cache result
-        cache.set(cacheKey, result);
-        return result;
-
+        const encodedTitle = encodeURIComponent(movieTitle.trim());
+        console.log(`[ConnectorRepository] Proxying review request for "${movieTitle}" to Reviews Server: ${MONGO_API}/reviews/movies/${encodedTitle}`);
+        const response = await axios.get(`${MONGO_API}/reviews/movies/${encodedTitle}`);
+        console.log(`[ConnectorRepository] Received response from ReviewsServer for "${movieTitle}".`);
+        return response.data;
     } catch (error) {
-        console.error('Failed to search movies:', error);
-        throw error;
+        console.error('[ConnectorRepository ERROR] Failed to proxy review request to Reviews Server:', error.message);
+        throw new Error(`Failed to fetch reviews from Reviews Server: ${error.message}`);
     }
-};*/
+};
+
 
 const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
     const cacheKey = `filteredMovies_title_${title}_page_${page}_size_${size}`;
@@ -194,7 +142,6 @@ const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
         });
         console.log('Connection successful');
         const pageData = response.data;
-        //const moviesDTO = response.data.content;
 
         const transformedMovies = pageData.content.map(movieDTO => ({
             id: movieDTO.movieId,
@@ -231,24 +178,6 @@ const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
             stack: error.stack
         });
         throw error;
-    }
-};
-
-const getReviewsFromReviewsServer = async (movieTitle) => {
-    try {
-        if (!movieTitle || typeof movieTitle !== 'string' || movieTitle.trim() === '') {
-            throw new Error('Invalid movie title for reviews');
-        }
-        const encodedTitle = encodeURIComponent(movieTitle.trim());
-        // Use MONGO_API which is already defined in this repository
-        console.log(`[ConnectorRepository] Proxying review request for "${movieTitle}" to Reviews Server: ${MONGO_API}/reviews/movies/${encodedTitle}`);
-        const response = await axios.get(`${MONGO_API}/reviews/movies/${encodedTitle}`);
-        console.log(`[ConnectorRepository] Received response from ReviewsServer for "${movieTitle}".`);
-        return response.data; // Return the data received from the ReviewsServer
-    } catch (error) {
-        console.error('[ConnectorRepository ERROR] Failed to proxy review request to Reviews Server:', error.message);
-        // Rethrow or return a specific error to the controller
-        throw new Error(`Failed to fetch reviews from Reviews Server: ${error.message}`);
     }
 };
 
@@ -467,14 +396,11 @@ const fetchFilteredByLanguageMovies = async (language, page = 0, size = 10) => {
 
 export default {
     fetchMovieById,
-    fetchReviewsByMovieId,
     fetchMoviesPaginated,
     getReviewsFromReviewsServer,
-    //searchMoviesPaginated,
-    // fetchAllMovies,
     fetchFilteredByTitleMovies,
-    fetchAllGenres,
     fetchFilteredByGenreMovies,
     fetchFilteredByYearMovies,
-    fetchFilteredByLanguageMovies
+    fetchFilteredByLanguageMovies,
+    fetchAllGenres,
 };

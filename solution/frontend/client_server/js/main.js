@@ -15,6 +15,7 @@ const mainTitle = document.getElementById('main-title');
 const topRatedLink = document.getElementById('top-rated-link');
 const advancedSearchLink = document.getElementById('advanced-search-link');
 const navLinks = document.querySelectorAll('.main-nav ul > li > a');
+//const genresLink = document.getElementById('genres-link');
 
 // Chat elements
 const toggleChatBtn = document.getElementById('toggle-chat-btn');
@@ -160,9 +161,7 @@ function setActiveLink(activeLink) {
         activeLink.classList.add('active');
     }
 }
-
-
-/*// Gestori eventi
+/*
 // Event Listeners
 topRatedLink.addEventListener('click', async (e) => {
     e.preventDefault();
@@ -327,7 +326,8 @@ async function init() {
         await Promise.all([
             loadTemplate('movie-card'),
             loadTemplate('modal-template'),
-            loadTemplate('movie-detail')
+            loadTemplate('movie-detail'),
+            //loadTemplate('advanced-search')
         ]);
 
         movieGrid.innerHTML = '<p class="loading">Loading Films...</p>';

@@ -149,30 +149,6 @@ router.get('/movies', async (req, res, next) => {
     }
 });
 
-/*router.get('/movies/search', async (req, res, next) => {
-    try {
-        const { query } = req.query;
-        const page = parseInt(req.query.page) || 0;
-        const size = parseInt(req.query.size) || 10;
-
-        // Validate parameters
-        if (!query || query.trim() === '') {
-            return res.status(400).json({ error: 'Search query is required' });
-        }
-        if (isNaN(page) || page < 0) {
-            return res.status(400).json({ error: 'Invalid page number' });
-        }
-        if (isNaN(size) || size < 1 || size > 100) {
-            return res.status(400).json({ error: 'Invalid page size (1-100)' });
-        }
-
-        const result = await connectorService.searchMoviesPaginated(query, page, size);
-        res.json(result);
-    } catch (error) {
-        next(error);
-    }
-});*/
-
 /**
  * @swagger
  * /movies/{id}:
@@ -265,7 +241,6 @@ router.get('/movies/:id', validateMovieId, async (req, res, next) => {
  *                   type: string
  *                   example: "Failed to fetch reviews from Reviews Server"
  */
-
 router.get('/reviews/movies/:movie_title', async (req, res, next) => {
     try {
         const movieTitle = req.params.movie_title;
@@ -370,6 +345,47 @@ router.get('/filteredMovies/:title', async (req, res, next) => {
     }
 });
 
+/**
+ * @swagger
+ * paths:
+ *   /filteredByGenreMovies/{genre}:
+ *     get:
+ *       summary: Get movies filtered by genre
+ *       parameters:
+ *         - name: genre
+ *           in: path
+ *           required: true
+ *           description: Genre to filter movies by
+ *           schema:
+ *             type: string
+ *         - name: page
+ *           in: query
+ *           required: false
+ *           description: Page number (starting from 0)
+ *           schema:
+ *             type: integer
+ *             default: 0
+ *         - name: size
+ *           in: query
+ *           required: false
+ *           description: Number of results per page
+ *           schema:
+ *             type: integer
+ *             default: 10
+ *       responses:
+ *         200:
+ *           description: List of movies by genre
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/Movie'
+ *         400:
+ *           description: Genre query parameter is required
+ *         500:
+ *           description: Internal server error
+ */
 router.get('/filteredByGenreMovies/:genre', async (req, res, next) => {
     try {
         // Get the title from the query parameters
@@ -387,6 +403,46 @@ router.get('/filteredByGenreMovies/:genre', async (req, res, next) => {
     }
 });
 
+/**
+ * @swagger
+ * /filteredByYearMovies/{year}:
+ *     get:
+ *       summary: Get movies filtered by year
+ *       parameters:
+ *         - name: year
+ *           in: path
+ *           required: true
+ *           description: Year to filter movies by
+ *           schema:
+ *             type: integer
+ *         - name: page
+ *           in: query
+ *           required: false
+ *           description: Page number (starting from 0)
+ *           schema:
+ *             type: integer
+ *             default: 0
+ *         - name: size
+ *           in: query
+ *           required: false
+ *           description: Number of results per page
+ *           schema:
+ *             type: integer
+ *             default: 10
+ *       responses:
+ *         200:
+ *           description: List of movies by year
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/Movie'
+ *         400:
+ *           description: Year parameter is required
+ *         500:
+ *           description: Internal server error
+ */
 router.get('/filteredByYearMovies/:year', async (req, res, next) => {
     try {
         // Get the title from the query parameters
@@ -404,6 +460,46 @@ router.get('/filteredByYearMovies/:year', async (req, res, next) => {
     }
 });
 
+/**
+ * @swagger
+ * /filteredByLanguageMovies/{language}:
+ *     get:
+ *       summary: Get movies filtered by language
+ *       parameters:
+ *         - name: language
+ *           in: path
+ *           required: true
+ *           description: Language to filter movies by
+ *           schema:
+ *             type: string
+ *         - name: page
+ *           in: query
+ *           required: false
+ *           description: Page number (starting from 0)
+ *           schema:
+ *             type: integer
+ *             default: 0
+ *         - name: size
+ *           in: query
+ *           required: false
+ *           description: Number of results per page
+ *           schema:
+ *             type: integer
+ *             default: 10
+ *       responses:
+ *         200:
+ *           description: List of movies by language
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/Movie'
+ *         400:
+ *           description: Language parameter is required
+ *         500:
+ *           description: Internal server error
+ */
 router.get('/filteredByLanguageMovies/:language', async (req, res, next) => {
     try {
         // Get the title from the query parameters
@@ -421,6 +517,23 @@ router.get('/filteredByLanguageMovies/:language', async (req, res, next) => {
     }
 });
 
+/**
+ * @swagger
+ * /genres:
+ *     get:
+ *       summary: Get all available movie genres
+ *       responses:
+ *         200:
+ *           description: List of genres
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *         500:
+ *           description: Internal server error
+ */
 router.get('/genres', async (req, res, next) => {
     try {
         const genres = await connectorService.getAllGenres();

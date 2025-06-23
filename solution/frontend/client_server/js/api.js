@@ -25,14 +25,14 @@ export async function fetchMovieReviews(movieTitle) {
             movieDetail.reviews = [];
         }
 
-        return movieDetail; // This 'movieDetail' object is what you'd pass to your Handlebars template
+        return movieDetail;
     } catch (error) {
         console.error(`Error fetching movie details for ID ${movieId}:`, error);
-        // Depending on your error handling strategy, you might return null or an object with an empty reviews array
         return {reviews: []};
     }
 }
 
+/////////
 export async function fetchMoviesByType(type, page = 0) {
     const response = await fetch(`${API_BASE_URL}/movies/${type}?page=${page}&size=${moviesPerPage}`);
     return await response.json();
