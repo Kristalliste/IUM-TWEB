@@ -1,4 +1,4 @@
-package com.tweb.moviesProject.Movies;
+package com.tweb.moviesProject.Actors;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

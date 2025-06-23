@@ -1,7 +1,7 @@
 import { API_BASE_URL, debounce, toTitleCase, capitalizeDescription, moviesPerPage } from './utils.js';
 import { showMainView} from './views.js';
 import { displayMoviePage } from './pagination.js';
-import { renderUsernamePrompt, disconnectChat } from "./chat.js"; // Import disconnectChat
+import {renderUsernamePrompt, disconnectChat, isGeneralChat} from "./chat.js"; // Import disconnectChat
 import { loadTemplate } from './templateLoader.js';
 
 // DOM elements
@@ -258,9 +258,9 @@ searchInput.addEventListener('input', debounce(async (e) => {
     await loadAndDisplayMoviesPage(0);
 });*/
 // Listener per il logo FilmTWEB per tornare alla homepage e caricare i film recenti
-if (logo) { // Verifica che l'elemento esista
+if (logo) {
     logo.addEventListener('click', async (e) => {
-        e.preventDefault(); // Impedisce il comportamento predefinito del link (se il logo fosse un <a>)
+        e.preventDefault();
         mainTitle.textContent = 'Most Recent Films';
         window.location.href = 'mainView.html';
     });
@@ -296,12 +296,20 @@ if (advancedSearchLink) { // Verifica che l'elemento esista
 
 // Chat event listeners
 toggleChatBtn.addEventListener('click', () => {
+    // Se siamo nella vista dettaglio, non mostrare la chat generale
+    if (detailView.style.display === 'block') {
+        const chatSection = document.querySelector('.chat-section');
+        if (chatSection) {
+            chatSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        return;
+    }
+
+    // Altrimenti, mostra/nascondi la chat generale
     floatingChat.classList.toggle('hidden');
     if (!floatingChat.classList.contains('hidden')) {
-        // Chat is now visible, initialize the username prompt for the general chat
-        renderUsernamePrompt(floatingChatBody, 'Generale', 1); // roomId 1 for general chat
+        renderUsernamePrompt(floatingChatBody, 'Generale', 1);
     } else {
-        // Chat is hidden, disconnect from the chat
         disconnectChat();
     }
 });

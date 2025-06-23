@@ -1,6 +1,7 @@
 package com.tweb.moviesProject.Movies;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.tweb.moviesProject.Actors.ActorRoleDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;

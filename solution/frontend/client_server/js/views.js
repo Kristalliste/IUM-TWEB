@@ -88,6 +88,17 @@ export async function showDetailView(movieId, mainView, detailView) {
         // Render with Handlebars
         detailView.innerHTML = detailTemplate(templateData);
 
+        const toggleChatBtn = document.getElementById('toggle-chat-btn');
+        if (toggleChatBtn) {
+            toggleChatBtn.addEventListener('click', () => {
+                // Scorri fino alla sezione chat
+                const chatSection = document.querySelector('.chat-section');
+                if (chatSection) {
+                    chatSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+
         // Set up back button
         document.getElementById('back-button').addEventListener('click', () => {
             showMainView(mainView, detailView);

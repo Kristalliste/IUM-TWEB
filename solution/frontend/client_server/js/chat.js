@@ -166,11 +166,16 @@ function scrollToBottom() {
 
 export function disconnectChat() {
     if (socket) {
+        socket.emit('leaveRoom', { room: currentRoom, username: currentUsername });
         socket.disconnect();
         socket = null;
         currentRoom = null;
         currentUsername = null;
     }
+}
+
+export function isGeneralChat() {
+    return currentRoom === 1;
 }
 
 // Cleanup quando si lascia la pagina

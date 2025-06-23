@@ -1,6 +1,7 @@
 import { API_BASE_URL } from './utils.js';
 import { showDetailView } from './views.js';
 import { loadTemplate } from './templateLoader.js';
+import { disconnectChat, isGeneralChat } from './chat.js';
 
 const modal = document.getElementById('movieModal');
 const modalContent = modal?.querySelector('.modal-content');
@@ -72,6 +73,17 @@ export async function showModal(movieId) {
             detailLink.onclick = (e) => {
                 e.preventDefault();
                 hideModal();
+
+                // CLOSE GENERAL CHAT WHEN NAVIGATING TO DETAIL VIEW
+                const floatingChat = document.getElementById('floating-chat');
+                if (floatingChat && !floatingChat.classList.contains('hidden')) {
+                    // Disconnect only if it's the general chat
+                    if (isGeneralChat()) {
+                        disconnectChat();
+                    }
+                    floatingChat.classList.add('hidden');
+                }
+
                 const mainView = document.querySelector('main');
                 const detailView = document.getElementById('movie-detail-view');
                 if (mainView && detailView) {
