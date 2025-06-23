@@ -1,18 +1,16 @@
 package com.tweb.moviesProject.Actors;
 
+import com.tweb.moviesProject.Movies.ActorRoleDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ActorService {
-
     private final ActorRepository actorRepository;
 
     @Autowired
@@ -20,20 +18,25 @@ public class ActorService {
         this.actorRepository = actorRepository;
     }
 
-    // Add this new method
-    public Map<Long, List<String>> getActorNamesByMovieIds(List<Long> movieIds) {
+    public Map<Long, List<ActorRoleDTO>> getActorsByMovieIds(List<Long> movieIds) {
         if (movieIds == null || movieIds.isEmpty()) {
             return Collections.emptyMap();
         }
 
-        Map<Long, List<String>> result = new HashMap<>();
+        Map<Long, List<ActorRoleDTO>> result = new HashMap<>();
         for (Long movieId : movieIds) {
-            result.put(movieId, actorRepository.findActorNamesByMovieId(movieId));
+            result.put(movieId, getActorsByMovieId(movieId));
         }
         return result;
     }
 
-    // Existing methods remain unchanged
+    public List<ActorRoleDTO> getActorsByMovieId(Long movieId) {
+        List<Object[]> actorData = actorRepository.findActorNamesAndRolesByMovieId(movieId);
+        return actorData.stream()
+                .map(data -> new ActorRoleDTO((String) data[0], (String) data[1]))
+                .collect(Collectors.toList());
+    }
+
     public List<Actor> findByNameContainingIgnoreCase(String name) {
         return actorRepository.findByNameContainingIgnoreCase(name);
     }
@@ -51,10 +54,17 @@ public class ActorService {
     }
 
     public List<String> getActorNamesByMovieId(Long movieId) {
-        List<String> names = actorRepository.findActorNamesByMovieId(movieId);
-        if (names == null) {
-            return Collections.emptyList();
+        return getActorsByMovieId(movieId).stream()
+                .map(ActorRoleDTO::getName)
+                .collect(Collectors.toList());
+    }
+
+    // New method to get actor names by a list of movie IDs
+    public Map<Long, List<String>> getActorNamesByMovieIds(List<Long> movieIds) {
+        Map<Long, List<String>> result = new HashMap<>();
+        for (Long movieId : movieIds) {
+            result.put(movieId, getActorNamesByMovieId(movieId));
         }
-        return names;
+        return result;
     }
 }

@@ -6,14 +6,17 @@ import { fetchMovieDetails, fetchMovieReviews } from './api.js';
 function formatMovieDetails(movieData) {
     return {
         id: movieData.id,
-        title: toTitleCase(movieData.title) || 'Unkonwn',
-        originalTitle: movieData.title || 'Unknown', // we keep the original titles to look for its reviews
+        title: toTitleCase(movieData.title) || 'Unknown',
+        originalTitle: movieData.title || 'Unknown',
         year: movieData.year || 0,
         minute: movieData.minute || 0,
         posterUrl: movieData.posterUrl || 'https://placehold.co/300x450?text=No+Image',
         description: capitalizeDescription(movieData.description) || '',
         rating: movieData.rating || 'N/A',
-        actors: movieData.actors || [],
+        actors: movieData.actors?.map(a => ({
+            name: a.name || 'Unknown actor',
+            role: a.role || 'Unknown role'
+        })) || [],
         genres: movieData.genres || [],
         languages: movieData.languages || [],
         hasOscar: movieData.hasOscar || false,
@@ -102,7 +105,11 @@ export async function showDetailView(movieId, mainView, detailView) {
 
         const actorsList = document.getElementById('detail-view-actors-list');
         actorsList.innerHTML = (movie.actors || [])
-            .map(actor => `<li class="detail-list-item">${escapeHTML(actor)}</li>`)
+            .map(actor => `
+        <li class="detail-list-item">
+            <strong>${escapeHTML(actor.name)}</strong> [ ${escapeHTML(actor.role)} ]
+        </li>`
+            )
             .join('') || '<li class="detail-list-item">No cast specified</li>';
 
         const reviewsList = document.getElementById('reviews-list');

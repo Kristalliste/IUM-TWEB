@@ -2,25 +2,32 @@ package com.tweb.moviesProject.Actors;
 
 import jakarta.persistence.*;
 
+// JPA annotation to mark this class as a database entity
 @Entity
+// Specifies the table name in the database
 @Table(name = "Actors")
 public class Actor {
+    // Primary key for the Actor entity
     @Id
     @Column(name = "actor_id")
     private Long actorId;
 
+    // Foreign key referencing the related movie
     @Column(name = "movie_id")
     private Long movieId;
 
+    //Actor's name
     @Column(name = "name")
     private String name;
 
+    // Actor's role in the movie
     @Column(name = "role")
     private String role;
 
-    // Constructors, Getters, and Setters
+    // Default constructor required by JPA
     public Actor() {}
 
+    // Constructor to initialize Actor with movieId, name, and role
     public Actor(Long movieId, String name, String role) {
         this.movieId = movieId;
         this.name = name;
