@@ -1,6 +1,7 @@
 import { API_BASE_URL, debounce, toTitleCase, capitalizeDescription, moviesPerPage } from './utils.js';
 import { displayMoviePage } from './pagination.js';
 import { renderUsernamePrompt } from "./chat.js";
+import { renderMovies } from './views.js';
 // import {formatMovieData, loadAndDisplayMoviesPage} from "./main.js";
 // DA VALUTARE SE METTERE IN UTILS
 

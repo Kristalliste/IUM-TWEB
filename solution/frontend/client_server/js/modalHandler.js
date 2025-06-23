@@ -169,22 +169,22 @@ export function attachModalListeners() {
 
     // Use event delegation on movie grid container
     const movieGrid = document.getElementById('movie-grid');
-    if (!movieGrid) return;
+    if (movieGrid) {
+        movieGrid.addEventListener('click', (e) => {
+            const card = e.target.closest('.movie-card');
+            if (card) {
+                e.preventDefault();
+                const movieId = card.getAttribute('data-movie-id');
 
-    movieGrid.addEventListener('click', (e) => {
-        const card = e.target.closest('.movie-card');
-        if (card) {
-            e.preventDefault();
-            const movieId = card.getAttribute('data-movie-id');
-
-            // Validate movie ID
-            if (movieId && movieId !== '0' && !isNaN(movieId)) {
-                showModal(movieId);
-            } else {
-                console.error('Invalid movie ID:', movieId);
+                // Validate movie ID
+                if (movieId && movieId !== '0' && !isNaN(movieId)) {
+                    showModal(movieId);
+                } else {
+                    console.error('Invalid movie ID:', movieId);
+                }
             }
-        }
-    });
+        });
+    }
 }
 
 // Initialize once when DOM is loaded
