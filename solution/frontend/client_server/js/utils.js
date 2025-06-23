@@ -104,3 +104,15 @@ export const validateResponse = (response) => {
 };
 
 export const moviesPerPage = 10;
+
+export function initHandlebars() {
+    // Register helper for checking oscar nomination
+    Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+        return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+    });
+
+    // Escape HTML helper
+    Handlebars.registerHelper('escape', function(context) {
+        return escapeHTML(context);
+    });
+}

@@ -3,6 +3,7 @@ import { showMainView} from './views.js';
 import { displayMoviePage } from './pagination.js';
 import { populateGenres } from './genres.js';
 import { renderUsernamePrompt } from "./chat.js";
+import { loadTemplate } from './templateLoader.js';
 
 // DOM elements
 const movieGrid = document.getElementById('movie-grid');
@@ -226,58 +227,57 @@ advancedSearchLink.addEventListener('click', (e) => {
 
 // Inizialization
 async function init() {
-    movieGrid.innerHTML = '<p class="loading">Loading Films...</p>';
-
     try {
-        const initialData = await fetchMovies('recent', 0);
+        // Preload templates if needed
+        await Promise.all([
+            loadTemplate('movie-card'),
+            loadTemplate('modal-template'),
+            loadTemplate('movie-detail')
+        ]);
 
-        const moviesForGenres = initialData.content.map(movie => formatMovieData(movie));
+        movieGrid.innerHTML = '<p class="loading">Loading Films...</p>';
 
-        populateGenres(
-            moviesForGenres,
-            mainView,
-            detailView,
-            searchInput,
-            currentPage,
-            mainTitle,
-            genresLink,
-            setActiveLink,
-            async (page) => {
-                await loadAndDisplayMoviesPage(page - 1);
-            },
-            paginationContainer,
-            movieGrid
-        );
+            const initialData = await fetchMovies('recent', 0);
 
-        showMainView(mainView, detailView);
-        mainTitle.textContent = 'Most Recent Films';
-        setActiveLink(null);
-        await loadAndDisplayMoviesPage(0);
-    } catch (error) {
-        console.error('Initialization error:', error);
-        movieGrid.innerHTML = `
+            const moviesForGenres = initialData.content.map(movie => formatMovieData(movie));
+
+            populateGenres(
+                moviesForGenres,
+                mainView,
+                detailView,
+                searchInput,
+                currentPage,
+                mainTitle,
+                genresLink,
+                setActiveLink,
+                async (page) => {
+                    await loadAndDisplayMoviesPage(page - 1);
+                },
+                paginationContainer,
+                movieGrid
+            );
+
+            showMainView(mainView, detailView);
+            mainTitle.textContent = 'Most Recent Films';
+            setActiveLink(null);
+            await loadAndDisplayMoviesPage(0);
+        } catch (error) {
+            console.error('Initialization error:', error);
+            movieGrid.innerHTML = `
             <div class="error" style="grid-column: 1 / -1; text-align: center; padding: 20px;">
                 <i class="fas fa-exclamation-triangle"></i>
                 <h3>Errore durante il caricamento</h3>
                 <p>${error.message}</p>
             </div>
         `;
+        }
     }
-}
 
-// Chat
-document.getElementById('toggle-chat-btn').addEventListener('click', () => {
-    const floatingChat = document.getElementById('floating-chat');
-    floatingChat.classList.toggle('hidden');
 
-    if (!floatingChat.classList.contains('hidden')) {
-        const chatWrapper = document.getElementById('floating-chat-body');
-        renderUsernamePrompt(chatWrapper, "homepage", 1);
-    }
-});
-
-document.getElementById('close-chat-btn').addEventListener('click', () => {
-    document.getElementById('floating-chat').classList.add('hidden');
-});
-
-document.addEventListener('DOMContentLoaded', init);
+// Update your DOMContentLoaded event listener
+    document.addEventListener('DOMContentLoaded', () => {
+        // No need to make this async since init is already async
+        init().catch(error => {
+            console.error('Unhandled initialization error:', error);
+        });
+    });
