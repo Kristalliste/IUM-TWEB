@@ -1,7 +1,7 @@
 import { API_BASE_URL, debounce, moviesPerPage, formatMovieData } from './utils.js';
 import { showMainView, showAdvancedSearch} from './views.js';
 import { displayMoviePage } from './pagination.js';
-import {renderUsernamePrompt, disconnectChat } from "./chat.js";
+import { renderUsernamePrompt, disconnectChat } from "./chat.js";
 import { loadTemplate } from './templateLoader.js';
 
 // DOM elements

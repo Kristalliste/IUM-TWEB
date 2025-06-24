@@ -1,12 +1,10 @@
 import { API_BASE_URL, formatMovieData, moviesPerPage } from './utils.js';
 import { displayMoviePage } from './pagination.js';
-import { loadTemplate } from './templateLoader.js';
 import { reattachSearchListeners } from './modalHandler.js';
 
 let currentPage = 1;
 let currentView = '';
 let totalPages = 1;
-//const modal = document.getElementById('movie-modal-search');
 
 async function fetchAllGenres() {
     try {

@@ -2,8 +2,8 @@ import { formatMovieDetails, formatMovieReviews } from './utils.js';
 import { renderUsernamePrompt } from './chat.js';
 import { fetchMovieDetails, fetchMovieReviews } from './api.js';
 import { loadTemplate } from './templateLoader.js';
-import { initSearch, performSearch } from './searchMain.js'; // <--- ADD THIS IMPORT
-import { reattachSearchListeners } from './modalHandler.js'; // NEW IMPORT
+import { initSearch, performSearch } from './searchMain.js';
+import { reattachSearchListeners } from './modalHandler.js';
 
 // Function to show the film details view
 export function showMainView(mainView, detailView) {
