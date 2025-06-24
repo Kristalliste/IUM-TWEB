@@ -78,10 +78,7 @@ async function searchMovies(page = 0) {
         currentPage = page + 1;
 
         let data;
-        if (type === "TITLE") {
-            currentView = 'title';
-            data = await loadFilteredMovies(page, currentView);
-        } else if (type === "YEAR") {
+        if (type === "YEAR") {
             currentView = 'year';
             data = await loadFilteredMovies(page, currentView);
         } else if (type === "GENRE") {
@@ -132,13 +129,6 @@ async function loadFilteredMovies(page = 0, currentView) {
         let searchValue;
 
         switch (currentView) {
-            case "title": {
-                searchValue = document.getElementById("search-input").value;
-                if (!searchValue) return { content: [], totalPages: 1, totalElements: 0 };
-                const encoded = encodeURIComponent(searchValue);
-                url = `${API_BASE_URL}/filteredMovies/${encoded}?page=${page}&size=${size}`;
-                break;
-            }
             case "genre": {
                 searchValue = document.getElementById("search-genre").value;
                 if (!searchValue || searchValue === "Select a genre") return { content: [], totalPages: 1, totalElements: 0 };
