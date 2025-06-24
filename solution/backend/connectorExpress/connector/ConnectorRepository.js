@@ -123,7 +123,6 @@ const getReviewsFromReviewsServer = async (movieTitle) => {
     }
 };
 
-
 const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
     const cacheKey = `filteredMovies_title_${title}_page_${page}_size_${size}`;
     const cachedMovies = cache.get(cacheKey);
