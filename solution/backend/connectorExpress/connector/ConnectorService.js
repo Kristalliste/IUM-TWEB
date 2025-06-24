@@ -51,16 +51,16 @@ const getFilteredByTitleMovies = async (title, page, size) => {
         return await ConnectorRepository.fetchFilteredByTitleMovies(title, page, size);
     } catch (error) {
         console.error('Error in getFilteredByTitleMovies:', error);
-        throw new Error('Failed to fetch movies');
+        throw new Error('Failed to fetch movies by title');
     }
 };
 
 const getFilteredByGenreMovies = async (genre, page, size) => {
     try {
-        return await ConnectorRepository.getFilteredByGenreMovies(genre, page, size);
+        return await ConnectorRepository.fetchFilteredByGenreMovies(genre, page, size);
     } catch (error) {
         console.error('Error in fetchFilteredByGenreMovies:', error);
-        throw new Error('Failed to fetch movies');
+        throw new Error('Failed to fetch movies by genre');
     }
 };
 
@@ -69,7 +69,7 @@ const getFilteredByYearMovies = async (year, page, size) => {
         return await ConnectorRepository.fetchFilteredByYearMovies(year, page, size);
     } catch (error) {
         console.error('Error in getFilteredByYearMovies:', error);
-        throw new Error('Failed to fetch movies');
+        throw new Error('Failed to fetch movies by year');
     }
 };
 
@@ -78,7 +78,7 @@ const getFilteredByLanguageMovies = async (language, page, size) => {
         return await ConnectorRepository.fetchFilteredByLanguageMovies(language, page, size);
     } catch (error) {
         console.error('Error in getFilteredByYearMovies:', error);
-        throw new Error('Failed to fetch movies');
+        throw new Error('Failed to fetch movies by language');
     }
 };
 
@@ -87,7 +87,7 @@ const getFilteredByActorMovies = async (actor, page, size) => {
         return await ConnectorRepository.fetchFilteredByActorMovies(actor, page, size);
     } catch (error) {
         console.error('Error in getFilteredByActorMovies:', error);
-        throw new Error('Failed to fetch movies');
+        throw new Error('Failed to fetch movies by actor');
     }
 };
 
