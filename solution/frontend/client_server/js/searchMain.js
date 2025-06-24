@@ -1,7 +1,7 @@
 // searchMain.js
 import { API_BASE_URL, toTitleCase, capitalizeDescription, moviesPerPage } from './utils.js';
 import { displayMoviePage } from './pagination.js';
-import { loadTemplate } from './templateLoader.js';
+import { showFilmLoader, hideFilmLoader } from '../loader/loader.js'; // Add this line
 
 let currentPage = 1;
 let currentView = '';
@@ -137,6 +137,7 @@ async function searchMovies(page = 0) {
 
 async function loadFilteredMovies(page = 0, currentView) {
     try {
+        showFilmLoader();
         const size = document.getElementById("page-size").value;
         let url;
         let searchValue;
@@ -198,6 +199,8 @@ async function loadFilteredMovies(page = 0, currentView) {
     } catch (error) {
         console.error('Error fetching filtered movies:', error);
         return { content: [], totalPages: 1, totalElements: 0 };
+    } finally {
+        hideFilmLoader();
     }
 }
 

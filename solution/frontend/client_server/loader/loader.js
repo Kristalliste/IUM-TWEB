@@ -1,9 +1,9 @@
-function showFilmLoader() {
+export function showFilmLoader() {
     const loader = document.getElementById('film-loader');
     if (loader) loader.style.display = 'flex';
 }
 
-function hideFilmLoader() {
+export function hideFilmLoader() {
     const loader = document.getElementById('film-loader');
     if (loader) loader.style.display = 'none';
 }
