@@ -23,7 +23,6 @@ const floatingChat = document.getElementById('floating-chat');
 const closeChatBtn = document.getElementById('close-chat-btn');
 const floatingChatBody = document.getElementById('floating-chat-body');
 
-
 // State
 let currentPage = 1;
 let currentView = 'recent'; // 'recent', 'top-rated', 'search'
@@ -90,7 +89,7 @@ async function fetchMovies(type, page = 0, query = '') {
 
 // Loads and shows a page of films
 async function loadAndDisplayMoviesPage(page = 0) {
-    currentPage = page + 1; // Converti in 1-indexed per UI
+    currentPage = page + 1; // Converts into 1-indexed per UI
     let data;
     console.log('Fetching movies page...');
     if (currentView === 'search') {
@@ -111,7 +110,7 @@ async function loadAndDisplayMoviesPage(page = 0) {
         totalPages,
         mainView,
         detailView,
-        (pageIndex) => { // Callback per cambio pagina
+        (pageIndex) => { // Callback to change page
             loadAndDisplayMoviesPage(pageIndex);
         }
     );
@@ -197,22 +196,22 @@ if (topRatedLink) {
     topRatedLink.addEventListener('click', async (e) => {
         e.preventDefault();
 
-        // Cambia l'URL senza ricaricare la pagina
+        // Change URL without reloading the page
         window.history.pushState({}, '', 'mainView?view=top-rated.html');
 
         console.log("Navigazione: Top Rated");
 
-        // Mostra vista principale e resetta la ricerca
+        // Show main view and clear search bar
         showMainView(mainView, detailView);
         searchInput.value = '';
 
-        // Imposta stato interno
+        // Set internal status
         currentView = 'top-rated';
         currentPage = 1;
         mainTitle.textContent = 'Film Top Rated';
         setActiveLink(topRatedLink);
 
-        // Carica la prima pagina di film top-rated
+        // Load the first page for top-rated
         await loadAndDisplayMoviesPage(0);
     });
 }
@@ -256,7 +255,8 @@ searchInput.addEventListener('input', debounce(async (e) => {
 
     await loadAndDisplayMoviesPage(0);
 });*/
-// Listener per il logo FilmTWEB per tornare alla homepage e caricare i film recenti
+
+// Listener for logo, to go back to homepage
 if (logo) {
     logo.addEventListener('click', async (e) => {
         e.preventDefault();
@@ -282,6 +282,7 @@ if (logo) {
         });
     }
 });*/
+
 // CORREZIONE: Gestore click per "Ricerca Avanzata"
 // Questo listener viene aggiunto una sola volta al DOMContentLoaded.
 if (advancedSearchLink) { // Verifica che l'elemento esista
@@ -295,7 +296,7 @@ if (advancedSearchLink) { // Verifica che l'elemento esista
 
 // Chat event listeners
 toggleChatBtn.addEventListener('click', () => {
-    // Se siamo nella vista dettaglio, non mostrare la chat generale
+    // If we're in the details view, don't show the main chat
     if (detailView.style.display === 'block') {
         const chatSection = document.querySelector('.chat-section');
         if (chatSection) {
@@ -304,10 +305,10 @@ toggleChatBtn.addEventListener('click', () => {
         return;
     }
 
-    // Altrimenti, mostra/nascondi la chat generale
+    // Otherwise, show/hide the main chat
     floatingChat.classList.toggle('hidden');
     if (!floatingChat.classList.contains('hidden')) {
-        renderUsernamePrompt(floatingChatBody, 'Generale', 1);
+        renderUsernamePrompt(floatingChatBody, 'Main', 1);
     } else {
         disconnectChat();
     }

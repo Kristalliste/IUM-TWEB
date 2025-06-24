@@ -43,9 +43,7 @@ export async function showModal(movieId) {
         console.error('Invalid movie ID:', movieId);
         return;
     }
-
     if (!modal) return;
-
 
     // Show loading state
     modalContent.innerHTML = '<div class="loading">Loading movie details...</div>';
@@ -54,14 +52,14 @@ export async function showModal(movieId) {
 
     try {
         const movie = await loadMovieDetails(movieId);
-        const formatteedmovies = formatMovieDetails(movie);
+        const formattedMovies = formatMovieDetails(movie);
         const template = await loadTemplate('modal-template');
 
         if (!template) {
             throw new Error('Could not load modal template');
         }
 
-        modalContent.innerHTML = template(formatteedmovies);
+        modalContent.innerHTML = template(formattedMovies);
 
         // Set up event listeners
         const closeBtn = modalContent.querySelector('.close');
@@ -75,7 +73,7 @@ export async function showModal(movieId) {
                 e.preventDefault();
                 hideModal();
 
-                // CLOSE GENERAL CHAT WHEN NAVIGATING TO DETAIL VIEW
+                // Close main chat when navigating to details views
                 const floatingChat = document.getElementById('floating-chat');
                 if (floatingChat && !floatingChat.classList.contains('hidden')) {
                     // Disconnect only if it's the general chat
@@ -88,7 +86,7 @@ export async function showModal(movieId) {
                 const mainView = document.querySelector('main');
                 const detailView = document.getElementById('movie-detail-view');
                 if (mainView && detailView) {
-                    showDetailView(formatteedmovies.id, mainView, detailView);
+                    showDetailView(formattedMovies.id, mainView, detailView);
                 }
             };
         }

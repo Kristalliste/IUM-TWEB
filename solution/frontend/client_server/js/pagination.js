@@ -1,23 +1,10 @@
 import { renderMovies } from './views.js';
 
 // Main function to display a page of movies with pagination controls
-export function displayMoviePage(
-    movieList,
-    paginationContainer,
-    movieGrid,
-    currentPage,
-    totalPages,  // Now passed from backend
-    mainView,
-    detailView,
-    onPageChange  // Callback function for page changes
-) {
+export function displayMoviePage(movieList, paginationContainer,movieGrid, currentPage, totalPages, mainView, detailView, onPageChange) {
     renderMovies(movieList, movieGrid, mainView, detailView);
-    renderPagination(
-        totalPages,
-        paginationContainer,
-        currentPage,
-        onPageChange
-    );
+
+    renderPagination(totalPages, paginationContainer, currentPage, onPageChange);
     window.scrollTo(0, 0);
 }
 

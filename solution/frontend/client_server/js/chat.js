@@ -8,11 +8,11 @@ export function renderUsernamePrompt(container, movieTitle, movieId) {
     currentRoom = movieId;
     container.innerHTML = `
         <div class="username-prompt">
-            <p>Scegli il tuo nome per la chat o partecipa in modo anonimo.</p>
-            <input type="text" id="username-input" placeholder="Inserisci il tuo username..." maxlength="20">
+            <p> Choose your username or join anonymously.</p>
+            <input type="text" id="username-input" placeholder="Type your username..." maxlength="20">
             <div class="username-prompt-buttons">
-                <button id="anonymous-chat-btn">Entra come Anonimo</button>
-                <button id="start-chat-btn">Inizia a chattare</button>
+                <button id="anonymous-chat-btn">Join anonymously</button>
+                <button id="start-chat-btn">Start chatting</button>
             </div>
         </div>
     `;
@@ -22,7 +22,7 @@ export function renderUsernamePrompt(container, movieTitle, movieId) {
     const usernameInput = document.getElementById('username-input');
 
     const handleStartChat = () => {
-        const username = usernameInput.value.trim() || 'Anonimo';
+        const username = usernameInput.value.trim() || 'Anonymous';
         connectToChat(username, movieTitle, movieId);
     };
 
@@ -32,14 +32,14 @@ export function renderUsernamePrompt(container, movieTitle, movieId) {
     });
 
     anonymousChatBtn.addEventListener('click', () => {
-        connectToChat('Anonimo', movieTitle, movieId);
+        connectToChat('Anonymous', movieTitle, movieId);
     });
 }
 
 function connectToChat(username, movieTitle, roomId) {
-    // Chiudi connessione esistente se presente
+    // Close all pre existing connections
     if (socket) {
-        socket.removeAllListeners(); // Rimuovi tutti i listener
+        socket.removeAllListeners(); // Remove all listeners
         socket.disconnect();
         socket = null;
     }
@@ -62,22 +62,22 @@ function connectToChat(username, movieTitle, roomId) {
     });
 
     socket.on('message', (data) => {
-        // Solo se siamo nella stanza corretta
+        // Only if we're in the correct room
         if (data.room === currentRoom) {
             appendMessage(data.username, data.message, data.time);
         }
     });
 
     socket.on('systemMessage', (data) => {
-        // Solo se siamo nella stanza corretta
+        // Only if we're in the correct room
         if (data.room === currentRoom) {
             const systemMsg = document.createElement('p');
             systemMsg.className = 'chat-system';
 
             if (data.type === 'join') {
-                systemMsg.textContent = `${data.username} si è unito alla chat`;
+                systemMsg.textContent = `${data.username} joined the chat`;
             } else if (data.type === 'leave') {
-                systemMsg.textContent = `${data.username} ha lasciato la chat`;
+                systemMsg.textContent = `${data.username} left the chat chat`;
             }
 
             document.getElementById('chat-messages').appendChild(systemMsg);
@@ -86,7 +86,7 @@ function connectToChat(username, movieTitle, roomId) {
     });
 
     socket.on('disconnect', () => {
-        console.log('Disconnesso dalla chat');
+        console.log('Disconnected from chat');
     });
 }
 
@@ -95,29 +95,29 @@ export function renderChatInterface(container, movieTitle, username, roomId) {
     if(roomId === 1){
         container.innerHTML = `
         <div class="chat-username-display">
-            Stai chattando come: <strong>${escapeHTML(username)}</strong> | 
+            You're chatting as: <strong>${escapeHTML(username)}</strong> | 
             Chat: <strong>${escapeHTML(movieTitle)}</strong>
         </div>
         <div id="chat-messages" class="chat-messages">
-            <p class="chat-system">Benvenuto nella chat generale!</p>
+            <p class="chat-system">Welcome to the main chat!</p>
         </div>
         <div class="chat-input-area">
-            <input type="text" id="chat-input" placeholder="Scrivi un messaggio...">
-            <button id="send-chat-btn">Invia</button>
+            <input type="text" id="chat-input" placeholder="Write something...">
+            <button id="send-chat-btn">Send</button>
         </div>
         `;
     } else {
         container.innerHTML = `
         <div class="chat-username-display">
-            Stai chattando come: <strong>${escapeHTML(username)}</strong> | 
-            Film: <strong>${escapeHTML(movieTitle)}</strong>
+            You're chatting as: <strong>${escapeHTML(username)}</strong> | 
+            Chat for film: <strong>${escapeHTML(movieTitle)}</strong>
         </div>
         <div id="chat-messages" class="chat-messages">
-            <p class="chat-system">Benvenuto nella chat per "${escapeHTML(movieTitle)}"!</p>
+            <p class="chat-system">Welcome to the chat for "${escapeHTML(movieTitle)}"!</p>
         </div>
         <div class="chat-input-area">
-            <input type="text" id="chat-input" placeholder="Scrivi un messaggio...">
-            <button id="send-chat-btn">Invia</button>
+            <input type="text" id="chat-input" placeholder="Write something...">
+            <button id="send-chat-btn">Send</button>
         </div>
         `;
     }
@@ -178,7 +178,7 @@ export function isGeneralChat() {
     return currentRoom === 1;
 }
 
-// Cleanup quando si lascia la pagina
+// Cleanup
 window.addEventListener('beforeunload', () => {
     disconnectChat();
 });

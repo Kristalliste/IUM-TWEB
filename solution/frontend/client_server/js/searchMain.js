@@ -118,6 +118,7 @@ async function fetchAllGenres(){
     }
 }
 
+//DUPLICATO CON MAIN, METTERE IN UTILS
 function formatMovieData(movie) {
     return {
         id: movie.id,

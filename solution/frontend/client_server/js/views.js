@@ -51,7 +51,7 @@ export async function showDetailView(movieId, mainView, detailView) {
 
         const movieReviews = await fetchMovieReviews(formattedMovie.originalTitle);
         const formattedReviews = formatMovieReviews(movieReviews);
-        console.log("Reviews data passed to template:", formattedReviews); // <-- Add this line
+        console.log("Reviews data passed to template:", formattedReviews);
 
 
         const detailTemplate = await loadTemplate('movie-detail');
@@ -70,7 +70,7 @@ export async function showDetailView(movieId, mainView, detailView) {
         const toggleChatBtn = document.getElementById('toggle-chat-btn');
         if (toggleChatBtn) {
             toggleChatBtn.addEventListener('click', () => {
-                // Scorri fino alla sezione chat
+                // Scroll to the chat section
                 const chatSection = document.querySelector('.chat-section');
                 if (chatSection) {
                     chatSection.scrollIntoView({ behavior: 'smooth' });
