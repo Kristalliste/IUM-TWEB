@@ -163,7 +163,7 @@ function setActiveLink(activeLink) {
 
 
 // Gestori eventi
-/*
+
 // Event Listeners
 topRatedLink.addEventListener('click', async (e) => {
     e.preventDefault();
@@ -195,7 +195,7 @@ if (topRatedLink) {
     });
 }*/
 
-if (topRatedLink) {
+/*if (topRatedLink) {
     topRatedLink.addEventListener('click', async (e) => {
         e.preventDefault();
 
@@ -217,7 +217,7 @@ if (topRatedLink) {
         // Load the first page for top-rated
         await loadAndDisplayMoviesPage(0);
     });
-}
+}*/
 
 searchInput.addEventListener('input', debounce(async (e) => {
     showMainView(mainView, detailView);
@@ -248,7 +248,7 @@ searchInput.addEventListener('input', debounce(async (e) => {
     }
 }, 300));
 
-/*logo.addEventListener('click', async () => {
+logo.addEventListener('click', async () => {
     searchInput.value = '';
     currentView = 'recent';
     currentPage = 1;
@@ -263,13 +263,13 @@ searchInput.addEventListener('input', debounce(async (e) => {
 });*/
 
 // Listener for logo, to go back to homepage
-if (logo) {
+/*if (logo) {
     logo.addEventListener('click', async (e) => {
         e.preventDefault();
         mainTitle.textContent = 'Most Recent Films';
         window.location.href = 'mainView.html';
     });
-}
+}*/
 
 /*advancedSearchLink.addEventListener('click', (e) => {
     e.preventDefault();
