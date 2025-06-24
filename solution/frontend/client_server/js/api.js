@@ -1,9 +1,4 @@
-import {API_BASE_URL, moviesPerPage} from './utils.js';
-
-export async function fetchMovies() {
-    const response = await fetch(`${API_BASE_URL}/movies`);
-    return await response.json();
-}
+import {API_BASE_URL} from './utils.js';
 
 export async function fetchMovieDetails(movieId) {
     const response = await fetch(`${API_BASE_URL}/movies/${movieId}`);
@@ -30,10 +25,4 @@ export async function fetchMovieReviews(movieTitle) {
         console.error(`Error fetching movie details for ID ${movieId}:`, error);
         return {reviews: []};
     }
-}
-
-/////////
-export async function fetchMoviesByType(type, page = 0) {
-    const response = await fetch(`${API_BASE_URL}/movies/${type}?page=${page}&size=${moviesPerPage}`);
-    return await response.json();
 }

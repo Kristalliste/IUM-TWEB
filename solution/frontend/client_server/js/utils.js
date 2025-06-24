@@ -1,4 +1,4 @@
-// URL del connector server
+// Connector server URL
 export const API_BASE_URL = 'http://localhost:4000/api';
 
 // Add debounce function
@@ -10,6 +10,21 @@ export function debounce(func, wait) {
     };
 }
 
+// Function to format movie data for main view
+export function formatMovieData(movie) {
+    return {
+        id: movie.id,
+        title: movie.title ? toTitleCase(movie.title) : 'Untitled Movie',
+        year: movie.year || (movie.date ? new Date(movie.date).getUTCFullYear() : 0),
+        posterUrl: movie.posterUrl || movie.link || 'https://placehold.co/300x450?text=No+Image',
+        description: capitalizeDescription(movie.description),
+        rating: movie.rating || 'N/A',
+        minute: movie.minute || 0,
+        hasOscar: movie.hasOscar || false,
+    };
+}
+
+// Function to format movie data for details view
 export function formatMovieDetails(movieData) {
     return {
         id: movieData.id,
@@ -42,6 +57,7 @@ export function escapeHTML(str) {
     });
 }
 
+// Function to correctly display movie titles
 export function toTitleCase(str) {
     if (!str) return '';
 
@@ -75,6 +91,7 @@ export function toTitleCase(str) {
         .join('');
 }
 
+// Function to correctly display movie descriptions
 export function capitalizeDescription(str) {
     if (!str) return '';
     return str
@@ -92,35 +109,17 @@ export function capitalizeDescription(str) {
         .trim();
 }
 
+// Format movie reviews response to a consistent structure
+export function formatMovieReviews(movieReviewsData) {
+    return {
+        reviews: movieReviewsData.map(review => ({
+            critic_name: review.criticName || 'Anonymous',
+            top_critic: review.topCritic || false,
+            review_date: review.reviewDate || '',
+            review_content: review.reviewContent || "The critic didn't leave any comment.",
+            normalized_score: review.normalizedScore || 'N/A'
+        }))
+    };
+}
+
 export const moviesPerPage = 10;
-
-/**
- export const handleApiError = (error) => {
- console.error('API Error:', error);
- return {
- error: true,
- message: error.message || 'Server Error'
- };
- };
-
- export const validateResponse = (response) => {
- if (!response.ok) {
- throw new Error(`HTTP error! status: ${response.status}`);
- }
- return response.json();
- };
-
-
-
- export function initHandlebars() {
- // Register helper for checking oscar nomination
-   Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
- return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
- });
-
- // Escape HTML helper
-  Handlebars.registerHelper('escape', function(context) {
- return escapeHTML(context);
- });
- }
- */

@@ -110,7 +110,7 @@ export function renderChatInterface(container, movieTitle, username, roomId) {
         container.innerHTML = `
         <div class="chat-username-display">
             You're chatting as: <strong>${escapeHTML(username)}</strong> | 
-            Chat for film: <strong>${escapeHTML(movieTitle)}</strong>
+            Chat for: <strong>${escapeHTML(movieTitle)}</strong>
         </div>
         <div id="chat-messages" class="chat-messages">
             <p class="chat-system">Welcome to the chat for "${escapeHTML(movieTitle)}"!</p>

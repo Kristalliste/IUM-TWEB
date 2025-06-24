@@ -1,22 +1,9 @@
-import { formatMovieDetails} from './utils.js';
+import { formatMovieDetails, formatMovieReviews } from './utils.js';
 import { renderUsernamePrompt } from './chat.js';
 import { fetchMovieDetails, fetchMovieReviews } from './api.js';
 import { loadTemplate } from './templateLoader.js';
-import { initSearch, performSearch } from './searchMain.js'; // <--- ADD THIS IMPORT
-import { reattachSearchListeners } from './modalHandler.js'; // NEW IMPORT
-
-// Format movie reviews response to a consistent structure
-function formatMovieReviews(movieReviewsData) {
-    return {
-        reviews: movieReviewsData.map(review => ({
-            critic_name: review.criticName || 'Anonymous',
-            top_critic: review.topCritic || false,
-            review_date: review.reviewDate || '',
-            review_content: review.reviewContent || "The critic didn't leave any comment.",
-            normalized_score: review.normalizedScore || 'N/A'
-        }))
-    };
-}
+import { initSearch, performSearch } from './searchMain.js';
+import { reattachSearchListeners } from './modalHandler.js';
 
 // Function to show the film details view
 export function showMainView(mainView, detailView) {
@@ -25,7 +12,6 @@ export function showMainView(mainView, detailView) {
     detailView.innerHTML = '';
 }
 
-// views.js - update the showAdvancedSearch function
 export async function showAdvancedSearch(mainView, detailView) {
     mainView.style.display = 'none';
     detailView.style.display = 'block';
@@ -50,7 +36,7 @@ export async function showAdvancedSearch(mainView, detailView) {
         // Initialize the search functionality
         await initSearch();
 
-        // NEW: Attach search listeners after rendering
+        // Attach search listeners after rendering
         reattachSearchListeners();
 
         // Set up back button
@@ -102,6 +88,8 @@ export async function showDetailView(movieId, mainView, detailView) {
 
         const movieReviews = await fetchMovieReviews(formattedMovie.originalTitle);
         const formattedReviews = formatMovieReviews(movieReviews);
+        console.log("Reviews data passed to template:", formattedReviews);
+
 
         const detailTemplate = await loadTemplate('movie-detail');
 
@@ -213,7 +201,7 @@ export async function showDetailView(movieId, mainView, detailView) {
     initActorsCarousel();
 }
 
-// Function to render movie cards (now receives pre-paginated movies)
+// Function to render movie cards ( receives pre-paginated movies)
 export async function renderMovies(movieList, movieGrid, mainView, detailView) {
     movieGrid.innerHTML = '';
 

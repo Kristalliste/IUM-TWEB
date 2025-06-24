@@ -94,7 +94,7 @@ export function hideModal() {
     }
 }
 
-// NEW: Function to handle clicks on movie cards in search results
+// Function to handle clicks on movie cards in search results
 function handleMovieCardClick(e) {
     const card = e.target.closest('.movie-card');
     if (card) {
@@ -110,7 +110,7 @@ function handleMovieCardClick(e) {
     }
 }
 
-// NEW: Function to initialize event listeners for search results
+// Function to initialize event listeners for search results
 export function attachSearchListeners() {
     const searchGrid = document.getElementById('movie-grid-search');
     if (searchGrid) {
@@ -133,7 +133,7 @@ export function attachModalListeners() {
 // Initialize once when DOM is loaded
 document.addEventListener('DOMContentLoaded', attachModalListeners);
 
-// NEW: Reattach search listeners when advanced search is loaded
+// Reattach search listeners when advanced search is loaded
 export function reattachSearchListeners() {
     attachSearchListeners();
 }

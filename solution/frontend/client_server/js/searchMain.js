@@ -1,6 +1,5 @@
-import { API_BASE_URL, toTitleCase, capitalizeDescription, moviesPerPage } from './utils.js';
+import { API_BASE_URL, formatMovieData, moviesPerPage } from './utils.js';
 import { displayMoviePage } from './pagination.js';
-import { loadTemplate } from './templateLoader.js';
 import { reattachSearchListeners } from './modalHandler.js';
 
 let currentPage = 1;
@@ -19,19 +18,6 @@ async function fetchAllGenres() {
         console.error('API Error: Failed to fetch genres', error);
         throw error;
     }
-}
-
-function formatMovieData(movie) {
-    return {
-        id: movie.id,
-        title: movie.title ? toTitleCase(movie.title) : 'Untitled Movie',
-        year: movie.year || (movie.date ? new Date(movie.date).getUTCFullYear() : 0),
-        posterUrl: movie.posterUrl || movie.link || 'https://placehold.co/300x450?text=No+Image',
-        description: capitalizeDescription(movie.description),
-        rating: movie.rating || 'N/A',
-        minute: movie.minute || 0,
-        hasOscar: movie.hasOscar || false
-    };
 }
 
 export async function initSearch() {
@@ -123,7 +109,7 @@ async function searchMovies(page = 0) {
             }
         );
 
-        // NEW: Reattach event listeners for search results
+        // Reattach event listeners for search results
         reattachSearchListeners();
     } catch (error) {
         console.error('Error during movie search:', error);
