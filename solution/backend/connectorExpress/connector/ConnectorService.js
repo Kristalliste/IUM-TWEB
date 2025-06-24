@@ -82,6 +82,14 @@ const getFilteredByLanguageMovies = async (language, page, size) => {
     }
 };
 
+const getFilteredByActorMovies = async (actor, page, size) => {
+    try {
+        return await ConnectorRepository.fetchFilteredByActorMovies(actor, page, size);
+    } catch (error) {
+        console.error('Error in getFilteredByActorMovies:', error);
+        throw new Error('Failed to fetch movies');
+    }
+};
 
 const getAllGenres = async () => {
     try {
@@ -99,6 +107,7 @@ export default {
     getFilteredByTitleMovies,
     getFilteredByGenreMovies,
     getFilteredByYearMovies,
-    getFilteredByLanguageMovies,
     getAllGenres,
+    getFilteredByLanguageMovies,
+    getFilteredByActorMovies
 };

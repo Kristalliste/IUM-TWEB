@@ -351,7 +351,7 @@ router.get('/filteredMovies/:title', async (req, res, next) => {
 
     try {
         // Get the title from the query parameters
-        const title = req.params.title; // 'title' will be the value of ?title=... in the URL
+        const title = req.params.title;
         const page = parseInt(req.query.page) || 0;
         const size = parseInt(req.query.size) || 10;
         console.log("hei");
@@ -416,8 +416,8 @@ router.get('/filteredByGenreMovies/:genre', async (req, res, next) => {
     console.log('[GET /filteredByGenreMovies/:genre] req.query:', req.query);
 
     try {
-        // Get the title from the query parameters
-        const genre = req.params.genre; // 'title' will be the value of ?title=... in the URL
+        // Get the genre from the query parameters
+        const genre = req.params.genre;
         const page = parseInt(req.query.page) || 0;
         const size = parseInt(req.query.size) || 10;
 
@@ -480,8 +480,8 @@ router.get('/filteredByYearMovies/:year', async (req, res, next) => {
     console.log('[GET /filteredByYearMovies/:year] req.query:', req.query);
 
     try {
-        // Get the title from the query parameters
-        const year = req.params.year; // 'title' will be the value of ?title=... in the URL
+        // Get the year from the query parameters
+        const year = req.params.year;
         const page = parseInt(req.query.page) || 0;
         const size = parseInt(req.query.size) || 10;
 
@@ -540,8 +540,8 @@ router.get('/filteredByYearMovies/:year', async (req, res, next) => {
  */
 router.get('/filteredByLanguageMovies/:language', async (req, res, next) => {
     try {
-        // Get the title from the query parameters
-        const language = req.params.language; // 'title' will be the value of ?title=... in the URL
+        // Get the language from the query parameters
+        const language = req.params.language;
         const page = parseInt(req.query.page) || 0;
         const size = parseInt(req.query.size) || 10;
 
@@ -555,6 +555,23 @@ router.get('/filteredByLanguageMovies/:language', async (req, res, next) => {
         res.json(movies);
     } catch (error) {
         console.error(`[ERROR] Failed to fetch movies by language: ${error.message}`);
+        next(error);
+    }
+});
+
+router.get('/filteredByActorMovies/:actor', async (req, res, next) => {
+    try {
+        // Get the actor from the query parameters
+        const actor = req.params.actor;
+        const page = parseInt(req.query.page) || 0;
+        const size = parseInt(req.query.size) || 10;
+
+        if (!actor) {
+            return res.status(400).json({ error: 'Actor parameter is required.' });
+        }
+        let movies = await connectorService.getFilteredByActorMovies(actor, page, size);
+        res.json(movies);
+    } catch (error) {
         next(error);
     }
 });

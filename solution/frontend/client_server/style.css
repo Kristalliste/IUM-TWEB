@@ -1089,3 +1089,138 @@ footer {
     left: 5px;
     color: #f5c518;
 }
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #1f1f1f;
+    min-width: 180px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    z-index: 1001;
+    border-radius: 5px;
+    padding: 10px 0;
+    border: 1px solid #333;
+    margin-top: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a {
+    color: #eee;
+    padding: 8px 15px;
+    text-decoration: none;
+    display: block;
+    font-size: 1em;
+    font-weight: normal;
+    white-space: normal;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dropdown-content a:hover {
+    background-color: #000;
+    color: #f5c518;
+}
+
+.dropdown-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dropdown-content::-webkit-scrollbar-track {
+    background: #2a2a2a;
+    border-radius: 0 5px 5px 0;
+}
+
+.dropdown-content::-webkit-scrollbar-thumb {
+    background: #f5c518;
+    border-radius: 4px;
+}
+
+/* Contenitore dei controlli di ricerca */
+.search-controls-container {
+    background-color: #1f1f1f; /* Sfondo leggermente più scuro */
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    margin-bottom: 40px;
+}
+
+.search-form {
+    display: flex;
+    flex-wrap: wrap; /* Permette agli elementi di andare a capo */
+    gap: 20px; /* Spazio tra gli elementi del form */
+    align-items: flex-end; /* Allinea gli elementi alla base */
+    justify-content: center; /* Centra gli elementi orizzontalmente */
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Spazio tra label e input */
+    flex-basis: 200px; /* Base per la larghezza degli elementi, si espanderanno/restringeranno */
+    flex-grow: 1; /* Permette agli elementi di crescere */
+}
+
+.form-group label {
+    font-size: 0.9em;
+    color: #ccc;
+    margin-bottom: 5px;
+}
+
+/* Stili per select e input testuale */
+.search-form select,
+.search-form input[type="text"] {
+    padding: 12px 15px;
+    border-radius: 6px;
+    border: 1px solid #3a3a3a;
+    background-color: #2a2a2a; /* Sfondo scuro per i campi */
+    color: #ffffff;
+    font-size: 1em;
+    outline: none;
+    appearance: none; /* Rimuove lo stile di default delle select */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-form select:focus,
+.search-form input[type="text"]:focus {
+    border-color: #f5c518;
+    box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.3); /* Effetto glow */
+}
+
+/* Stile per il placeholder */
+.search-form input[type="text"]::placeholder {
+    color: #aaa;
+    opacity: 0.7;
+}
+
+/* Pulsante Cerca */
+.search-button {
+    background-color: #f5c518; /* Giallo */
+    color: #121212; /* Testo scuro */
+    padding: 12px 25px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    flex-shrink: 0; /* Non si restringe */
+    margin-top: 15px; /* Spazio sopra il bottone per allineamento */
+}
+
+.search-button:hover {
+    background-color: #e6b800; /* Giallo più scuro al hover */
+    transform: translateY(-2px); /* Lieve effetto di sollevamento */
+}
+
+/* Nascondi gli elementi con classe 'hidden' */
+.hidden {
+    display: none !important;
+}

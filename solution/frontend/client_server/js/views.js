@@ -2,6 +2,7 @@ import { formatMovieDetails} from './utils.js';
 import { renderUsernamePrompt } from './chat.js';
 import { fetchMovieDetails, fetchMovieReviews } from './api.js';
 import { loadTemplate } from './templateLoader.js';
+import { initSearch } from './searchMain.js'; // <--- ADD THIS IMPORT
 
 // Format movie reviews response to a consistent structure
 function formatMovieReviews(movieReviewsData) {
@@ -30,6 +31,61 @@ export function showMainView(mainView, detailView) {
     mainView.style.display = 'block';
     detailView.style.display = 'none';
     detailView.innerHTML = '';
+}
+
+// views.js - update the showAdvancedSearch function
+export async function showAdvancedSearch(mainView, detailView) {
+    mainView.style.display = 'none';
+    detailView.style.display = 'block';
+    window.scrollTo(0, 0);
+
+    // Show loading state
+    detailView.innerHTML = `
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Loading search form...</p>
+        </div>
+    `;
+
+    try {
+        const searchTemplate = await loadTemplate('advanced-search');
+
+        if (!searchTemplate) throw new Error('Could not load search template');
+
+        // Render the template
+        detailView.innerHTML = searchTemplate({});
+
+        // Initialize the search functionality
+        await initSearch();
+
+        // Set up back button
+        const backButton = document.createElement('button');
+        backButton.id = 'back-button';
+        backButton.className = 'back-button';
+        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Return to Movie List';
+        backButton.addEventListener('click', () => {
+            showMainView(mainView, detailView);
+        });
+        detailView.insertBefore(backButton, detailView.firstChild);
+
+    } catch (error) {
+        console.error('Error loading advanced search:', error);
+        detailView.innerHTML = `
+            <button id="back-button" class="back-button">
+                <i class="fas fa-arrow-left"></i> Return to Movie List
+            </button>
+            <div class="error-container">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h2>Error while loading search form</h2>
+                <p>Please try again later</p>
+                <p class="error-details">${error.message}</p>
+            </div>
+        `;
+
+        document.getElementById('back-button').addEventListener('click', () => {
+            showMainView(mainView, detailView);
+        });
+    }
 }
 
 export async function showDetailView(movieId, mainView, detailView) {

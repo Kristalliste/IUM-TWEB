@@ -168,4 +168,8 @@ public class MovieService {
     public Page<MovieDTO> getAllMoviesOrderedByRatingDescDTO(Pageable pageable) {
         return convertToDTOPage(movieRepository.findAllMoviesOrderedByRatingDesc(pageable));
     }
+
+    public Page<MovieDTO> findByActorIgnoreCase(String actor, Pageable pageable) {
+        return convertToDTOPage(movieRepository.findByActorIgnoreCase(actor, pageable));
+    }
 }

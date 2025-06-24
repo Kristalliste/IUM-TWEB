@@ -1,5 +1,5 @@
 import { API_BASE_URL, debounce, toTitleCase, capitalizeDescription, moviesPerPage } from './utils.js';
-import { showMainView} from './views.js';
+import { showMainView, showAdvancedSearch} from './views.js';
 import { displayMoviePage } from './pagination.js';
 import {renderUsernamePrompt, disconnectChat } from "./chat.js";
 import { loadTemplate } from './templateLoader.js';
@@ -160,6 +160,9 @@ function setActiveLink(activeLink) {
         activeLink.classList.add('active');
     }
 }
+
+
+// Gestori eventi
 /*
 // Event Listeners
 topRatedLink.addEventListener('click', async (e) => {
@@ -174,7 +177,7 @@ topRatedLink.addEventListener('click', async (e) => {
 
     await loadAndDisplayMoviesPage(0);
 });
-
+/*
 if (topRatedLink) {
     topRatedLink.addEventListener('click', async (e) => {
         e.preventDefault(); // <-- QUESTO È IL PUNTO CHIAVE!
@@ -254,6 +257,9 @@ searchInput.addEventListener('input', debounce(async (e) => {
     setActiveLink(null);
 
     await loadAndDisplayMoviesPage(0);
+});
+// Listener per il logo FilmTWEB per tornare alla homepage e caricare i film recenti
+/*if (logo) { // Verifica che l'elemento esista
 });*/
 
 // Listener for logo, to go back to homepage
@@ -285,14 +291,20 @@ if (logo) {
 
 // CORREZIONE: Gestore click per "Ricerca Avanzata"
 // Questo listener viene aggiunto una sola volta al DOMContentLoaded.
-if (advancedSearchLink) { // Verifica che l'elemento esista
+/*if (advancedSearchLink) { // Verifica che l'elemento esista
     advancedSearchLink.addEventListener('click', (e) => {
         e.preventDefault(); // Previene la navigazione di default
         // Non sono necessarie showMainView o altre manipolazioni UI qui
         // perché si sta navigando a una pagina completamente nuova.
         window.location.href = 'search.html'; // Naviga alla pagina di ricerca avanzata
     });
-}
+}*/
+
+// In main.js - update the advancedSearchLink event listener
+advancedSearchLink.addEventListener('click', async (e) => {
+    e.preventDefault();
+    await showAdvancedSearch(mainView, detailView);
+});
 
 // Chat event listeners
 toggleChatBtn.addEventListener('click', () => {
@@ -328,7 +340,6 @@ async function init() {
             loadTemplate('movie-card'),
             loadTemplate('modal-template'),
             loadTemplate('movie-detail'),
-            //loadTemplate('advanced-search')
         ]);
 
         movieGrid.innerHTML = '<p class="loading">Loading Films...</p>';
