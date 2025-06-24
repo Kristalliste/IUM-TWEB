@@ -157,6 +157,60 @@ export async function showDetailView(movieId, mainView, detailView) {
             showMainView(mainView, detailView);
         });
     }
+    // Initialize actors carousel
+    function initActorsCarousel() {
+        const carousel = document.querySelector('.actors-carousel');
+        if (!carousel) return;
+
+        const inner = carousel.querySelector('.carousel-inner');
+        const items = inner.querySelectorAll('.actor-item');
+        const prevBtn = carousel.querySelector('.prev');
+        const nextBtn = carousel.querySelector('.next');
+
+        let currentIndex = 0;
+        const itemsPerSlide = 6; // 3 columns x 2 rows
+
+        function showSlide(index) {
+            // Hide all items
+            items.forEach(item => {
+                item.style.display = 'none';
+            });
+
+            // Show items for current slide
+            const start = index * itemsPerSlide;
+            const end = Math.min(start + itemsPerSlide, items.length);
+
+            for (let i = start; i < end; i++) {
+                if (items[i]) {
+                    items[i].style.display = 'block';
+                }
+            }
+
+            // Update button states
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = end >= items.length;
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                showSlide(currentIndex);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < Math.ceil(items.length / itemsPerSlide) - 1) {
+                currentIndex++;
+                showSlide(currentIndex);
+            }
+        });
+
+        // Initialize first slide
+        showSlide(currentIndex);
+    }
+
+// Call this after rendering the detail view
+    initActorsCarousel();
 }
 
 // Function to render movie cards (now receives pre-paginated movies)

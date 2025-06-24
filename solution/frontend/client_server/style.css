@@ -1084,8 +1084,8 @@ footer {
 }
 
 .actor-role::before {
-    content: "»";
-    position: absolute;
+    content: "» ";
+    position: sticky;
     left: 5px;
     color: #f5c518;
 }
@@ -1223,4 +1223,83 @@ footer {
 /* Nascondi gli elementi con classe 'hidden' */
 .hidden {
     display: none !important;
+}
+
+/* Actors Carousel */
+.actors-carousel {
+    position: relative;
+    padding: 0 40px;
+    margin-top: 20px;
+}
+
+.carousel-inner {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 15px;
+    overflow: hidden;
+    min-height: 220px;
+}
+
+.actor-item {
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.carousel-control.prev {
+    left: 0;
+}
+
+.carousel-control.next {
+    right: 0;
+}
+
+.carousel-control:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.no-actors {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 0;
+    color: #999;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .carousel-inner {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+    }
+
+    .actors-carousel {
+        padding: 0 35px;
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel-inner {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
 }
