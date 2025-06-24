@@ -144,16 +144,16 @@ async function loadFilteredMovies(page = 0, currentView) {
 
         switch (currentView) {
             case "title": {
-                const title = document.getElementById("search-input").value;
-                if (!title) return { content: [], totalPages: 1, totalElements: 0 };
-                const encoded = encodeURIComponent(title);
+                searchValue = document.getElementById("search-input").value;
+                if (!searchValue) return { content: [], totalPages: 1, totalElements: 0 };
+                const encoded = encodeURIComponent(searchValue);
                 url = `${API_BASE_URL}/filteredMovies/${encoded}?page=${page}&size=${size}`;
                 break;
             }
             case "genre": {
-                const genre = document.getElementById("search-genre").value;
-                if (!genre || genre === "Select a genre") return { content: [], totalPages: 1, totalElements: 0 };
-                const encoded = encodeURIComponent(genre);
+                searchValue = document.getElementById("search-genre").value;
+                if (!searchValue || searchValue === "Select a genre") return { content: [], totalPages: 1, totalElements: 0 };
+                const encoded = encodeURIComponent(searchValue);
                 url = `${API_BASE_URL}/filteredByGenreMovies/${encoded}?page=${page}&size=${size}`;
                 break;
             }
