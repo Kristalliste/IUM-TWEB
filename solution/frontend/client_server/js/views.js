@@ -2,7 +2,8 @@ import { formatMovieDetails} from './utils.js';
 import { renderUsernamePrompt } from './chat.js';
 import { fetchMovieDetails, fetchMovieReviews } from './api.js';
 import { loadTemplate } from './templateLoader.js';
-import { initSearch } from './searchMain.js'; // <--- ADD THIS IMPORT
+import { initSearch, performSearch } from './searchMain.js'; // <--- ADD THIS IMPORT
+import { reattachSearchListeners } from './modalHandler.js'; // NEW IMPORT
 
 // Format movie reviews response to a consistent structure
 function formatMovieReviews(movieReviewsData) {
@@ -16,15 +17,6 @@ function formatMovieReviews(movieReviewsData) {
         }))
     };
 }
-
-// Function to fetch the HTML template for movie details view
-/*async function fetchMovieDetailTemplate() {
-    const response = await fetch('./movieDetail.html');
-    if (!response.ok) {
-        throw new Error('Failed to load movie detail template');
-    }
-    return response.text();
-}*/
 
 // Function to show the film details view
 export function showMainView(mainView, detailView) {
@@ -57,6 +49,9 @@ export async function showAdvancedSearch(mainView, detailView) {
 
         // Initialize the search functionality
         await initSearch();
+
+        // NEW: Attach search listeners after rendering
+        reattachSearchListeners();
 
         // Set up back button
         const backButton = document.createElement('button');
@@ -107,8 +102,6 @@ export async function showDetailView(movieId, mainView, detailView) {
 
         const movieReviews = await fetchMovieReviews(formattedMovie.originalTitle);
         const formattedReviews = formatMovieReviews(movieReviews);
-        console.log("Reviews data passed to template:", formattedReviews);
-
 
         const detailTemplate = await loadTemplate('movie-detail');
 

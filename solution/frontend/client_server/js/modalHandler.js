@@ -1,5 +1,5 @@
 import {API_BASE_URL, formatMovieDetails} from './utils.js';
-import {showAdvancedSearch, showDetailView} from './views.js';
+import {showDetailView} from './views.js';
 import { loadTemplate } from './templateLoader.js';
 import { disconnectChat, isGeneralChat } from './chat.js';
 
@@ -59,7 +59,6 @@ export async function showModal(movieId) {
 
         const detailLink = document.getElementById('detailLink');
         if (detailLink) {
-            console.log("detailLink:", detailLink);
             detailLink.onclick = (e) => {
                 e.preventDefault();
                 hideModal();
@@ -82,16 +81,6 @@ export async function showModal(movieId) {
             };
         }
 
-        const advanceSearchLink = document.getElementById('advanced-search-link');
-        if (advanceSearchLink) {
-            console.log("advanced search:", advanceSearchLink);
-            advanceSearchLink.onclick = (e) => {
-                e.preventDefault();
-                showAdvancedSearch();
-            };
-        }
-
-
     } catch (error) {
         console.error('Error showing modal:', error);
         modalContent.innerHTML = `<div class="error">Error loading movie details: ${error.message}</div>`;
@@ -105,32 +94,46 @@ export function hideModal() {
     }
 }
 
-export function attachModalListeners() {
-    if (!modal) return;
+// NEW: Function to handle clicks on movie cards in search results
+function handleMovieCardClick(e) {
+    const card = e.target.closest('.movie-card');
+    if (card) {
+        e.preventDefault();
+        const movieId = card.getAttribute('data-movie-id');
 
-    // Use event delegation on movie grid container
-    const movieGrid = document.getElementById('movie-grid');
-    if (movieGrid) {
-        movieGrid.addEventListener('click', (e) => {
-            const card = e.target.closest('.movie-card');
-            if (card) {
-                e.preventDefault();
-                const movieId = card.getAttribute('data-movie-id');
-
-                // Validate movie ID
-                if (movieId && movieId !== '0' && !isNaN(movieId)) {
-                    showModal(movieId);
-                } else {
-                    console.error('Invalid movie ID:', movieId);
-                }
-            }
-        });
+        // Validate movie ID
+        if (movieId && movieId !== '0' && !isNaN(movieId)) {
+            showModal(movieId);
+        } else {
+            console.error('Invalid movie ID:', movieId);
+        }
     }
 }
 
+// NEW: Function to initialize event listeners for search results
+export function attachSearchListeners() {
+    const searchGrid = document.getElementById('movie-grid-search');
+    if (searchGrid) {
+        searchGrid.addEventListener('click', handleMovieCardClick);
+    }
+}
 
+// Initialize both main and search listeners
+export function attachModalListeners() {
+    // Main grid listener
+    const movieGrid = document.getElementById('movie-grid');
+    if (movieGrid) {
+        movieGrid.addEventListener('click', handleMovieCardClick);
+    }
 
-
+    // NEW: Also attach to search grid if it exists
+    attachSearchListeners();
+}
 
 // Initialize once when DOM is loaded
 document.addEventListener('DOMContentLoaded', attachModalListeners);
+
+// NEW: Reattach search listeners when advanced search is loaded
+export function reattachSearchListeners() {
+    attachSearchListeners();
+}
