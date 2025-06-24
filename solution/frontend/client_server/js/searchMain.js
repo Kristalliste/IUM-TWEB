@@ -112,25 +112,32 @@ async function searchMovies(page = 0) {
             document.getElementById('pagination-container').innerHTML = '';
             return;
         }
-
+        console.log(data.content);
         const formattedMovies = data.content.map(movie => formatMovieData(movie));
         totalPages = data.totalPages;
-
-        const movieGrid = document.getElementById('movie-grid');
+        console.log(formattedMovies);
+/*        const movieGrid = document.getElementById('movie-grid');
         const template = await loadTemplate('movie-card');
 
         if (template) {
             movieGrid.innerHTML = '';
             formattedMovies.forEach(movie => {
-                const html = template(movie);
-                movieGrid.insertAdjacentHTML('beforeend', html);
+                try {
+                    const html = template(movie);
+                    console.log("Generated HTML for movie:", html);
+                    console.log("here");
+                    movieGrid.insertAdjacentHTML('beforeend', html);
+                } catch (innerError) {
+                    console.error("Error during movie card rendering for movie:", movie, innerError);
+                }
             });
-        }
+        }*/
 
         displayMoviePage(
             formattedMovies,
-            document.getElementById('pagination-container'),
-            movieGrid,
+            document.getElementById('pagination-container-search'),
+            //movieGrid,
+            document.getElementById('movie-grid-search'),
             currentPage,
             totalPages,
             document.querySelector('main'),
@@ -183,7 +190,7 @@ async function loadFilteredMovies(page = 0, currentView) {
 
         console.log(url);
         const response = await fetch(url);
-        console.log(response.body);
+        console.log("Fetch response:", response);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

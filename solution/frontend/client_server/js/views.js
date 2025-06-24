@@ -210,6 +210,8 @@ export async function renderMovies(movieList, movieGrid, mainView, detailView) {
             description: movie.description,
             posterUrl: movie.posterUrl
         });
+        console.log("renderMovies: Generated HTML for movie:", html.substring(0, 200) + '...'); // Log a snippet for brevity
         movieGrid.insertAdjacentHTML('beforeend', html);
     });
+    console.log("renderMovies: FINAL check - movieGrid.innerHTML:", movieGrid.innerHTML);
 }

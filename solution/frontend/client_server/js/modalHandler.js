@@ -130,5 +130,6 @@ export function attachModalListeners() {
 
 
 
+
 // Initialize once when DOM is loaded
 document.addEventListener('DOMContentLoaded', attachModalListeners);
