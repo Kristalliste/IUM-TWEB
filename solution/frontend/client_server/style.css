@@ -12,6 +12,7 @@ body {
     padding: 20px;
 }
 
+/* Header Styles */
 header {
     background-color: #1f1f1f;
     padding: 10px 0;
@@ -37,6 +38,7 @@ header .container {
     cursor: pointer;
 }
 
+/* Main Navigation Styles */
 .main-nav {
     flex-grow: 1;
 }
@@ -69,6 +71,7 @@ header .container {
     color: #f5c518;
 }
 
+/* Dropdown Menu Styles */
 .dropdown-content {
     display: none;
     position: absolute;
@@ -106,21 +109,7 @@ header .container {
     color: #f5c518;
 }
 
-/* Custom scrollbar for description */
-.movie-description::-webkit-scrollbar {
-    width: 5px;
-}
-
-.movie-description::-webkit-scrollbar-track {
-    background: #2a2a2a;
-}
-
-.movie-description::-webkit-scrollbar-thumb {
-    background: #f5c518;
-    border-radius: 5px;
-}
-
-/* Add scrollbar styling */
+/* Dropdown Scrollbar Styling */
 .dropdown-content::-webkit-scrollbar {
     width: 8px;
 }
@@ -135,6 +124,7 @@ header .container {
     border-radius: 4px;
 }
 
+/* Search Bar Styles */
 .search-bar input {
     width: 300px;
     padding: 10px 15px;
@@ -152,7 +142,30 @@ header .container {
     box-shadow: 0 0 8px rgba(245, 197, 24, 0.5);
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
+/* Chat Toggle Button */
+.chat-toggle-btn {
+    background: #f5c518;
+    color: #121212;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+    white-space: nowrap;
+}
+
+.chat-toggle-btn:hover {
+    background: #e6b800;
+}
+
+/* Main Content Styles */
 main h2 {
     font-size: 1.8em;
     border-bottom: 2px solid #f5c518;
@@ -161,12 +174,14 @@ main h2 {
     color: #f5c518;
 }
 
+/* Movie Grid Styles */
 .movie-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 25px;
 }
 
+/* Movie Card Styles */
 .movie-card {
     background-color: #1a1a1a;
     border-radius: 8px;
@@ -181,10 +196,6 @@ main h2 {
 .movie-card:hover {
     transform: scale(1.05);
     box-shadow: 0 8px 16px rgba(0,0,0,0.7);
-}
-
-.movie-card:hover .movie-overlay {
-    opacity: 1;
 }
 
 .movie-poster-container {
@@ -220,12 +231,30 @@ main h2 {
     text-align: left;
 }
 
+.movie-card:hover .movie-overlay {
+    opacity: 1;
+}
+
 .movie-description {
     font-size: 0.9em;
     line-height: 1.5;
     max-height: 100%;
     overflow-y: auto;
-    padding-right: 5px; /* space for scrollbar */
+    padding-right: 5px; /* Space for scrollbar */
+}
+
+/* Custom scrollbar for movie description */
+.movie-description::-webkit-scrollbar {
+    width: 5px;
+}
+
+.movie-description::-webkit-scrollbar-track {
+    background: #2a2a2a;
+}
+
+.movie-description::-webkit-scrollbar-thumb {
+    background: #f5c518;
+    border-radius: 5px;
 }
 
 .movie-info {
@@ -257,6 +286,7 @@ main h2 {
     font-size: 1.1em;
 }
 
+/* Pagination Styles */
 .pagination-container {
     display: flex;
     justify-content: center;
@@ -300,6 +330,14 @@ main h2 {
     border-color: #333;
 }
 
+.pagination .ellipsis {
+    display: inline-block;
+    padding: 8px 12px;
+    color: #888;
+    user-select: none;
+}
+
+/* Footer Styles */
 footer {
     background-color: #1f1f1f;
     text-align: center;
@@ -309,7 +347,7 @@ footer {
     color: #888;
 }
 
-/* Movie Detail Page */
+/* Movie Detail Page Styles */
 .back-button {
     background-color: #f5c518;
     color: #121212;
@@ -330,7 +368,7 @@ footer {
     background-color: #fff;
 }
 
-/* Clean, consistent detail view sections */
+/* Detail view sections */
 .detail-info {
     display: flex;
     flex-direction: column;
@@ -435,24 +473,25 @@ footer {
     padding: 0.3rem 0;
     color: #ffffff;
     font-size: 1em;
-    //break-inside: avoid; /* Prevents item splitting across columns */
+    /* break-inside: avoid; /* Prevents item splitting across columns */
 }
 
-/* Responsive: Reduce to 1 column on mobile */
-@media (max-width: 768px) {
-    .languages-list,
-    .genres-list,
-    .actors-list {
-        grid-template-columns: 1fr;
-    }
+.actor-role {
+    display: block;
+    font-size: 0.85em;
+    color: #aaa;
+    margin-top: 3px;
+    font-style: italic;
+    padding-left: 15px;
+    position: relative;
 }
 
-/**
-.detail-sections {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-}*/
+.actor-role::before {
+    content: "»";
+    position: absolute;
+    left: 5px;
+    color: #f5c518;
+}
 
 /* Move the reviews section to be full width */
 .reviews-section {
@@ -495,12 +534,7 @@ footer {
     margin-right: 5px;
 }
 
-.chat-section h2 {
-    font-size: 1.8em;
-    color: #f5c518;
-    margin-bottom: 20px;
-}
-
+/* Review Section Styles */
 .reviews-list {
     max-height: 500px;
     overflow-y: auto;
@@ -529,33 +563,16 @@ footer {
     font-style: italic;
 }
 
-/* For mobile responsiveness */
-@media (max-width: 992px) {
-    .detail-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .detail-poster-chat-container {
-        width: 100%;
-    }
-
-    .detail-poster {
-        text-align: center;
-    }
-
-    .detail-poster img {
-        max-width: 300px;
-    }
-
-    .chat-section {
-        max-width: 300px;
-        margin: 20px auto 0;
-    }
-}
-
+/* Chat Section Styles */
 .chat-section {
     width: 100%;
     margin-top: 20px;
+}
+
+.chat-section h2 {
+    font-size: 1.8em;
+    color: #f5c518;
+    margin-bottom: 20px;
 }
 
 .username-prompt {
@@ -661,7 +678,6 @@ footer {
     color: #f5c518;
 }
 
-
 .chat-input-area {
     display: flex;
     gap: 10px;
@@ -694,86 +710,63 @@ footer {
     background-color: #fff;
 }
 
-
-@media (max-width: 992px) {
-    .detail-grid {
-        grid-template-columns: 1fr;
-    }
-    .detail-poster {
-        text-align: center;
-    }
-    .detail-poster img {
-        max-width: 300px;
-    }
-}
-
-
-@media (max-width: 768px) {
-    .search-bar input {
-        width: 100%;
-    }
-    header .container {
-        justify-content: center;
-        text-align: center;
-    }
-    .detail-sections {
-        grid-template-columns: 1fr;
-    }
-}
-
-.loading {
-    color: #f5c518;
-    text-align: center;
-    grid-column: 1 / -1;
-    font-size: 1.2em;
-}
-
-.error {
-    color: #ff4d4d;
-    text-align: center;
-    grid-column: 1 / -1;
-    font-size: 1.2em;
-}
-
-/* Add loader styles */
-.loader {
+/* Floating Chat Styles */
+.floating-chat {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    height: 450px;
+    background: #1a1a1a;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
+    z-index: 1000;
+    border: 1px solid #333;
+    overflow: hidden;
+}
+
+.floating-chat.hidden {
+    display: none;
+}
+
+.chat-header {
+    background-color: #1f1f1f;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    padding: 40px;
+    border-bottom: 1px solid #333;
 }
 
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid rgba(245, 197, 24, 0.3);
-    border-radius: 50%;
-    border-top-color: #f5c518;
-    animation: spin 1s ease-in-out infinite;
+.chat-header span {
+    font-weight: bold;
+    color: #f5c518;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
+#close-chat-btn {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 5px;
 }
 
-/* Improve error display */
-.error {
-    color: #ff4d4d;
-    text-align: center;
-    padding: 20px;
-    background: rgba(255, 77, 77, 0.1);
-    border-radius: 8px;
-    margin: 20px 0;
+#close-chat-btn:hover {
+    color: #fff;
 }
 
-.error i {
-    font-size: 2em;
-    margin-bottom: 10px;
-    display: block;
+.chat-body {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Adding modal (pop-up) styles */
+
+/* Modal (Pop-up) Styles */
 .modal {
     display: none;
     position: fixed;
@@ -802,9 +795,6 @@ footer {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    //display: flex;
-   // flex-direction: column;
-   // min-height: 80vh;
     padding-bottom: 25px;
 }
 
@@ -918,31 +908,12 @@ footer {
     width: 300px;
 }
 
-
-/* For smaller screens where modal might be taller than viewport */
-@media (max-height: 700px) {
-    .modal {
-        align-items: flex-start;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-    .modal-content {
-        top: 20px;
-        transform: translate(-50%, 0);
-    }
-}
-
-
 .bi-award {
     color: #f5c518;
     margin-left: 10px;
     font-size: 1.2em;
     vertical-align: middle;
-}
-
-/* add animation for the Oscar icon */
-.bi-award {
-    animation: pulse 2s infinite;
+    animation: pulse 2s infinite; /* Add animation for the Oscar icon */
 }
 
 @keyframes pulse {
@@ -951,6 +922,7 @@ footer {
     100% { transform: scale(1); }
 }
 
+/* Search Controls Container */
 /* Header actions container */
 .header-actions {
     display: flex;
@@ -1143,7 +1115,7 @@ footer {
 
 /* Contenitore dei controlli di ricerca */
 .search-controls-container {
-    background-color: #1f1f1f; /* Sfondo leggermente più scuro */
+    background-color: #1f1f1f; /* Slightly darker background */
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
@@ -1152,18 +1124,18 @@ footer {
 
 .search-form {
     display: flex;
-    flex-wrap: wrap; /* Permette agli elementi di andare a capo */
-    gap: 20px; /* Spazio tra gli elementi del form */
-    align-items: flex-end; /* Allinea gli elementi alla base */
-    justify-content: center; /* Centra gli elementi orizzontalmente */
+    flex-wrap: wrap; /* Allows elements to wrap to the next line */
+    gap: 20px; /* Space between form elements */
+    align-items: flex-end; /* Aligns elements to the bottom */
+    justify-content: center; /* Centers elements horizontally */
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Spazio tra label e input */
-    flex-basis: 200px; /* Base per la larghezza degli elementi, si espanderanno/restringeranno */
-    flex-grow: 1; /* Permette agli elementi di crescere */
+    gap: 8px; /* Space between label and input */
+    flex-basis: 200px; /* Base width for elements, they will expand/shrink */
+    flex-grow: 1; /* Allows elements to grow */
 }
 
 .form-group label {
@@ -1172,17 +1144,17 @@ footer {
     margin-bottom: 5px;
 }
 
-/* Stili per select e input testuale */
+/* Styles for select and text input */
 .search-form select,
 .search-form input[type="text"] {
     padding: 12px 15px;
     border-radius: 6px;
     border: 1px solid #3a3a3a;
-    background-color: #2a2a2a; /* Sfondo scuro per i campi */
+    background-color: #2a2a2a; /* Dark background for fields */
     color: #ffffff;
     font-size: 1em;
     outline: none;
-    appearance: none; /* Rimuove lo stile di default delle select */
+    appearance: none; /* Removes default select arrow */
     -webkit-appearance: none;
     -moz-appearance: none;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -1191,19 +1163,19 @@ footer {
 .search-form select:focus,
 .search-form input[type="text"]:focus {
     border-color: #f5c518;
-    box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.3); /* Effetto glow */
+    box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.3); /* Glow effect */
 }
 
-/* Stile per il placeholder */
+/* Placeholder style */
 .search-form input[type="text"]::placeholder {
     color: #aaa;
     opacity: 0.7;
 }
 
-/* Pulsante Cerca */
+/* Search Button */
 .search-button {
-    background-color: #f5c518; /* Giallo */
-    color: #121212; /* Testo scuro */
+    background-color: #f5c518; /* Yellow */
+    color: #121212; /* Dark text */
     padding: 12px 25px;
     border: none;
     border-radius: 6px;
@@ -1211,18 +1183,232 @@ footer {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    flex-shrink: 0; /* Non si restringe */
-    margin-top: 15px; /* Spazio sopra il bottone per allineamento */
+    flex-shrink: 0; /* Does not shrink */
+    margin-top: 15px; /* Space above the button for alignment */
 }
 
 .search-button:hover {
-    background-color: #e6b800; /* Giallo più scuro al hover */
-    transform: translateY(-2px); /* Lieve effetto di sollevamento */
+    background-color: #e6b800; /* Darker yellow on hover */
+    transform: translateY(-2px); /* Slight lift effect */
 }
 
-/* Nascondi gli elementi con classe 'hidden' */
+
+/* Loading and Error Styles */
+.loading {
+    color: #f5c518;
+    text-align: center;
+    grid-column: 1 / -1;
+    font-size: 1.2em;
+}
+
+.loading-text {
+    color: #f5c518; /* Theme yellow color */
+    font-size: 1.2em;
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+}
+
+.loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(245, 197, 24, 0.3);
+    border-radius: 50%;
+    border-top-color: #f5c518;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.error {
+    color: #ff4d4d;
+    text-align: center;
+    grid-column: 1 / -1;
+    font-size: 1.2em;
+}
+
+.error {
+    color: #ff4d4d;
+    text-align: center;
+    padding: 20px;
+    background: rgba(255, 77, 77, 0.1);
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.error i {
+    font-size: 2em;
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* Utility Class */
 .hidden {
     display: none !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    .detail-poster-chat-container {
+        width: 100%;
+    }
+    .detail-poster {
+        text-align: center;
+    }
+    .detail-poster img {
+        max-width: 300px;
+    }
+    .chat-section {
+        max-width: 300px;
+        margin: 20px auto 0;
+    }
+    .modal-content {
+        top: 20px;
+        transform: translate(-50%, 0);
+    }
+}
+
+@media (max-height: 700px) {
+    .modal {
+        align-items: flex-start;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+    .modal-content {
+        top: 20px;
+        transform: translate(-50%, 0);
+    }
+}
+
+@media (max-width: 768px) {
+    .search-bar input {
+        width: 100%;
+    }
+    header .container {
+        justify-content: center;
+        text-align: center;
+    }
+    .detail-sections {
+        grid-template-columns: 1fr;
+    }
+    .floating-chat {
+        width: 300px;
+        height: 400px;
+        bottom: 10px;
+        right: 10px;
+    }
+    .header-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+    .search-bar input {
+        width: 180px;
+    }
+    .languages-list,
+    .genres-list,
+    .actors-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Actors Carousel */
+.actors-carousel {
+    position: relative;
+    padding: 0 40px;
+    margin-top: 20px;
+}
+
+.carousel-inner {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 15px;
+    overflow: hidden;
+    min-height: 220px;
+}
+
+.actor-item {
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.carousel-control.prev {
+    left: 0;
+}
+
+.carousel-control.next {
+    right: 0;
+}
+
+.carousel-control:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.no-actors {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 0;
+    color: #999;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .carousel-inner {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+    }
+
+    .actors-carousel {
+        padding: 0 35px;
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel-inner {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
 }
 
 /* Actors Carousel */
