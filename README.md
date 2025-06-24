@@ -14,6 +14,7 @@ Language level: 20 - No new language features.
 Data Bases: We uploaded on Google Drive the exports of the two databases:
 - backup dbTWEB.sql for PostgreSQL
 - MongoDB TWEB.reviews.json for MongDB
+  
 at the following link: https://drive.google.com/drive/folders/1Qja4sgJ0SL4IggdNUxnNAPXd_bWQi6rX?usp=drive_link
 
 Installs:
@@ -31,6 +32,9 @@ Finally, run these files, preferably in the following order:
 6. mainViev.html in frontend.
 
 Swagger usage:
+
 For Express server debugging go to http://localhost:3000/api-docs
+
 For connector Express server debugging go to http://localhost:4000/api-docs
+
 For Springboot server debugging go to http://localhost:8080/swagger-ui/index.html
