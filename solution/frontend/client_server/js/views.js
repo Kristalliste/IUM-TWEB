@@ -5,11 +5,18 @@ import { loadTemplate } from './templateLoader.js';
 import { initSearch, performSearch } from './searchMain.js';
 import { reattachSearchListeners } from './modalHandler.js';
 
+// Add this helper function to clear active states
+function clearActiveNavLinks() {
+    const navLinks = document.querySelectorAll('.main-nav ul > li > a');
+    navLinks.forEach(link => link.classList.remove('active'));
+}
+
 // Function to show the film details view
 export function showMainView(mainView, detailView) {
     mainView.style.display = 'block';
     detailView.style.display = 'none';
     detailView.innerHTML = '';
+    clearActiveNavLinks();  // Clear active states when returning to main view
 }
 
 export async function showAdvancedSearch(mainView, detailView) {

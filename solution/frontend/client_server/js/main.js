@@ -170,14 +170,14 @@ logo.addEventListener('click', async () => {
     currentPage = 1;
     showMainView(mainView, detailView);
     mainTitle.textContent = 'Most Recent Films';
-    setActiveLink(null);
-
+    setActiveLink(null);  // Clear active states
     await loadAndDisplayMoviesPage(0);
 });
 
 // In main.js - update the advancedSearchLink event listener
 advancedSearchLink.addEventListener('click', async (e) => {
     e.preventDefault();
+    setActiveLink(advancedSearchLink);  // Set this link as active
     await showAdvancedSearch(mainView, detailView);
 });
 
