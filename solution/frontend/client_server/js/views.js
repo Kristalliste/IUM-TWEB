@@ -2,7 +2,8 @@ import { formatMovieDetails, formatMovieReviews } from './utils.js';
 import { renderUsernamePrompt } from './chat.js';
 import { fetchMovieDetails, fetchMovieReviews } from './api.js';
 import { loadTemplate } from './templateLoader.js';
-import { initSearch } from './searchMain.js';
+import { initSearch, performSearch } from './searchMain.js'; // <--- ADD THIS IMPORT
+import { reattachSearchListeners } from './modalHandler.js'; // NEW IMPORT
 
 // Function to show the film details view
 export function showMainView(mainView, detailView) {
@@ -34,6 +35,9 @@ export async function showAdvancedSearch(mainView, detailView) {
 
         // Initialize the search functionality
         await initSearch();
+
+        // Attach search listeners after rendering
+        reattachSearchListeners();
 
         // Set up back button
         const backButton = document.createElement('button');

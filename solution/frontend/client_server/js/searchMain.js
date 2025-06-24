@@ -1,10 +1,12 @@
 import { API_BASE_URL, formatMovieData, moviesPerPage } from './utils.js';
 import { displayMoviePage } from './pagination.js';
+import { loadTemplate } from './templateLoader.js';
+import { reattachSearchListeners } from './modalHandler.js';
 
 let currentPage = 1;
 let currentView = '';
 let totalPages = 1;
-const modal = document.getElementById('movie-modal-search');
+//const modal = document.getElementById('movie-modal-search');
 
 async function fetchAllGenres() {
     try {
@@ -89,8 +91,8 @@ async function searchMovies(page = 0) {
         }
 
         if (!data || !data.content || data.content.length === 0) {
-            document.getElementById('movie-grid').innerHTML = '<p class="no-results">No films found</p>';
-            document.getElementById('pagination-container').innerHTML = '';
+            document.getElementById('movie-grid-search').innerHTML = '<p class="no-results">No films found</p>';
+            document.getElementById('pagination-container-search').innerHTML = '';
             return;
         }
         const formattedMovies = data.content.map(movie => formatMovieData(movie));
@@ -108,9 +110,12 @@ async function searchMovies(page = 0) {
                 searchMovies(pageIndex);
             }
         );
+
+        // Reattach event listeners for search results
+        reattachSearchListeners();
     } catch (error) {
         console.error('Error during movie search:', error);
-        document.getElementById('movie-grid').innerHTML = '<p class="error-message">Failed to load movies. Please try again.</p>';
+        document.getElementById('movie-grid-search').innerHTML = '<p class="error-message">Failed to load movies. Please try again.</p>';
     }
 }
 
