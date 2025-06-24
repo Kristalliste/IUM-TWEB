@@ -9,12 +9,7 @@ export function displayMoviePage(movieList, paginationContainer,movieGrid, curre
 }
 
 // Improved pagination rendering
-export function renderPagination(
-    totalPages,  // Total pages from backend
-    paginationContainer,
-    currentPage,
-    onPageChange  // Callback function (pageNumber: 0-indexed)
-) {
+export function renderPagination( totalPages, paginationContainer, currentPage, onPageChange) {
     paginationContainer.innerHTML = '';
     if (totalPages <= 1) return;
 
@@ -79,7 +74,6 @@ export function renderPagination(
         });
         pagination.appendChild(nextButton);
     }
-
     paginationContainer.appendChild(pagination);
 }
 

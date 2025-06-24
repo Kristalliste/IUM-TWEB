@@ -1,17 +1,10 @@
-// searchMain.js
-import { API_BASE_URL, toTitleCase, capitalizeDescription, moviesPerPage } from './utils.js';
+import { API_BASE_URL, formatMovieData, moviesPerPage } from './utils.js';
 import { displayMoviePage } from './pagination.js';
-import { loadTemplate } from './templateLoader.js';
 
 let currentPage = 1;
 let currentView = '';
 let totalPages = 1;
 const modal = document.getElementById('movie-modal-search');
-
-// Initialize the search functionality when the DOM content is fully loaded.
-/*document.addEventListener("DOMContentLoaded", async () => {
-    await initSearch();
-});*/
 
 async function fetchAllGenres() {
     try {
@@ -25,20 +18,6 @@ async function fetchAllGenres() {
         console.error('API Error: Failed to fetch genres', error);
         throw error;
     }
-}
-
-//DUPLICATO CON MAIN, METTERE IN UTILS
-function formatMovieData(movie) {
-    return {
-        id: movie.id,
-        title: movie.title ? toTitleCase(movie.title) : 'Untitled Movie',
-        year: movie.year || (movie.date ? new Date(movie.date).getUTCFullYear() : 0),
-        posterUrl: movie.posterUrl || movie.link || 'https://placehold.co/300x450?text=No+Image',
-        description: capitalizeDescription(movie.description),
-        rating: movie.rating || 'N/A',
-        minute: movie.minute || 0,
-        hasOscar: movie.hasOscar || false
-    };
 }
 
 export async function initSearch() {
@@ -200,7 +179,6 @@ async function loadFilteredMovies(page = 0, currentView) {
         return { content: [], totalPages: 1, totalElements: 0 };
     }
 }
-
 
 // Export the searchMovies function to be called from views.js
 export async function performSearch() {

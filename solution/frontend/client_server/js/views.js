@@ -1,30 +1,8 @@
-import { formatMovieDetails} from './utils.js';
+import { formatMovieDetails, formatMovieReviews } from './utils.js';
 import { renderUsernamePrompt } from './chat.js';
 import { fetchMovieDetails, fetchMovieReviews } from './api.js';
 import { loadTemplate } from './templateLoader.js';
-import { initSearch } from './searchMain.js'; // <--- ADD THIS IMPORT
-
-// Format movie reviews response to a consistent structure
-function formatMovieReviews(movieReviewsData) {
-    return {
-        reviews: movieReviewsData.map(review => ({
-            critic_name: review.criticName || 'Anonymous',
-            top_critic: review.topCritic || false,
-            review_date: review.reviewDate || '',
-            review_content: review.reviewContent || "The critic didn't leave any comment.",
-            normalized_score: review.normalizedScore || 'N/A'
-        }))
-    };
-}
-
-// Function to fetch the HTML template for movie details view
-/*async function fetchMovieDetailTemplate() {
-    const response = await fetch('./movieDetail.html');
-    if (!response.ok) {
-        throw new Error('Failed to load movie detail template');
-    }
-    return response.text();
-}*/
+import { initSearch } from './searchMain.js';
 
 // Function to show the film details view
 export function showMainView(mainView, detailView) {
@@ -33,7 +11,6 @@ export function showMainView(mainView, detailView) {
     detailView.innerHTML = '';
 }
 
-// views.js - update the showAdvancedSearch function
 export async function showAdvancedSearch(mainView, detailView) {
     mainView.style.display = 'none';
     detailView.style.display = 'block';
@@ -166,7 +143,7 @@ export async function showDetailView(movieId, mainView, detailView) {
     }
 }
 
-// Function to render movie cards (now receives pre-paginated movies)
+// Function to render movie cards ( receives pre-paginated movies)
 export async function renderMovies(movieList, movieGrid, mainView, detailView) {
     movieGrid.innerHTML = '';
 
