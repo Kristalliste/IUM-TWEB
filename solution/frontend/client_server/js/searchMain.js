@@ -6,6 +6,7 @@ import { loadTemplate } from './templateLoader.js';
 let currentPage = 1;
 let currentView = '';
 let totalPages = 1;
+const modal = document.getElementById('movie-modal-search');
 
 // Initialize the search functionality when the DOM content is fully loaded.
 /*document.addEventListener("DOMContentLoaded", async () => {
@@ -112,36 +113,17 @@ async function searchMovies(page = 0) {
             document.getElementById('pagination-container').innerHTML = '';
             return;
         }
-        console.log(data.content);
         const formattedMovies = data.content.map(movie => formatMovieData(movie));
         totalPages = data.totalPages;
-        console.log(formattedMovies);
-/*        const movieGrid = document.getElementById('movie-grid');
-        const template = await loadTemplate('movie-card');
-
-        if (template) {
-            movieGrid.innerHTML = '';
-            formattedMovies.forEach(movie => {
-                try {
-                    const html = template(movie);
-                    console.log("Generated HTML for movie:", html);
-                    console.log("here");
-                    movieGrid.insertAdjacentHTML('beforeend', html);
-                } catch (innerError) {
-                    console.error("Error during movie card rendering for movie:", movie, innerError);
-                }
-            });
-        }*/
 
         displayMoviePage(
             formattedMovies,
             document.getElementById('pagination-container-search'),
-            //movieGrid,
             document.getElementById('movie-grid-search'),
             currentPage,
             totalPages,
             document.querySelector('main'),
-            document.getElementById('movie-detail-view'),
+            document.getElementById('movie-detail-view-search'),
             (pageIndex) => {
                 searchMovies(pageIndex);
             }
@@ -158,39 +140,45 @@ async function loadFilteredMovies(page = 0, currentView) {
         let url;
         let searchValue;
 
-        if (currentView === "title") {
-            const title = document.getElementById("search-input").value;
-            console.log(title);
-            if (!title) return { content: [], totalPages: 1, totalElements: 0 };
-            console.log(title);
-            const encoded = encodeURIComponent(title);
-            console.log(encoded);
-            url = `${API_BASE_URL}/filteredMovies/${encoded}?page=${page}&size=${size}`;
-        } else if (currentView === "genre") {
-            const genre = document.getElementById("search-genre").value;
-            if (!genre || genre === "Select a genre") return { content: [], totalPages: 1, totalElements: 0 };
-            const encoded = encodeURIComponent(genre);
-            url = `${API_BASE_URL}/filteredByGenreMovies/${encoded}?page=${page}&size=${size}`;
-        } else if (currentView === "year") {
-            searchValue = document.getElementById("search-input").value;
-            if (!searchValue) return { content: [], totalPages: 1, totalElements: 0 };
-            const encoded = encodeURIComponent(searchValue);
-            url = `${API_BASE_URL}/filteredByYearMovies/${encoded}?page=${page}&size=${size}`;
-        } else if (currentView === "language") {
-            searchValue = document.getElementById("search-input").value;
-            if (!searchValue) return { content: [], totalPages: 1, totalElements: 0 };
-            const encoded = encodeURIComponent(searchValue);
-            url = `${API_BASE_URL}/filteredByLanguageMovies/${encoded}?page=${page}&size=${size}`;
-        } else if (currentView === "actor") {
-            searchValue = document.getElementById("search-input").value;
-            if (!searchValue) return { content: [], totalPages: 1, totalElements: 0 };
-            const encoded = encodeURIComponent(searchValue);
-            url = `${API_BASE_URL}/filteredByActorMovies/${encoded}?page=${page}&size=${size}`;
+        switch (currentView) {
+            case "title": {
+                const title = document.getElementById("search-input").value;
+                if (!title) return { content: [], totalPages: 1, totalElements: 0 };
+                const encoded = encodeURIComponent(title);
+                url = `${API_BASE_URL}/filteredMovies/${encoded}?page=${page}&size=${size}`;
+                break;
+            }
+            case "genre": {
+                const genre = document.getElementById("search-genre").value;
+                if (!genre || genre === "Select a genre") return { content: [], totalPages: 1, totalElements: 0 };
+                const encoded = encodeURIComponent(genre);
+                url = `${API_BASE_URL}/filteredByGenreMovies/${encoded}?page=${page}&size=${size}`;
+                break;
+            }
+            case "year": {
+                searchValue = document.getElementById("search-input").value;
+                if (!searchValue) return { content: [], totalPages: 1, totalElements: 0 };
+                const encoded = encodeURIComponent(searchValue);
+                url = `${API_BASE_URL}/filteredByYearMovies/${encoded}?page=${page}&size=${size}`;
+                break;
+            }
+            case "language": {
+                searchValue = document.getElementById("search-input").value;
+                if (!searchValue) return { content: [], totalPages: 1, totalElements: 0 };
+                const encoded = encodeURIComponent(searchValue);
+                url = `${API_BASE_URL}/filteredByLanguageMovies/${encoded}?page=${page}&size=${size}`;
+                break;
+            }
+            case "actor": {
+                searchValue = document.getElementById("search-input").value;
+                if (!searchValue) return { content: [], totalPages: 1, totalElements: 0 };
+                const encoded = encodeURIComponent(searchValue);
+                url = `${API_BASE_URL}/filteredByActorMovies/${encoded}?page=${page}&size=${size}`;
+                break;
+            }
         }
 
-        console.log(url);
         const response = await fetch(url);
-        console.log("Fetch response:", response);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -211,6 +199,7 @@ async function loadFilteredMovies(page = 0, currentView) {
         return { content: [], totalPages: 1, totalElements: 0 };
     }
 }
+
 
 // Export the searchMovies function to be called from views.js
 export async function performSearch() {

@@ -5,7 +5,7 @@ import { loadTemplate } from './templateLoader.js';
 const modal = document.getElementById('movieModal');
 const modalContent = modal?.querySelector('.modal-content');
 
-async function loadMovieDetails(movieId) {
+export async function loadMovieDetails(movieId) {
     try {
         const response = await fetch(`${API_BASE_URL}/movies/${movieId}`);
         if (!response.ok) {
