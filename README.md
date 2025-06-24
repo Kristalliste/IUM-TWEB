@@ -34,6 +34,7 @@ Finally, run these files, preferrably in the following order:
 3. ChatServer.js in express;
 4. MoviesProjectApplication in springboot;
 5. ConnectorServer.js in connectorExpress;
+6.  mainViev.html in frontend.
    
 Swagger usage:
 For Express server debugging go to http://localhost:3000/api-docs
