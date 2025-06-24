@@ -20,9 +20,12 @@ const router = express.Router();
  */
 router.get('/', async (req, res, next) => {
     try {
+        console.log('[ReviewsController] GET /reviews');
         const reviews = await reviewsService.getAllReviews();
+        console.log('[ReviewsController] Retrieved', reviews.length, 'review(s) from service');
         res.json(reviews);
     } catch (err) {
+        console.error('[ReviewsController] Error in GET /reviews:', err.message);
         next(err);
     }
 });
@@ -50,9 +53,14 @@ router.get('/', async (req, res, next) => {
  */
 router.post('/', async (req, res, next) => {
     try {
+        console.log('[ReviewsController] POST /reviews');
+        console.log('[ReviewsController] req.body:', req.body);
+
         const newReview = await reviewsService.createReview(req.body);
+        console.log('[ReviewsController] Created review with ID:', newReview._id);
         res.status(201).json(newReview);
     } catch (err) {
+        console.error('[ReviewsController] Error in POST /reviews:', err.message);
         next(err);
     }
 });
@@ -76,52 +84,24 @@ router.post('/', async (req, res, next) => {
  */
 router.delete('/:id', async (req, res, next) => {
     try {
-        const deleted = await reviewsService.deleteReview(req.params.id);
+        const reviewId = req.params.id;
+        console.log(`[ReviewsController] DELETE /reviews/${reviewId}`);
+
+        const deleted = await reviewsService.deleteReview(reviewId);
         if (deleted) {
+            console.log(`[ReviewsController] Deleted review with ID: ${reviewId}`);
             res.status(204).send();
         } else {
+            console.warn(`[ReviewsController] Review not found for ID: ${reviewId}`);
             res.status(404).json({ message: 'Review not found' });
         }
     } catch (err) {
+        console.error('[ReviewsController] Error in DELETE /reviews/:id:', err.message);
         next(err);
     }
 });
 
-/**
- * @swagger
- * /reviews/by-title/{movieTitle}:
- *   get:
- *     summary: Retrieve reviews by movie title
- *     parameters:
- *       - in: path
- *         name: movieTitle
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: A list of reviews
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Review'
- */
 
-router.get('/by-title/:movieTitle', async (req, res, next) => {
-    try {
-        const movieTitle = req.params.movieTitle;
-        const reviews = await reviewsService.getReviewsByMovieTitle(movieTitle);
-        if (reviews.length > 0) {
-            res.status(200).json(reviews);
-        } else {
-            res.status(404).json({ message: 'No reviews found for the specified movie title' });
-        }
-    } catch (error) {
-        next(error);
-    }
-});
 
 /**
  * @swagger
@@ -178,8 +158,10 @@ router.get('/movies/:movie_title', async (req, res, next) => {
         console.log(`[ReviewsController] Received movie_title from request: "${movieTitle}"`);
 
         const reviews = await reviewsService.getReviewsByMovieTitle(movieTitle.trim());
+        console.log(`[ReviewsController] Retrieved ${reviews.length} review(s) from service`);
         res.status(200).json(reviews);
     } catch (error) {
+        console.error('[ReviewsController] Error in GET /movies/:movie_title:', error.message);
         next(error);
     }
 });

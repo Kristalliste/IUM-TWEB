@@ -6,6 +6,7 @@ const router = express.Router();
 // Middleware per validare gli ID
 const validateMovieId = (req, res, next) => {
     const id = Number(req.params.id);
+    console.log('[validateMovieId] req.params:', req.params);
     if (isNaN(id) || id <= 0 || !Number.isInteger(id)) {
         return res.status(400).json({
             error: 'Invalid movie ID. Must be a positive integer'
@@ -126,6 +127,9 @@ const validateMovieId = (req, res, next) => {
  *         description: Server error
  */
 router.get('/movies', async (req, res, next) => {
+    console.log('[GET /movies] Entered route');
+    console.log('[GET /movies] req.query:', req.query);
+
     try {
         const { type = 'recent' } = req.query;
         const page = parseInt(req.query.page) || 0;
@@ -142,9 +146,11 @@ router.get('/movies', async (req, res, next) => {
             return res.status(400).json({ error: 'Invalid type parameter' });
         }
 
+        console.log('[GET /movies] Calling connectorService.getMoviesPaginated');
         const result = await connectorService.getMoviesPaginated(type, page, size);
         res.json(result);
     } catch (error) {
+        console.error('[GET /movies] Error:', error.message);
         next(error);
     }
 });
@@ -175,10 +181,15 @@ router.get('/movies', async (req, res, next) => {
  *         description: Server error
  */
 router.get('/movies/:id', validateMovieId, async (req, res, next) => {
+    console.log('[GET /movies/:id] Entered route');
+    console.log('[GET /movies/:id] req.params:', req.params);
+
     try {
+        console.log('[GET /movies/:id] Calling connectorService.getMovieById');
         const movie = await connectorService.getMovieById(req.validatedId);
         res.json(movie);
     } catch (error) {
+        console.error('[GET /movies/:id] Error:', error.message);
         next(error);
     }
 });
@@ -242,16 +253,21 @@ router.get('/movies/:id', validateMovieId, async (req, res, next) => {
  *                   example: "Failed to fetch reviews from Reviews Server"
  */
 router.get('/reviews/movies/:movie_title', async (req, res, next) => {
+    console.log('[GET /reviews/movies/:movie_title] Entered route');
+    console.log('[GET /reviews/movies/:movie_title] req.params:', req.params);
+
     try {
         const movieTitle = req.params.movie_title;
         if (!movieTitle || typeof movieTitle !== 'string' || movieTitle.trim() === '') {
             return res.status(400).json({ error: 'Invalid or missing movieTitle parameter' });
         }
+
+        console.log('[GET /reviews/movies/:movie_title] Calling connectorService.getReviewsFromReviewsServer');
         console.log(`[ConnectorController] Received request for reviews for movie title: "${movieTitle}"`);
         const reviews = await connectorService.getReviewsFromReviewsServer(movieTitle.trim());
         res.json(reviews);
     } catch (error) {
-        console.error('[ConnectorController ERROR] Failed to fetch reviews from Reviews Server:', error.message);
+        console.error('[GET /reviews/movies/:movie_title] Error:', error.message);
         next(error);
     }
 });
@@ -329,6 +345,10 @@ router.get('/reviews/movies/:movie_title', async (req, res, next) => {
  *           description: Internal server error
  */
 router.get('/filteredMovies/:title', async (req, res, next) => {
+    console.log('[GET /filteredMovies/:title] Entered route');
+    console.log('[GET /filteredMovies/:title] req.params:', req.params);
+    console.log('[GET /filteredMovies/:title] req.query:', req.query);
+
     try {
         // Get the title from the query parameters
         const title = req.params.title; // 'title' will be the value of ?title=... in the URL
@@ -338,9 +358,13 @@ router.get('/filteredMovies/:title', async (req, res, next) => {
         if (!title) {
             return res.status(400).json({ error: 'Title query parameter is required.' });
         }
+
+
+        console.log('[GET /filteredMovies/:title] Calling connectorService.getFilteredByTitleMovies');
         let movies = await connectorService.getFilteredByTitleMovies(title, page, size);
         res.json(movies);
     } catch (error) {
+        console.error('[GET /filteredMovies/:title] Error:', error.message);
         next(error);
     }
 });
@@ -387,6 +411,10 @@ router.get('/filteredMovies/:title', async (req, res, next) => {
  *           description: Internal server error
  */
 router.get('/filteredByGenreMovies/:genre', async (req, res, next) => {
+    console.log('[GET /filteredByGenreMovies/:genre] Entered route');
+    console.log('[GET /filteredByGenreMovies/:genre] req.params:', req.params);
+    console.log('[GET /filteredByGenreMovies/:genre] req.query:', req.query);
+
     try {
         // Get the title from the query parameters
         const genre = req.params.genre; // 'title' will be the value of ?title=... in the URL
@@ -396,9 +424,12 @@ router.get('/filteredByGenreMovies/:genre', async (req, res, next) => {
         if (!genre) {
             return res.status(400).json({ error: 'Genre query parameter is required.' });
         }
+
+        console.log('[GET /filteredByGenreMovies/:genre] Calling connectorService.getFilteredByGenreMovies');
         let movies = await connectorService.getFilteredByGenreMovies(genre, page, size);
         res.json(movies);
     } catch (error) {
+        console.error('[GET /filteredByGenreMovies/:genre] Error:', error.message);
         next(error);
     }
 });
@@ -444,6 +475,10 @@ router.get('/filteredByGenreMovies/:genre', async (req, res, next) => {
  *           description: Internal server error
  */
 router.get('/filteredByYearMovies/:year', async (req, res, next) => {
+    console.log('[GET /filteredByYearMovies/:year] Entered route');
+    console.log('[GET /filteredByYearMovies/:year] req.params:', req.params);
+    console.log('[GET /filteredByYearMovies/:year] req.query:', req.query);
+
     try {
         // Get the title from the query parameters
         const year = req.params.year; // 'title' will be the value of ?title=... in the URL
@@ -453,9 +488,12 @@ router.get('/filteredByYearMovies/:year', async (req, res, next) => {
         if (!year) {
             return res.status(400).json({ error: 'Year parameter is required.' });
         }
+
+        console.log('[GET /filteredByYearMovies/:year] Calling connectorService.getFilteredByYearMovies');
         let movies = await connectorService.getFilteredByYearMovies(year, page, size);
         res.json(movies);
     } catch (error) {
+        console.error('[GET /filteredByYearMovies/:year] Error:', error.message);
         next(error);
     }
 });
@@ -507,12 +545,16 @@ router.get('/filteredByLanguageMovies/:language', async (req, res, next) => {
         const page = parseInt(req.query.page) || 0;
         const size = parseInt(req.query.size) || 10;
 
+        console.log(`[GET] /filteredByLanguageMovies/${language} | page=${page}, size=${size}`);
         if (!language) {
             return res.status(400).json({ error: 'Language parameter is required.' });
         }
+
         let movies = await connectorService.getFilteredByLanguageMovies(language, page, size);
+        console.log(`[RESULT] Found ${movies.length} movie(s) for language: ${language}`);
         res.json(movies);
     } catch (error) {
+        console.error(`[ERROR] Failed to fetch movies by language: ${error.message}`);
         next(error);
     }
 });
@@ -536,9 +578,14 @@ router.get('/filteredByLanguageMovies/:language', async (req, res, next) => {
  */
 router.get('/genres', async (req, res, next) => {
     try {
+        console.log('[GET] /genres | Fetching all movie genres');
+
         const genres = await connectorService.getAllGenres();
+
+        console.log(`[RESULT] Retrieved ${genres.length} genre(s)`);
         res.json(genres);
     } catch (error) {
+        console.error(`[ERROR] Failed to fetch genres: ${error.message}`);
         next(error);
     }
 });
