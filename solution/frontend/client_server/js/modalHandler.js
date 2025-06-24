@@ -15,16 +15,7 @@ async function loadMovieDetails(movieId) {
         }
         const movie = await response.json();
 
-        return {
-            id: movie.id,
-            title: movie.title || 'Unknown',
-            year: movie.year || 'N/A',
-            minute: movie.minute || 0,
-            description: movie.description || '',
-            rating: movie.rating || 0,
-            posterUrl: movie.posterUrl || "https://placehold.co/300x450?text=Error+Loading",
-            hasOscar: movie.hasOscar || false
-        };
+        return formatMovieDetails(movie);
     } catch (error) {
         console.error("Fetch error:", error);
         return {
@@ -52,14 +43,13 @@ export async function showModal(movieId) {
 
     try {
         const movie = await loadMovieDetails(movieId);
-        const formattedMovies = formatMovieDetails(movie);
         const template = await loadTemplate('modal-template');
 
         if (!template) {
             throw new Error('Could not load modal template');
         }
 
-        modalContent.innerHTML = template(formattedMovies);
+        modalContent.innerHTML = template(movie);
 
         // Set up event listeners
         const closeBtn = modalContent.querySelector('.close');
@@ -86,7 +76,7 @@ export async function showModal(movieId) {
                 const mainView = document.querySelector('main');
                 const detailView = document.getElementById('movie-detail-view');
                 if (mainView && detailView) {
-                    showDetailView(formattedMovies.id, mainView, detailView);
+                    showDetailView(movie.id, mainView, detailView);
                 }
             };
         }

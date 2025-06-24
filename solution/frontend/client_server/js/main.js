@@ -278,7 +278,7 @@ if (logo) {
     if (searchLink) {
         searchLink.addEventListener('click', function(event) {
             event.preventDefault(); // Previeni il comportamento di default del link
-            window.location.href = 'search.html'; // Percorso alla tua pagina di ricerca avanzata
+            // Percorso alla tua pagina di ricerca avanzata
         });
     }
 });*/
