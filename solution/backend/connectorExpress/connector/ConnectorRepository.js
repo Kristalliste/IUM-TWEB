@@ -204,7 +204,7 @@ const fetchAllGenres = async () => {
         return genres;
 
     } catch (error) {
-        console.error('Failed to fetch genres:', {
+        console.error('Failed to fetch genres by title:', {
             url: `${SPRING_API}/genres/allGenres`,
             error: error.message,
             stack: error.stack
@@ -269,12 +269,18 @@ const fetchFilteredByGenreMovies = async (genre, page = 0, size = 10) => {
         return transformedMovies;*/
 
     } catch (error) {
-        console.error('Failed to fetch movies:', {
+        console.error('Failed to fetch movies by genre:', {
             url: `${SPRING_API}/search/genre?genre=${genre}`,
             error: error.message,
             stack: error.stack
         });
-        throw error;
+        if (error.response) {
+            throw new Error(`Server responded with ${error.response.status}`);
+        } else if (error.request) {
+            throw new Error('No response received from server');
+        } else {
+            throw new Error('Request setup error');
+        }
     }
 };
 
@@ -327,12 +333,18 @@ const fetchFilteredByYearMovies = async (year, page = 0, size = 10) => {
         return transformedMovies;*/
 
     } catch (error) {
-        console.error('Failed to fetch movies:', {
+        console.error('Failed to fetch movies by year:', {
             url: `${SPRING_API}/search/year?year=${year}`,
             error: error.message,
             stack: error.stack
         });
-        throw error;
+        if (error.response) {
+            throw new Error(`Server responded with ${error.response.status}`);
+        } else if (error.request) {
+            throw new Error('No response received from server');
+        } else {
+            throw new Error('Request setup error');
+        }
     }
 };
 
@@ -385,12 +397,18 @@ const fetchFilteredByLanguageMovies = async (language, page = 0, size = 10) => {
         return transformedMovies;*/
 
     } catch (error) {
-        console.error('Failed to fetch movies:', {
+        console.error('Failed to fetch movies by language:', {
             url: `${SPRING_API}/search/language?language=${language}`,
             error: error.message,
             stack: error.stack
         });
-        throw error;
+        if (error.response) {
+            throw new Error(`Server responded with ${error.response.status}`);
+        } else if (error.request) {
+            throw new Error('No response received from server');
+        } else {
+            throw new Error('Request setup error');
+        }
     }
 };
 
@@ -443,12 +461,18 @@ const fetchFilteredByActorMovies = async (actor, page = 0, size = 10) => {
         return transformedMovies;*/
 
     } catch (error) {
-        console.error('Failed to fetch movies:', {
+        console.error('Failed to fetch movies by actor:', {
             url: `${SPRING_API}/search/actor?actor=${actor}`,
             error: error.message,
             stack: error.stack
         });
-        throw error;
+        if (error.response) {
+            throw new Error(`Server responded with ${error.response.status}`);
+        } else if (error.request) {
+            throw new Error('No response received from server');
+        } else {
+            throw new Error('Request setup error');
+        }
     }
 };
 

@@ -1,10 +1,17 @@
 import { API_BASE_URL, formatMovieData, moviesPerPage } from './utils.js';
 import { displayMoviePage } from './pagination.js';
+import { showFilmLoader, hideFilmLoader } from '../loader/loader.js'; // Add this line
 import { reattachSearchListeners } from './modalHandler.js';
 
 let currentPage = 1;
 let currentView = '';
 let totalPages = 1;
+const modal = document.getElementById('movie-modal-search');
+
+// Initialize the search functionality when the DOM content is fully loaded.
+/*document.addEventListener("DOMContentLoaded", async () => {
+    await initSearch();
+});*/
 
 async function fetchAllGenres() {
     try {
@@ -119,22 +126,23 @@ async function searchMovies(page = 0) {
 
 async function loadFilteredMovies(page = 0, currentView) {
     try {
+        showFilmLoader();
         const size = document.getElementById("page-size").value;
         let url;
         let searchValue;
 
         switch (currentView) {
             case "title": {
-                const title = document.getElementById("search-input").value;
-                if (!title) return { content: [], totalPages: 1, totalElements: 0 };
-                const encoded = encodeURIComponent(title);
+                searchValue = document.getElementById("search-input").value;
+                if (!searchValue) return { content: [], totalPages: 1, totalElements: 0 };
+                const encoded = encodeURIComponent(searchValue);
                 url = `${API_BASE_URL}/filteredMovies/${encoded}?page=${page}&size=${size}`;
                 break;
             }
             case "genre": {
-                const genre = document.getElementById("search-genre").value;
-                if (!genre || genre === "Select a genre") return { content: [], totalPages: 1, totalElements: 0 };
-                const encoded = encodeURIComponent(genre);
+                searchValue = document.getElementById("search-genre").value;
+                if (!searchValue || searchValue === "Select a genre") return { content: [], totalPages: 1, totalElements: 0 };
+                const encoded = encodeURIComponent(searchValue);
                 url = `${API_BASE_URL}/filteredByGenreMovies/${encoded}?page=${page}&size=${size}`;
                 break;
             }
@@ -180,6 +188,8 @@ async function loadFilteredMovies(page = 0, currentView) {
     } catch (error) {
         console.error('Error fetching filtered movies:', error);
         return { content: [], totalPages: 1, totalElements: 0 };
+    } finally {
+        hideFilmLoader();
     }
 }
 
