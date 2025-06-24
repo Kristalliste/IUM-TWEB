@@ -18,7 +18,9 @@ Data Bases: We uploaded on Google Drive the exports of the two databases:
 at the following link: https://drive.google.com/drive/folders/1Qja4sgJ0SL4IggdNUxnNAPXd_bWQi6rX?usp=drive_link
 
 Installs:
+
 • In the main directory, on your terminal run: - npm install
+
 • In the connectorExpress directory, run : - npm install node
 
 Running files:
