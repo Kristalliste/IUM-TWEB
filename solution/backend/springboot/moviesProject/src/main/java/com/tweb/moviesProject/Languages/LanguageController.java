@@ -14,6 +14,7 @@ public class LanguageController {
 
     private final LanguageService languageService;
 
+    // Constructor injection for LanguageService dependency
     public LanguageController(LanguageService languageService) {
         this.languageService = languageService;
     }
@@ -39,5 +40,3 @@ public class LanguageController {
         return languages.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(languages);
     }
 }
-
-

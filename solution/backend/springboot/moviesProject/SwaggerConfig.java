@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configurazione Swagger/OpenAPI per la documentazione delle API.
+ * Configuration Swagger/OpenAPI for the API documatation.
  */
 @Configuration
 public class SwaggerConfig {
@@ -15,8 +15,8 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
             .info(new Info()
-                .title("Titolo API")
+                .title("API Title")
                 .version("1.0")
-                .description("Documentazione delle API del server Spring Boot"));
+                .description("API documatation for Spring Boot server"));
     }
 }

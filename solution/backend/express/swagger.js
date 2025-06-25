@@ -1,6 +1,7 @@
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
+// Function to set up Swagger documentation for the Express app
 const swaggerSetup = (app, basePath) => {
     const options = {
         definition: {
@@ -11,6 +12,7 @@ const swaggerSetup = (app, basePath) => {
                 description: 'API for managing movie reviews',
             },
             servers: [
+                // Server URL for Swagger UI, using environment variable for port
                 { url: `http://localhost:${process.env.PORT || 3000}${basePath}` }
             ],
 
@@ -65,6 +67,7 @@ const swaggerSetup = (app, basePath) => {
                                 description: 'Normalized score given in the review'
                             }
                         },
+                        // Example object for the Review schema
                         example: {
                             rotten_tomatoes_link: "https://www.rottentomatoes.com/m/matrix",
                             movie_title: "The Matrix",
@@ -81,10 +84,14 @@ const swaggerSetup = (app, basePath) => {
                 }
             }
         },
+        // Path to the controller file containing Swagger annotations
         apis: ['./reviews/ReviewsController.js'],
     };
 
+    // Generate Swagger specification from options
     const swaggerSpec = swaggerJsDoc(options);
+
+    // Serve Swagger UI at /api-docs endpoint
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 };
 

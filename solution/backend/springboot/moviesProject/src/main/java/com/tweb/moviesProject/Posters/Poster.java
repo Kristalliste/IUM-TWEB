@@ -7,31 +7,32 @@ import jakarta.persistence.*;
 public class Poster {
     @Id
     @Column(name = "poster_id")
-    private Long posterId;
+    private Long posterId; // Unique identifier for the poster
 
     @Column(name = "movie_id")
-    private Long movieId;
+    private Long movieId; // References the associated movie
 
     @Column(name = "link")
-    private String link;
+    private String link; // URL or path to the poster image
 
     public Poster() { }
 
+    // Constructor without posterId, as it is usually auto-generated
     public Poster(Long movieId, String link) {
         this.movieId = movieId;
         this.link = link;
     }
 
     // Getters and Setters for all fields
-    public Long getPosterId() {return posterId;}
+    public Long getPosterId() { return posterId; }
 
-    public void setPosterId(Long posterId) {this.posterId = posterId;}
+    public void setPosterId(Long posterId) { this.posterId = posterId; }
 
-    public Long getMovieId() {return movieId;}
+    public Long getMovieId() { return movieId; }
 
-    public void setMovieId(Long movieId) {this.movieId = movieId;}
+    public void setMovieId(Long movieId) { this.movieId = movieId; }
 
-    public String getLink() {return link;}
+    public String getLink() { return link; }
 
-    public void setLink(String link) {this.link = link;}
+    public void setLink(String link) { this.link = link; }
 }

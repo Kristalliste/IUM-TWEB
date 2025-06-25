@@ -11,6 +11,7 @@ import java.util.List;
 @RequestMapping("/api/genres")
 public class GenreController {
 
+    // Service layer for handling genre-related business logic
     private final GenreService genreService;
 
     @Autowired

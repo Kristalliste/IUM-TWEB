@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/movies")
 public class MovieController {
 
+    // Service layer for movie-related business logic
     private final MovieService movieService;
 
     @Autowired
@@ -65,7 +66,7 @@ public class MovieController {
 
     @Operation(summary = "Get detailed movie information by ID")
     @GetMapping("/{id}")
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true) // Ensures the transaction is read-only for performance
     public ResponseEntity<MovieDTO> getMovieDetails(@PathVariable Long id) {
         MovieDTO movieDetails = movieService.getMovieDetails(id);
         return ResponseEntity.ok(movieDetails);

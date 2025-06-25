@@ -8,35 +8,35 @@ Andreea Cojocaru - andreea.cojocaru860@edu.unito.it - 1064397
 ----------------------------------------------------
 How to run this project:
 
-per fa funzionare
-run npm install
+On IntelliJ Ultimate, in your Project Structure section, set up SDK: ms-17 and
+Language level: 20 - No new language features.
 
+Data Bases: We uploaded on Google Drive the exports of the two databases:
+- backup dbTWEB.sql for PostgreSQL
+- MongoDB TWEB.reviews.json for MongDB
+  
+at the following link: https://drive.google.com/drive/folders/1Qja4sgJ0SL4IggdNUxnNAPXd_bWQi6rX?usp=drive_link
 
-MongoDb:
+Installs:
 
-download jason file create db mongoDB_TWEB e collection reviews e poi importi JSON
+• In the main directory, on your terminal run: - npm install
 
+• In the connectorExpress directory, run : - npm install node
 
-Run the following command inside the connectorExpress directory:
+Running files:
+Finally, run these files, preferably in the following order:
 
-npm install cors
-npm install node-cache
-npm install handlebars
-in socket directory:
-npm install node
-npm install socket
-
-
-
-Finally, run these files, preferrably in the following order:
 1. mongoConnect.js in express;
 2. ReviewsServer.js in express;
 3. ChatServer.js in express;
 4. MoviesProjectApplication in springboot;
 5. ConnectorServer.js in connectorExpress;
-6.  mainViev.html in frontend.
-   
+6. mainViev.html in frontend.
+
 Swagger usage:
+
 For Express server debugging go to http://localhost:3000/api-docs
+
 For connector Express server debugging go to http://localhost:4000/api-docs
+
 For Springboot server debugging go to http://localhost:8080/swagger-ui/index.html

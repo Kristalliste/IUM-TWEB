@@ -3,7 +3,7 @@ import connectorService from './ConnectorService.js';
 
 const router = express.Router();
 
-// Middleware per validare gli ID
+// Middleware to validate IDs
 const validateMovieId = (req, res, next) => {
     const id = Number(req.params.id);
     console.log('[validateMovieId] req.params:', req.params);

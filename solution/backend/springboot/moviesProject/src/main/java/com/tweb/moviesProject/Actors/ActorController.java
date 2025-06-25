@@ -13,7 +13,10 @@ import java.util.List;
 public class ActorController {
     private final ActorService actorService;
 
-    public ActorController(ActorService actorService) {this.actorService = actorService;}
+    // Constructor injection for ActorService dependency
+    public ActorController(ActorService actorService) {
+        this.actorService = actorService;
+    }
 
     @Operation(summary = "Returns a list of actors whose names contain the given string (case-insensitive)")
     @GetMapping("/filterByName/{name}")
