@@ -2,7 +2,7 @@ import { formatMovieDetails, formatMovieReviews } from './utils.js';
 import { renderUsernamePrompt } from './chat.js';
 import { fetchMovieDetails, fetchMovieReviews } from './api.js';
 import { loadTemplate } from './templateLoader.js';
-import { initSearch, performSearch } from './searchMain.js';
+import { initSearch } from './searchMain.js';
 import { reattachSearchListeners } from './modalHandler.js';
 
 // Add this helper function to clear active states

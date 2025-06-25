@@ -8,11 +8,6 @@ let currentView = '';
 let totalPages = 1;
 const modal = document.getElementById('movie-modal-search');
 
-// Initialize the search functionality when the DOM content is fully loaded.
-/*document.addEventListener("DOMContentLoaded", async () => {
-    await initSearch();
-});*/
-
 async function fetchAllGenres() {
     try {
         const response = await fetch(`${API_BASE_URL}/genres`);

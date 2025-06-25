@@ -8,9 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
-import java.util.NoSuchElementException;
 
 @Tag(name = "Movies API", description = "Endpoints for managing movies")
 @RestController
@@ -69,17 +66,9 @@ public class MovieController {
     @Operation(summary = "Get detailed movie information by ID")
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
-    public ResponseEntity<MovieDTO> getMovieDetails(@PathVariable Long id) {  // Simplified parameter name
-        try {
-            MovieDTO movieDetails = movieService.getMovieDetails(id);
-            return ResponseEntity.ok(movieDetails);
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            System.err.println("Error fetching movie details: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().build();  // Remove .body(null)
-        }
+    public ResponseEntity<MovieDTO> getMovieDetails(@PathVariable Long id) {
+        MovieDTO movieDetails = movieService.getMovieDetails(id);
+        return ResponseEntity.ok(movieDetails);
     }
 
     @Operation(summary = "Get paginated recent movies")

@@ -151,7 +151,7 @@ router.get('/movies', async (req, res, next) => {
         res.json(result);
     } catch (error) {
         console.error('[GET /movies] Error:', error.message);
-        next(error);
+        res.json({});
     }
 });
 
@@ -190,7 +190,7 @@ router.get('/movies/:id', validateMovieId, async (req, res, next) => {
         res.json(movie);
     } catch (error) {
         console.error('[GET /movies/:id] Error:', error.message);
-        next(error);
+        res.json({});
     }
 });
 
@@ -268,7 +268,7 @@ router.get('/reviews/movies/:movie_title', async (req, res, next) => {
         res.json(reviews);
     } catch (error) {
         console.error('[GET /reviews/movies/:movie_title] Error:', error.message);
-        next(error);
+        res.json({});
     }
 });
 
@@ -359,13 +359,12 @@ router.get('/filteredMovies/:title', async (req, res, next) => {
             return res.status(400).json({ error: 'Title query parameter is required.' });
         }
 
-
         console.log('[GET /filteredMovies/:title] Calling connectorService.getFilteredByTitleMovies');
         let movies = await connectorService.getFilteredByTitleMovies(title, page, size);
         res.json(movies);
     } catch (error) {
         console.error('[GET /filteredMovies/:title] Error:', error.message);
-        next(error);
+        res.json({});
     }
 });
 
@@ -430,7 +429,7 @@ router.get('/filteredByGenreMovies/:genre', async (req, res, next) => {
         res.json(movies);
     } catch (error) {
         console.error('[GET /filteredByGenreMovies/:genre] Error:', error.message);
-        next(error);
+        res.json({});
     }
 });
 
@@ -494,7 +493,7 @@ router.get('/filteredByYearMovies/:year', async (req, res, next) => {
         res.json(movies);
     } catch (error) {
         console.error('[GET /filteredByYearMovies/:year] Error:', error.message);
-        next(error);
+        res.json({});
     }
 });
 
@@ -555,10 +554,79 @@ router.get('/filteredByLanguageMovies/:language', async (req, res, next) => {
         res.json(movies);
     } catch (error) {
         console.error(`[ERROR] Failed to fetch movies by language: ${error.message}`);
-        next(error);
+        res.json({});
     }
 });
-
+/**
+ * @swagger
+ * paths:
+ *   /filteredByActorMovies/{actor}:
+ *     get:
+ *       summary: Get paginated movies by actor
+ *       description: Returns a paginated list of movies filtered by the specified actor name.
+ *       tags:
+ *         - Movies
+ *       parameters:
+ *         - name: actor
+ *           in: path
+ *           required: true
+ *           description: Name of the actor to filter movies by
+ *           schema:
+ *             type: string
+ *         - name: page
+ *           in: query
+ *           required: false
+ *           description: Page number (starting from 0)
+ *           schema:
+ *             type: integer
+ *             minimum: 0
+ *             default: 0
+ *         - name: size
+ *           in: query
+ *           required: false
+ *           description: Number of results per page
+ *           schema:
+ *             type: integer
+ *             minimum: 1
+ *             default: 10
+ *       responses:
+ *         '200':
+ *           description: A list of movies featuring the specified actor
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     title:
+ *                       type: string
+ *                     year:
+ *                       type: integer
+ *                     actors:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *         '400':
+ *           description: Missing or invalid actor parameter
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: Actor parameter is required.
+ *         '500':
+ *           description: Internal server error
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ */
 router.get('/filteredByActorMovies/:actor', async (req, res, next) => {
     try {
         // Get the actor from the query parameters
@@ -572,7 +640,7 @@ router.get('/filteredByActorMovies/:actor', async (req, res, next) => {
         let movies = await connectorService.getFilteredByActorMovies(actor, page, size);
         res.json(movies);
     } catch (error) {
-        next(error);
+        res.json({});
     }
 });
 
@@ -603,7 +671,7 @@ router.get('/genres', async (req, res, next) => {
         res.json(genres);
     } catch (error) {
         console.error(`[ERROR] Failed to fetch genres: ${error.message}`);
-        next(error);
+        res.json({});
     }
 });
 
