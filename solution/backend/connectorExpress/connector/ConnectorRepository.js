@@ -7,21 +7,23 @@ const SPRING_API = process.env.SPRING_SERVER_URL || 'http://localhost:8080/api';
 // Create cache instance, for 5 minutes
 const cache = new NodeCache({ stdTTL: 300 });
 
+// Fetches a movie by its ID, using cache to avoid unnecessary API calls
 const fetchMovieById = async (id) => {
     const cacheKey = `movie_${id}`;
 
     try {
-        // Check cache first
+        // Check if the movie is already cached
         const cachedMovie = cache.get(cacheKey);
         if (cachedMovie) {
             console.log(`Returning cached movie ${id}`);
             return cachedMovie;
         }
 
-        // Fetch from API
+        // Fetch movie data from the Spring Boot API if not cached
         const response = await axios.get(`${SPRING_API}/movies/${id}`);
         const movieDTO = response.data;
 
+        // Transform the API response to the expected movie object format
         const transformedMovie = {
             id: movieDTO?.movieId || 0,
             title: movieDTO?.name || 'Unknown',
@@ -36,15 +38,18 @@ const fetchMovieById = async (id) => {
             hasOscar: movieDTO.hasOscar || false
         };
 
+        // Store the transformed movie in cache for future requests
         cache.set(cacheKey, transformedMovie);
         return transformedMovie;
 
     } catch (error) {
+        // Log and rethrow any errors encountered during the fetch
         console.error(`Failed to fetch movie ${id}:`, error);
         throw error;
     }
 };
 
+// Fetches a paginated list of movies by type (recent or top-rated) with caching
 const fetchMoviesPaginated = async (type, page = 0, size = 10) => {
     const cacheKey = `movies_${type}_${page}_${size}`;
 
@@ -106,6 +111,7 @@ const fetchMoviesPaginated = async (type, page = 0, size = 10) => {
     }
 };
 
+// Fetches reviews for a movie from the Reviews Server (MongoDB-based)
 const getReviewsFromReviewsServer = async (movieTitle) => {
     try {
         if (!movieTitle || typeof movieTitle !== 'string' || movieTitle.trim() === '') {
@@ -123,6 +129,7 @@ const getReviewsFromReviewsServer = async (movieTitle) => {
     }
 };
 
+// Fetches movies filtered by title, paginated, with caching
 const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
     const cacheKey = `filteredMovies_title_${title}_page_${page}_size_${size}`;
     const cachedMovies = cache.get(cacheKey);
@@ -142,6 +149,7 @@ const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
         console.log('Connection successful');
         const pageData = response.data;
 
+        // Transform each movieDTO to the expected format
         const transformedMovies = pageData.content.map(movieDTO => ({
             id: movieDTO.movieId,
             title: movieDTO.name,
@@ -178,6 +186,7 @@ const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
     }
 };
 
+// Fetches all genres from the Spring Boot API, with caching
 const fetchAllGenres = async () => {
     const cacheKey = 'all_genres';
 
@@ -207,6 +216,7 @@ const fetchAllGenres = async () => {
             stack: error.stack
         });
 
+        // Handle different error scenarios
         if (error.response) {
             throw new Error(`Server responded with ${error.response.status}`);
         } else if (error.request) {
@@ -217,6 +227,7 @@ const fetchAllGenres = async () => {
     }
 };
 
+// Fetches movies filtered by genre, paginated, with caching
 const fetchFilteredByGenreMovies = async (genre, page = 0, size = 10) => {
     const cacheKey = `filteredMovies_genre_${genre}_page_${page}_size_${size}`;
     const cachedMovies = cache.get(cacheKey);
@@ -236,6 +247,7 @@ const fetchFilteredByGenreMovies = async (genre, page = 0, size = 10) => {
         console.log('Connection successful');
         const pageData = response.data;
 
+        // Transform each movieDTO to the expected format
         const transformedMovies = pageData.content.map(movieDTO => ({
             id: movieDTO.movieId,
             title: movieDTO.name,
@@ -278,6 +290,7 @@ const fetchFilteredByGenreMovies = async (genre, page = 0, size = 10) => {
     }
 };
 
+// Fetches movies filtered by year, paginated, with caching
 const fetchFilteredByYearMovies = async (year, page = 0, size = 10) => {
     const cacheKey = `filteredMovies_year_${year}_page_${page}_size_${size}`;
     const cachedMovies = cache.get(cacheKey);
@@ -297,6 +310,7 @@ const fetchFilteredByYearMovies = async (year, page = 0, size = 10) => {
         console.log('Connection successful');
         const pageData = response.data;
 
+        // Transform each movieDTO to the expected format
         const transformedMovies = pageData.content.map(movieDTO => ({
             id: movieDTO.movieId,
             title: movieDTO.name,
@@ -339,6 +353,7 @@ const fetchFilteredByYearMovies = async (year, page = 0, size = 10) => {
     }
 };
 
+// Fetches movies filtered by language, paginated, with caching
 const fetchFilteredByLanguageMovies = async (language, page = 0, size = 10) => {
     const cacheKey = `filteredMovies_language_${language}_page_${page}_size_${size}`;
     const cachedMovies = cache.get(cacheKey);
@@ -358,6 +373,7 @@ const fetchFilteredByLanguageMovies = async (language, page = 0, size = 10) => {
         console.log('Connection successful');
         const pageData = response.data;
 
+        // Transform each movieDTO to the expected format
         const transformedMovies = pageData.content.map(movieDTO => ({
             id: movieDTO.movieId,
             title: movieDTO.name,
@@ -400,6 +416,7 @@ const fetchFilteredByLanguageMovies = async (language, page = 0, size = 10) => {
     }
 };
 
+// Fetches movies filtered by actor, paginated, with caching
 const fetchFilteredByActorMovies = async (actor, page = 0, size = 10) => {
     const cacheKey = `filteredMovies_actor_${actor}_page_${page}_size_${size}`;
     const cachedMovies = cache.get(cacheKey);
@@ -419,6 +436,7 @@ const fetchFilteredByActorMovies = async (actor, page = 0, size = 10) => {
         console.log('Connection successful');
         const pageData = response.data;
 
+        // Transform each movieDTO to the expected format
         const transformedMovies = pageData.content.map(movieDTO => ({
             id: movieDTO.movieId,
             title: movieDTO.name,
@@ -461,6 +479,7 @@ const fetchFilteredByActorMovies = async (actor, page = 0, size = 10) => {
     }
 };
 
+// Export all repository functions
 export default {
     fetchMovieById,
     fetchMoviesPaginated,

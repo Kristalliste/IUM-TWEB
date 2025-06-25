@@ -11,6 +11,7 @@ import java.util.List;
 @RequestMapping("/api/genres")
 public class GenreController {
 
+    // Service layer for handling genre-related business logic
     private final GenreService genreService;
 
     @Autowired
@@ -21,6 +22,7 @@ public class GenreController {
     @Operation(summary = "Get all Genre entities for a specific movie")
     @GetMapping("/movie/{movieId}")
     public ResponseEntity<List<Genre>> getGenresByMovieId(@PathVariable Long movieId) {
+        // Retrieve all genres associated with a given movie ID
         List<Genre> genres = genreService.getGenresByMovieId(movieId);
         return genres.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(genres);
     }
@@ -28,6 +30,7 @@ public class GenreController {
     @Operation(summary = "Get all genre names for a specific movie")
     @GetMapping("/names/movie/{movieId}")
     public ResponseEntity<List<String>> getGenreNamesByMovieId(@PathVariable Long movieId) {
+        // Retrieve all genre names associated with a given movie ID
         List<String> genreNames = genreService.getGenreNamesByMovieId(movieId);
         return genreNames.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(genreNames);
     }
@@ -35,6 +38,7 @@ public class GenreController {
     @Operation(summary = "Get all Genre entities by genre name")
     @GetMapping("/{genreName}")
     public ResponseEntity<List<Genre>> getGenresByName(@PathVariable String genreName) {
+        // Retrieve all genres matching the specified genre name
         List<Genre> genres = genreService.getGenresByName(genreName);
         return genres.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(genres);
     }
@@ -42,6 +46,7 @@ public class GenreController {
     @Operation(summary = "Get all distinct movie genres")
     @GetMapping("allGenres")
     public ResponseEntity<List<String>> getAllGenres() {
+        // Retrieve all distinct genre names available in the database
         List<String> genres = genreService.getAllGenres();
         return ResponseEntity.ok(genres);
     }

@@ -20,17 +20,33 @@ public class OscarAwardService {
         this.oscarAwardRepository = oscarAwardRepository;
     }
 
+    /**
+     * Placeholder method: currently returns an empty map.
+     * To implement, you would need to map movie IDs to their names and check if each has won an Oscar.
+     */
     public Map<Long, Boolean> hasOscarByMovieIds(List<Long> movieIds) {
         // This method would need movie names, but we'll handle it differently
         // We'll keep this as a placeholder for now
         return Collections.emptyMap();
     }
 
+    /**
+     * Checks if a film has won an Oscar.
+     * @param film the name of the film
+     * @return true if the film has won an Oscar, false otherwise
+     */
     public boolean hasOscar(String film) {
         return oscarAwardRepository.existsByFilm(film);
     }
 
+    /**
+     * Batch check: for each film in the list, returns true if it has won an Oscar.
+     * The check is case-insensitive and null-safe.
+     * @param films list of film names
+     * @return map from film name to boolean indicating Oscar win
+     */
     public Map<String, Boolean> hasOscarBatch(List<String> films) {
+        // Retrieve the list of films that exist in the database
         List<String> filmsInDb = oscarAwardRepository.findFilmsInList(films);
         Set<String> filmsSet = new HashSet<>();
         for (String filmInDb : filmsInDb) {
@@ -40,6 +56,7 @@ public class OscarAwardService {
         }
 
         Map<String, Boolean> result = new HashMap<>();
+        // For each film, check if it exists in the set (case-insensitive)
         for (String film : films) {
             result.put(film, film != null && filmsSet.contains(film.toLowerCase()));
         }

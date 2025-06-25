@@ -1,7 +1,10 @@
 import { escapeHTML } from './utils.js';
 
+// Socket.IO client instance
 let socket = null;
+// Current chat room ID
 let currentRoom = null;
+// Current user's username
 let currentUsername = null;
 
 export function renderUsernamePrompt(container, movieTitle, movieId) {
@@ -36,8 +39,9 @@ export function renderUsernamePrompt(container, movieTitle, movieId) {
     });
 }
 
+// Connects to the chat server and sets up event listeners
 function connectToChat(username, movieTitle, roomId) {
-    // Close all pre existing connections
+    // Close all pre-existing connections
     if (socket) {
         socket.removeAllListeners(); // Remove all listeners
         socket.disconnect();
@@ -53,6 +57,7 @@ function connectToChat(username, movieTitle, roomId) {
             room: roomId,
             username: username
         });
+        // Render the appropriate chat interface based on room
         if(roomId === 1){
             renderChatInterface(document.getElementById('floating-chat-body'), movieTitle, username, roomId);
         }else {
@@ -61,6 +66,7 @@ function connectToChat(username, movieTitle, roomId) {
 
     });
 
+    // Listen for incoming chat messages
     socket.on('message', (data) => {
         // Only if we're in the correct room
         if (data.room === currentRoom) {
@@ -68,6 +74,7 @@ function connectToChat(username, movieTitle, roomId) {
         }
     });
 
+    // Listen for system messages (join/leave notifications)
     socket.on('systemMessage', (data) => {
         // Only if we're in the correct room
         if (data.room === currentRoom) {
@@ -85,6 +92,7 @@ function connectToChat(username, movieTitle, roomId) {
         }
     });
 
+    // Handle disconnection
     socket.on('disconnect', () => {
         console.log('Disconnected from chat');
     });
@@ -144,6 +152,7 @@ export function renderChatInterface(container, movieTitle, username, roomId) {
     chatInput.focus();
 }
 
+// Appends a new message to the chat window
 function appendMessage(username, message, timestamp) {
     const chatMessages = document.getElementById('chat-messages');
     const messageEl = document.createElement('p');
@@ -159,11 +168,13 @@ function appendMessage(username, message, timestamp) {
     scrollToBottom();
 }
 
+// Scrolls the chat window to the bottom
 function scrollToBottom() {
     const chatMessages = document.getElementById('chat-messages');
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
+// Disconnects from the chat and resets state
 export function disconnectChat() {
     if (socket) {
         socket.emit('leaveRoom', { room: currentRoom, username: currentUsername });
@@ -174,11 +185,12 @@ export function disconnectChat() {
     }
 }
 
+// Returns true if the current room is the general chat
 export function isGeneralChat() {
     return currentRoom === 1;
 }
 
-// Cleanup
+// Cleanup: disconnect from chat when the window is closed or refreshed
 window.addEventListener('beforeunload', () => {
     disconnectChat();
 });

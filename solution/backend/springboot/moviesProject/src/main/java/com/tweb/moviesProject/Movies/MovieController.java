@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/movies")
 public class MovieController {
 
+    // Service layer for movie-related business logic
     private final MovieService movieService;
 
     @Autowired
@@ -21,6 +22,7 @@ public class MovieController {
         this.movieService = movieService;
     }
 
+    // Endpoint to search movies by title (case insensitive), paginated
     @Operation(summary = "Get paginated movies by title (case insensitive)")
     @GetMapping("/search/title")
     public ResponseEntity<Page<MovieDTO>> getMoviesByTitle(@RequestParam String title, Pageable pageable) {
@@ -28,6 +30,7 @@ public class MovieController {
         return ResponseEntity.ok(movies);
     }
 
+    // Endpoint to search movies by release year, paginated
     @Operation(summary = "Get paginated movies by release year")
     @GetMapping("/search/year")
     public ResponseEntity<Page<MovieDTO>> getMoviesByYear(@RequestParam Integer year, Pageable pageable) {
@@ -35,6 +38,7 @@ public class MovieController {
         return ResponseEntity.ok(movies);
     }
 
+    // Endpoint to search movies by genre, paginated
     @Operation(summary = "Get paginated movies by genre")
     @GetMapping("/search/genre")
     public ResponseEntity<Page<MovieDTO>> getMoviesByGenre(@RequestParam String genre, Pageable pageable) {
@@ -42,6 +46,7 @@ public class MovieController {
         return ResponseEntity.ok(movies);
     }
 
+    // Endpoint to search movies by language, paginated
     @Operation(summary = "Get paginated movies by language")
     @GetMapping("/search/language")
     public ResponseEntity<Page<MovieDTO>> getMoviesByLanguage(@RequestParam String language, Pageable pageable) {
@@ -49,6 +54,7 @@ public class MovieController {
         return ResponseEntity.ok(movies);
     }
 
+    // Endpoint to search movies by actor, paginated
     @Operation(summary = "Get paginated movies by actor")
     @GetMapping("/search/actor")
     public ResponseEntity<Page<MovieDTO>> getMoviesByActor(@RequestParam String actor, Pageable pageable) {
@@ -56,6 +62,7 @@ public class MovieController {
         return ResponseEntity.ok(movies);
     }
 
+    // Endpoint to get all movies, paginated
     @Operation(summary = "Get paginated list of all movies")
     @GetMapping
     public ResponseEntity<Page<MovieDTO>> getAllMovies(Pageable pageable) {
@@ -63,14 +70,16 @@ public class MovieController {
         return ResponseEntity.ok(movies);
     }
 
+    // Endpoint to get detailed information about a movie by its ID
     @Operation(summary = "Get detailed movie information by ID")
     @GetMapping("/{id}")
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true) // Ensures the transaction is read-only for performance
     public ResponseEntity<MovieDTO> getMovieDetails(@PathVariable Long id) {
         MovieDTO movieDetails = movieService.getMovieDetails(id);
         return ResponseEntity.ok(movieDetails);
     }
 
+    // Endpoint to get the most recent movies, paginated
     @Operation(summary = "Get paginated recent movies")
     @GetMapping("/recent")
     public ResponseEntity<Page<MovieDTO>> getRecentMovies(Pageable pageable) {
@@ -78,6 +87,7 @@ public class MovieController {
         return ResponseEntity.ok(movies);
     }
 
+    // Endpoint to get the top rated movies, paginated
     @Operation(summary = "Get paginated top rated movies")
     @GetMapping("/top-rated")
     public ResponseEntity<Page<MovieDTO>> getTopRatedMovies(Pageable pageable) {

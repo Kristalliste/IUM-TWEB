@@ -13,48 +13,55 @@ import java.util.Optional;
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
+    // Search movies by title (case-insensitive), ordered by rating and id
     @Query(value = "SELECT * FROM \"Movies\" m WHERE m.name ILIKE '%' || :title || '%' ORDER BY rating DESC NULLS LAST, id DESC",
             countQuery = "SELECT count(*) FROM \"Movies\" m WHERE m.name ILIKE '%' || :title || '%'",
             nativeQuery = true)
     Page<Movie> findByTitleIgnoreCase(@Param("title") String title, Pageable pageable);
 
+    // Search movies by year, ordered by rating and id
     @Query(value = "SELECT * FROM \"Movies\" m WHERE EXTRACT(YEAR FROM m.date) = :year ORDER BY rating DESC NULLS LAST, id DESC",
             countQuery = "SELECT count(*) FROM \"Movies\" m WHERE EXTRACT(YEAR FROM m.date) = :year",
             nativeQuery = true)
     Page<Movie> findByYear(@Param("year") int year, Pageable pageable);
 
+    // Search movies by genre, ordered by rating and id
     @Query(value = "SELECT * FROM \"Movies\" m JOIN \"Genres\" g ON m.id = g.movie_id WHERE g.genre LIKE :genre ORDER BY rating DESC NULLS LAST, id DESC",
             countQuery = "SELECT count(*) FROM \"Movies\" m JOIN \"Genres\" g ON m.id = g.movie_id WHERE g.genre LIKE :genre",
             nativeQuery = true)
     Page<Movie> findByGenreIgnoreCase(@Param("genre")String genre, Pageable pageable);
 
-    // Add caching annotation to the single findAllMovies method
+    // Cache the result of retrieving all movies (for performance)
     @Cacheable("moviesCache")
     @Query(value = "SELECT * FROM \"Movies\"",
             countQuery = "SELECT count(*) FROM \"Movies\" ",
             nativeQuery = true)
     Page<Movie> findAllMovies(Pageable pageable);
 
-    // Overriding the standard jpa function (otherwise it doesn't load details)
+    // Override findById to use a custom query (to load details)
     @Override
     @Query(value = "SELECT * FROM \"Movies\" WHERE id = :id", nativeQuery = true)
     Optional<Movie> findById(@Param("id") Long id); //integer
 
+    // Get all movies ordered by date, rating, and id
     @Query(value = "SELECT * FROM \"Movies\" ORDER BY date DESC, rating DESC NULLS LAST, id DESC",
             countQuery = "SELECT count(*) FROM \"Movies\"",
             nativeQuery = true)
     Page<Movie> findAllMoviesOrderedByDateDesc(Pageable pageable);
 
+    // Get all movies with a rating, ordered by rating
     @Query(value = "SELECT * FROM \"Movies\" WHERE rating IS NOT NULL ORDER BY rating DESC",
             countQuery = "SELECT count(*) FROM \"Movies\" WHERE rating IS NOT NULL",
             nativeQuery = true)
     Page<Movie> findAllMoviesOrderedByRatingDesc(Pageable pageable);
 
+    // Search movies by primary language (case-insensitive), ordered by rating and id
     @Query(value = "SELECT * FROM \"Movies\" m JOIN \"Languages\" l ON m.id = l.movie_id WHERE l.language ILIKE '%' || :lang || '%' AND l.type LIKE 'Primary language' ORDER BY rating DESC NULLS LAST, id DESC",
             countQuery = "SELECT count(*) FROM \"Movies\" m JOIN \"Languages\" l ON m.id = l.movie_id WHERE l.language ILIKE '%' || :lang || '%' AND l.type LIKE 'Primary language' ",
             nativeQuery = true)
     Page<Movie> findByLanguageIgnoreCase(@Param("lang")String language, Pageable pageable);
 
+    // Search movies by actor name (case-insensitive), ordered by rating and id
     @Query(value = "SELECT m.* FROM \"Movies\" m JOIN \"Actors\" a ON m.id = a.movie_id WHERE a.name ILIKE '%' || :actor || '%' ORDER BY rating DESC NULLS LAST, id DESC",
             countQuery = "SELECT count(*) FROM \"Movies\" m JOIN \"Actors\" a ON m.id = a.movie_id WHERE a.name ILIKE '%' || :actor || '%'",
             nativeQuery = true)

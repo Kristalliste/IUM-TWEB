@@ -14,6 +14,8 @@ import mongoose from 'mongoose';
  * @property {String} review_content - Content of the review.
  * @property {String} normalized_score - Normalised score given in the review.
  */
+
+// Define the schema for the reviews collection
 const reviewsSchema = new mongoose.Schema({
     rotten_tomatoes_link: { type: String, default: null },
     movie_title: { type: String, required: true, index: true },
@@ -27,6 +29,7 @@ const reviewsSchema = new mongoose.Schema({
     normalized_score: { type: Number, default: 0 }
 });
 
+// Create the model for the reviews collection
 const Reviews = mongoose.model('Reviews', reviewsSchema, 'reviews');
 
 export default Reviews;

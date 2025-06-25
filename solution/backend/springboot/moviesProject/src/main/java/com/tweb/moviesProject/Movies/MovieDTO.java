@@ -43,8 +43,10 @@ public class MovieDTO {
     @Schema(description = "Indicates if the movie has any Oscar nominations or wins", example = "true")
     private Boolean hasOscar;
 
+    // Default constructor required for serialization/deserialization
     public MovieDTO() {}
 
+    // All-args constructor for easy instantiation
     public MovieDTO(Long movieId, String name, LocalDate date, String description,
                     Double minute, Double rating, String link, List<String> genres,
                     List<ActorRoleDTO> actors, List<String> languages, Boolean hasOscar) {
@@ -61,7 +63,8 @@ public class MovieDTO {
         this.hasOscar = hasOscar;
     }
 
-    // Getters and Setters
+    // Getters and Setters for all fields
+
     public Long getMovieId() { return movieId; }
     public void setMovieId(Long movieId) { this.movieId = movieId; }
 

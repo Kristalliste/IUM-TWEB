@@ -28,7 +28,7 @@ let currentView = 'recent'; // 'recent', 'top-rated', 'search'
 let currentSearchTerm = '';
 let totalPages = 1;
 
-// Functions for paginated fetching
+// Fetch movies from the API with pagination and type (recent, top-rated, etc.)
 async function fetchMovies(type, page = 0, query = '') {
     try {
         let url = `${API_BASE_URL}/movies`;
@@ -67,7 +67,7 @@ async function fetchMovies(type, page = 0, query = '') {
     }
 }
 
-// Loads and shows a page of films
+// Loads and displays a page of movies in the grid
 async function loadAndDisplayMoviesPage(page = 0) {
     currentPage = page + 1;     // Converts into 1-indexed per UI
     let data;
@@ -82,12 +82,21 @@ async function loadAndDisplayMoviesPage(page = 0) {
     totalPages = data.totalPages;
 
     // Callback to change page
-    displayMoviePage(formattedMovies, paginationContainer, movieGrid, currentPage, totalPages, mainView, detailView, (pageIndex) => {
+    displayMoviePage(
+        formattedMovies,
+        paginationContainer,
+        movieGrid,
+        currentPage,
+        totalPages,
+        mainView,
+        detailView,
+        (pageIndex) => {
             loadAndDisplayMoviesPage(pageIndex);
         }
     );
 }
 
+// Fetch movies filtered by title, with pagination
 async function loadFilteredByTitleMovies(page = 0) {
     try {
         const title = document.getElementById("searchInput").value;
@@ -120,6 +129,7 @@ async function loadFilteredByTitleMovies(page = 0) {
     }
 }
 
+// Set the active navigation link in the UI
 function setActiveLink(activeLink) {
     navLinks.forEach(link => link.classList.remove('active'));
     if (activeLink) {
@@ -206,7 +216,7 @@ closeChatBtn.addEventListener('click', () => {
     disconnectChat(); // Disconnect when closing the chat
 });
 
-// Initialization
+// App initialization: preload templates and load the first page
 async function init() {
     try {
         // Preload templates if needed

@@ -3,9 +3,11 @@ import {showDetailView} from './views.js';
 import { loadTemplate } from './templateLoader.js';
 import { disconnectChat, isGeneralChat } from './chat.js';
 
+// Get modal element and its content container
 const modal = document.getElementById('movieModal');
 const modalContent = modal?.querySelector('.modal-content');
 
+// Fetch movie details from API and format them
 export async function loadMovieDetails(movieId) {
     try {
         const response = await fetch(`${API_BASE_URL}/movies/${movieId}`);
@@ -18,6 +20,7 @@ export async function loadMovieDetails(movieId) {
         return formatMovieDetails(movie);
     } catch (error) {
         console.error("Fetch error:", error);
+        // Return a default error object if fetch fails
         return {
             title: "Error Loading Movie",
             description: error.message,
@@ -29,6 +32,7 @@ export async function loadMovieDetails(movieId) {
     }
 }
 
+// Show the modal with movie details
 export async function showModal(movieId) {
     if (!movieId || movieId === '0' || isNaN(movieId)) {
         console.error('Invalid movie ID:', movieId);
@@ -51,12 +55,13 @@ export async function showModal(movieId) {
 
         modalContent.innerHTML = template(movie);
 
-        // Set up event listeners
+        // Set up close button event listener
         const closeBtn = modalContent.querySelector('.close');
         if (closeBtn) {
             closeBtn.addEventListener('click', hideModal);
         }
 
+        // Set up detail link event listener
         const detailLink = document.getElementById('detailLink');
         if (detailLink) {
             detailLink.onclick = (e) => {
@@ -73,6 +78,7 @@ export async function showModal(movieId) {
                     floatingChat.classList.add('hidden');
                 }
 
+                // Show the detail view
                 const mainView = document.querySelector('main');
                 const detailView = document.getElementById('movie-detail-view');
                 if (mainView && detailView) {
@@ -87,6 +93,7 @@ export async function showModal(movieId) {
     }
 }
 
+// Hide the modal and restore scroll
 export function hideModal() {
     if (modal) {
         modal.style.display = 'none';
@@ -126,7 +133,7 @@ export function attachModalListeners() {
         movieGrid.addEventListener('click', handleMovieCardClick);
     }
 
-    // NEW: Also attach to search grid if it exists
+    // Also attach to search grid if it exists
     attachSearchListeners();
 }
 

@@ -45,31 +45,40 @@ public class OscarAward {
     @Schema(description = "True if the nominee won", example = "true")
     private Boolean winner;
 
-    // Constructors
+    // Default constructor required by JPA
     public OscarAward() {}
 
     // Getters and Setters
+
+    // Returns the dummy id (not used in queries)
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
+    // Returns the year the film was released
     public Date getYearFilm() { return yearFilm; }
     public void setYearFilm(Date yearFilm) { this.yearFilm = yearFilm; }
 
+    // Returns the year of the Oscar ceremony
     public Date getYearCeremony() { return yearCeremony; }
     public void setYearCeremony(Date yearCeremony) { this.yearCeremony = yearCeremony; }
 
+    // Returns the ceremony number
     public Integer getCeremony() { return ceremony; }
     public void setCeremony(Integer ceremony) { this.ceremony = ceremony; }
 
+    // Returns the award category
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
 
+    // Returns the name of the nominee
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
+    // Returns the title of the film
     public String getFilm() { return film; }
     public void setFilm(String film) { this.film = film; }
 
+    // Returns true if the nominee won
     public Boolean getWinner() { return winner; }
     public void setWinner(Boolean winner) { this.winner = winner; }
 }

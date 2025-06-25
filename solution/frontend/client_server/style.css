@@ -71,59 +71,6 @@ header .container {
     color: #f5c518;
 }
 
-/* Dropdown Menu Styles */
-.dropdown-content {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: #1f1f1f;
-    min-width: 180px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
-    z-index: 1001;
-    border-radius: 5px;
-    padding: 10px 0;
-    border: 1px solid #333;
-    margin-top: 10px;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-.dropdown-content a {
-    color: #eee;
-    padding: 8px 15px;
-    text-decoration: none;
-    display: block;
-    font-size: 1em;
-    font-weight: normal;
-    white-space: normal;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.dropdown-content a:hover {
-    background-color: #000;
-    color: #f5c518;
-}
-
-/* Dropdown Scrollbar Styling */
-.dropdown-content::-webkit-scrollbar {
-    width: 8px;
-}
-
-.dropdown-content::-webkit-scrollbar-track {
-    background: #2a2a2a;
-    border-radius: 0 5px 5px 0;
-}
-
-.dropdown-content::-webkit-scrollbar-thumb {
-    background: #f5c518;
-    border-radius: 4px;
-}
-
 /* Search Bar Styles */
 .search-bar input {
     width: 300px;
@@ -429,7 +376,6 @@ footer {
     padding: 0.3rem 0;
     color: #ffffff;
     font-size: 0.95rem;
-    break-inside: avoid;
 }
 
 .languages-section,
@@ -473,7 +419,6 @@ footer {
     padding: 0.3rem 0;
     color: #ffffff;
     font-size: 1em;
-    /* break-inside: avoid; /* Prevents item splitting across columns */
 }
 
 .actor-role {
@@ -496,13 +441,6 @@ footer {
 /* Move the reviews section to be full width */
 .reviews-section {
     grid-column: 1 / -1; /* Span both columns */
-    margin-top: 20px;
-}
-
-.detail-sections-container {
-    display: grid;
-    grid-template-columns: 300px 1fr; /* Chat takes 300px, reviews takes remaining */
-    gap: 40px;
     margin-top: 20px;
 }
 
@@ -765,7 +703,6 @@ footer {
     flex-direction: column;
 }
 
-
 /* Modal (Pop-up) Styles */
 .modal {
     display: none;
@@ -922,29 +859,11 @@ footer {
     100% { transform: scale(1); }
 }
 
-/* Search Controls Container */
 /* Header actions container */
 .header-actions {
     display: flex;
     align-items: center;
     gap: 10px;
-}
-
-/* Chat toggle button */
-.chat-toggle-btn {
-    background: #f5c518;
-    color: #121212;
-    border: none;
-    border-radius: 20px;
-    padding: 8px 15px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background 0.3s;
-    white-space: nowrap;
-}
-
-.chat-toggle-btn:hover {
-    background: #e6b800;
 }
 
 /* Floating chat positioning */
@@ -968,40 +887,6 @@ footer {
     display: none;
 }
 
-.chat-header {
-    background-color: #1f1f1f;
-    padding: 10px 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #333;
-}
-
-.chat-header span {
-    font-weight: bold;
-    color: #f5c518;
-}
-
-#close-chat-btn {
-    background: none;
-    border: none;
-    color: #ccc;
-    font-size: 1.5em;
-    cursor: pointer;
-    padding: 5px;
-}
-
-#close-chat-btn:hover {
-    color: #fff;
-}
-
-.chat-body {
-    flex: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .floating-chat {
@@ -1021,13 +906,6 @@ footer {
     }
 }
 
-.pagination .ellipsis {
-    display: inline-block;
-    padding: 8px 12px;
-    color: #888;
-    user-select: none;
-}
-
 .loading-text {
     color: #f5c518; /* Colore giallo del tema */
     font-size: 1.2em;
@@ -1044,76 +922,7 @@ footer {
     min-height: 300px;
 }
 
-/* Aggiungi questo nel tuo file CSS */
-.actor-role {
-    display: block;
-    font-size: 0.85em;
-    color: #aaa;
-    margin-top: 3px;
-    font-style: italic;
-    padding-left: 15px;
-    position: relative;
-}
-
-.actor-role::before {
-    content: "» ";
-    position: sticky;
-    left: 5px;
-    color: #f5c518;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: #1f1f1f;
-    min-width: 180px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
-    z-index: 1001;
-    border-radius: 5px;
-    padding: 10px 0;
-    border: 1px solid #333;
-    margin-top: 10px;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-.dropdown-content a {
-    color: #eee;
-    padding: 8px 15px;
-    text-decoration: none;
-    display: block;
-    font-size: 1em;
-    font-weight: normal;
-    white-space: normal;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.dropdown-content a:hover {
-    background-color: #000;
-    color: #f5c518;
-}
-
-.dropdown-content::-webkit-scrollbar {
-    width: 8px;
-}
-
-.dropdown-content::-webkit-scrollbar-track {
-    background: #2a2a2a;
-    border-radius: 0 5px 5px 0;
-}
-
-.dropdown-content::-webkit-scrollbar-thumb {
-    background: #f5c518;
-    border-radius: 4px;
-}
-
-/* Contenitore dei controlli di ricerca */
+/* Search Controls Container */
 .search-controls-container {
     background-color: #1f1f1f; /* Slightly darker background */
     padding: 30px;
@@ -1192,7 +1001,6 @@ footer {
     transform: translateY(-2px); /* Slight lift effect */
 }
 
-
 /* Loading and Error Styles */
 .loading {
     color: #f5c518;
@@ -1207,14 +1015,6 @@ footer {
     margin-top: 15px;
     text-align: center;
     font-weight: bold;
-}
-
-.loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 300px;
 }
 
 .loader {
@@ -1309,105 +1109,16 @@ footer {
         justify-content: center;
         text-align: center;
     }
-    .detail-sections {
-        grid-template-columns: 1fr;
-    }
     .floating-chat {
         width: 300px;
         height: 400px;
         bottom: 10px;
         right: 10px;
     }
-    .header-actions {
-        flex-wrap: wrap;
-        justify-content: flex-end;
-    }
-    .search-bar input {
-        width: 180px;
-    }
     .languages-list,
     .genres-list,
     .actors-list {
         grid-template-columns: 1fr;
-    }
-}
-
-/* Actors Carousel */
-.actors-carousel {
-    position: relative;
-    padding: 0 40px;
-    margin-top: 20px;
-}
-
-.carousel-inner {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 15px;
-    overflow: hidden;
-    min-height: 220px;
-}
-
-.actor-item {
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    text-align: center;
-    transition: transform 0.3s ease;
-}
-
-.carousel-control {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.5);
-    border: none;
-    color: white;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 10;
-}
-
-.carousel-control.prev {
-    left: 0;
-}
-
-.carousel-control.next {
-    right: 0;
-}
-
-.carousel-control:hover {
-    background: rgba(0, 0, 0, 0.8);
-}
-
-.no-actors {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 40px 0;
-    color: #999;
-}
-
-/* Responsive styles */
-@media (max-width: 768px) {
-    .carousel-inner {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(3, 1fr);
-    }
-
-    .actors-carousel {
-        padding: 0 35px;
-    }
-}
-
-@media (max-width: 480px) {
-    .carousel-inner {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
     }
 }
 

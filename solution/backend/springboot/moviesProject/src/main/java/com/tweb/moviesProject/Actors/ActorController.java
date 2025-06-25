@@ -13,16 +13,21 @@ import java.util.List;
 public class ActorController {
     private final ActorService actorService;
 
-    public ActorController(ActorService actorService) {this.actorService = actorService;}
+    // Constructor injection for ActorService dependency
+    public ActorController(ActorService actorService) {
+        this.actorService = actorService;
+    }
 
     @Operation(summary = "Returns a list of actors whose names contain the given string (case-insensitive)")
     @GetMapping("/filterByName/{name}")
+    // Returns a list of actors whose names contain the specified string (case-insensitive)
     public List<Actor> findByNameContainingIgnoreCase(@PathVariable String name) {
         return actorService.findByNameContainingIgnoreCase(name);
     }
 
     @Operation(summary = "Returns a paginated list of actors filtered by name")
     @GetMapping("/paged")
+    // Returns a paginated list of actors filtered by name
     public ResponseEntity<Page<Actor>> getPagedActors(
             @RequestParam String name,
             @RequestParam(defaultValue = "0") int page,
@@ -35,6 +40,7 @@ public class ActorController {
 
     @Operation(summary = "Returns a list of movie titles for a given actor name (case-insensitive)")
     @GetMapping("/movieTitlesByActorName/{name}")
+    // Returns a list of movie titles for the given actor name (case-insensitive)
     public ResponseEntity<List<String>> getMovieTitlesByActorName(@PathVariable String name) {
         List<String> movieTitles = actorService.findMovieNameByActorNameIgnoreCase(name);
         if (movieTitles.isEmpty()) {
@@ -45,6 +51,7 @@ public class ActorController {
 
     @Operation(summary = "Returns a list of actor names for a given movie ID")
     @GetMapping("/namesByMovieId/{movieId}")
+    // Returns a list of actor names for the specified movie ID
     public ResponseEntity<List<String>> getActorNamesByMovieId(@PathVariable Long movieId) {
         List<String> names = actorService.getActorNamesByMovieId(movieId);
         return names == null || names.isEmpty()
