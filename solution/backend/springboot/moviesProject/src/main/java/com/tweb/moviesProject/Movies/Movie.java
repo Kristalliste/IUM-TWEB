@@ -12,29 +12,30 @@ public class Movie {
 
     @Id
     @Column(name = "id")
-    private Long movieId;
+    private Long movieId; // Unique identifier for the movie
 
     @Column(name = "name")
-    private String name;
+    private String name; // Movie title
 
     @Column(name = "date")
-    private LocalDate date;
+    private LocalDate date; // Release date
 
     @Column(name = "tagline")
-    private String tagline;
+    private String tagline; // Short tagline
 
     @Column(name = "description")
-    private String description;
+    private String description; // Movie description
 
     @Column(name = "minute")
-    private Double minute;
+    private Double minute; // Duration in minutes
 
     @Column(name = "rating")
-    private Double rating;
+    private Double rating; // Movie rating
 
     public Movie() {}
 
-    public Movie( Long movieId, String name, LocalDate date, String tagline, String description, Double minute, Double rating) {
+    // Constructor with all fields except languages
+    public Movie(Long movieId, String name, LocalDate date, String tagline, String description, Double minute, Double rating) {
         this.movieId = movieId;
         this.name = name;
         this.date = date;
@@ -44,7 +45,7 @@ public class Movie {
         this.rating = rating;
     }
 
-    // Since many instances of languages are mapped to one instance of movie
+    // One movie can have multiple languages
     @OneToMany
     @JoinColumn(name = "movie_id", referencedColumnName = "id") // connects Movie.id to Language.movie_id
     private List<Language> languages;
@@ -79,5 +80,5 @@ public class Movie {
     }
 
     public Double getRating() { return rating; }
-    public void setRating(Double rating) {this.rating = rating;}
+    public void setRating(Double rating) { this.rating = rating; }
 }

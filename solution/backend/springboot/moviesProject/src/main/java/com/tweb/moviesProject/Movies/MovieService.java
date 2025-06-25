@@ -24,6 +24,7 @@ public class MovieService {
 
     private static final Logger logger = LoggerFactory.getLogger(MovieService.class);
 
+    // Repository and service dependencies for movie-related data
     private final MovieRepository movieRepository;
     private final PosterService posterService;
     private final GenreService genreService;
@@ -46,14 +47,17 @@ public class MovieService {
         this.oscarAwardService = oscarAwardService;
     }
 
+    // Find movies by title (case-insensitive), paginated
     public Page<Movie> findByTitleIgnoreCase(String title, Pageable pageable) {
         return movieRepository.findByTitleIgnoreCase(title, pageable);
     }
 
+    // Find movies by year, paginated
     public Page<Movie> findByYear(Integer year, Pageable pageable) {
         return movieRepository.findByYear(year, pageable);
     }
 
+    // Find movies by genre (case-insensitive), paginated
     public Page<Movie> findByGenreIgnoreCase(String genre, Pageable pageable) {
         return movieRepository.findByGenreIgnoreCase(genre, pageable);
     }
@@ -63,19 +67,19 @@ public class MovieService {
         return posterService.getPostersByMovieIds(movieIds);
     }
 
+    // Get all movies, paginated
     public Page<Movie> getAllMovies(Pageable pageable) {
         return movieRepository.findAllMovies(pageable);
     }
 
-
     // Converts a Page of Movie entities to a Page of MovieDTOs
     private Page<MovieDTO> convertToDTOPage(Page<Movie> moviePage) {
-        // Get all movie IDs
+        // Get all movie IDs from the page content
         List<Long> movieIds = moviePage.getContent().stream()
                 .map(Movie::getMovieId)
                 .collect(Collectors.toList());
 
-        // Batch fetch all related data
+        // Batch fetch all related data to avoid N+1 queries
         Map<Long, String> posters = getPostersByMovieIds(movieIds);
         Map<Long, List<String>> genresMap = genreService.getGenreNamesByMovieIds(movieIds);
         Map<Long, List<ActorRoleDTO>> actorsMap = actorService.getActorsByMovieIds(movieIds);
@@ -87,6 +91,7 @@ public class MovieService {
                 .collect(Collectors.toList());
         Map<String, Boolean> oscarMap = oscarAwardService.hasOscarBatch(movieNames);
 
+        // Map each Movie entity to its DTO
         return moviePage.map(movie -> {
             Long movieId = movie.getMovieId();
             return new MovieDTO(
@@ -98,33 +103,39 @@ public class MovieService {
                     movie.getRating(),
                     posters.getOrDefault(movieId, "https://placehold.co/300x450?text=No+Image"),
                     genresMap.getOrDefault(movieId, Collections.emptyList()),
-                    actorsMap.getOrDefault(movieId, Collections.emptyList()), // This now correctly passes List<ActorRoleDTO>
+                    actorsMap.getOrDefault(movieId, Collections.emptyList()), // List of ActorRoleDTO
                     languagesMap.getOrDefault(movieId, Collections.emptyList()),
                     oscarMap.getOrDefault(movie.getName(), false)
             );
         });
     }
 
+    // Find movies by title and return DTOs
     public Page<MovieDTO> findByTitleIgnoreCaseDTO(String title, Pageable pageable) {
         return convertToDTOPage(movieRepository.findByTitleIgnoreCase(title, pageable));
     }
 
+    // Find movies by year and return DTOs
     public Page<MovieDTO> findByYearDTO(Integer year, Pageable pageable) {
         return convertToDTOPage(movieRepository.findByYear(year, pageable));
     }
 
+    // Find movies by genre and return DTOs
     public Page<MovieDTO> findByGenreIgnoreCaseDTO(String genre, Pageable pageable) {
         return convertToDTOPage(movieRepository.findByGenreIgnoreCase(genre, pageable));
     }
 
+    // Find movies by language and return DTOs
     public Page<MovieDTO> findByLanguageIgnoreCaseDTO(String language, Pageable pageable) {
         return convertToDTOPage(movieRepository.findByLanguageIgnoreCase(language, pageable));
     }
 
+    // Get all movies and return DTOs
     public Page<MovieDTO> getAllMoviesDTO(Pageable pageable) {
         return convertToDTOPage(movieRepository.findAllMovies(pageable));
     }
 
+    // Get detailed information for a single movie by ID
     public MovieDTO getMovieDetails(Long movieId) {
         logger.debug("Fetching details for movie: {}", movieId);
 
@@ -132,13 +143,15 @@ public class MovieService {
             throw new EntityNotFoundException("Movie with id " + movieId + " doesn't exist");
         });
         try {
-            String posterUrl = posterService.getPosterByMovieId(movieId); // also no exception thrown here
+            // Fetch related data for the movie
+            String posterUrl = posterService.getPosterByMovieId(movieId);
             List<String> genres = genreService.getGenreNamesByMovieId(movieId);
-            List<ActorRoleDTO> actors = actorService.getActorsByMovieId(movieId); // Changed to get ActorRoleDTO
+            List<ActorRoleDTO> actors = actorService.getActorsByMovieId(movieId);
             List<String> languages = languageService.getLanguageNamesByMovieId(movieId);
 
             boolean hasOscar = oscarAwardService.hasOscar(movie.getName());
 
+            // Build and return the DTO
             return new MovieDTO(
                     movie.getMovieId(),
                     movie.getName(),
@@ -149,7 +162,7 @@ public class MovieService {
                     movie.getRating(),
                     posterUrl != null ? posterUrl : "https://placehold.co/300x450?text=No+Image",
                     genres,
-                    actors, // This now correctly passes List<ActorRoleDTO>
+                    actors, // List of ActorRoleDTO
                     languages,
                     hasOscar
                     //reviews.stream().map(review ->new ReviewDTO(review.getUser(), review.getComment())).collect(Collectors.toList())
@@ -160,14 +173,17 @@ public class MovieService {
         }
     }
 
+    // Get all movies ordered by date descending and return DTOs
     public Page<MovieDTO> getAllMoviesOrderedByDateDescDTO(Pageable pageable) {
         return convertToDTOPage(movieRepository.findAllMoviesOrderedByDateDesc(pageable));
     }
 
+    // Get all movies ordered by rating descending and return DTOs
     public Page<MovieDTO> getAllMoviesOrderedByRatingDescDTO(Pageable pageable) {
         return convertToDTOPage(movieRepository.findAllMoviesOrderedByRatingDesc(pageable));
     }
 
+    // Find movies by actor (case-insensitive) and return DTOs
     public Page<MovieDTO> findByActorIgnoreCase(String actor, Pageable pageable) {
         return convertToDTOPage(movieRepository.findByActorIgnoreCase(actor, pageable));
     }

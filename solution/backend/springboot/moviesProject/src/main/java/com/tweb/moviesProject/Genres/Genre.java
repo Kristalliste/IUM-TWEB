@@ -8,23 +8,24 @@ public class Genre {
 
     @Id
     @Column(name = "genre_id")
-    private Long genreId;
+    private Long genreId; // Primary key for the Genre entity
 
     @Column(name = "movie_id")
-    private Long movieId;
+    private Long movieId; // Foreign key referencing the related movie
 
     @Column(name = "genre")
-    private String genre;
+    private String genre; // Name of the genre
 
-    // Costruttori
+    // Constructors
     public Genre() {}
 
+    // Constructor used to create a Genre with a movieId and genre name
     public Genre(Long movieId, String genre) {
         this.movieId = movieId;
         this.genre = genre;
     }
 
-    // Getters e Setters
+    // Getters and Setters
     public Long getGenreId() { return genreId; }
     public void setGenreId(Long genreId) { this.genreId = genreId; }
     public Long getMovieId() { return movieId; }

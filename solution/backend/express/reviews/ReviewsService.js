@@ -1,6 +1,7 @@
 import ReviewsRepository from './ReviewsRepository.js';
 
 const ReviewsService = {
+    // Fetch all reviews from the repository
     getAllReviews: async () => {
         try {
             return await ReviewsRepository.findAll();
@@ -9,6 +10,7 @@ const ReviewsService = {
         }
     },
 
+    // Create a new review with the provided data
     createReview: async (data) => {
         try {
             return await ReviewsRepository.save(data);
@@ -17,6 +19,7 @@ const ReviewsService = {
         }
     },
 
+    // Delete a review by its unique identifier
     deleteReview: async (id) => {
         try {
             return await ReviewsRepository.deleteById(id);
@@ -25,6 +28,7 @@ const ReviewsService = {
         }
     },
 
+    // Retrieve reviews by the movie title
     getReviewsByMovieTitle: async (movieTitle) => {
         try {
             return await ReviewsRepository.findByMovieTitle(movieTitle);

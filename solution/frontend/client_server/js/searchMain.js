@@ -1,6 +1,6 @@
 import { API_BASE_URL, formatMovieData, moviesPerPage } from './utils.js';
 import { displayMoviePage } from './pagination.js';
-import { showFilmLoader, hideFilmLoader } from '../loader/loader.js'; // Add this line
+import { showFilmLoader, hideFilmLoader } from '../loader/loader.js'; // Loader functions for UI feedback
 import { reattachSearchListeners } from './modalHandler.js';
 
 let currentPage = 1;
@@ -8,6 +8,7 @@ let currentView = '';
 let totalPages = 1;
 const modal = document.getElementById('movie-modal-search');
 
+// Fetch all available genres from the API
 async function fetchAllGenres() {
     try {
         const response = await fetch(`${API_BASE_URL}/genres`);
@@ -22,12 +23,14 @@ async function fetchAllGenres() {
     }
 }
 
+// Initialize the search UI and listeners
 export async function initSearch() {
     const searchType = document.getElementById("search-type");
     const searchInput = document.getElementById("search-input");
     const searchGenre = document.getElementById("search-genre");
     let genresList = ["Select a genre"];
 
+    // Load genres from the API and populate the dropdown
     async function loadGenres() {
         try {
             let genres = await fetchAllGenres();
@@ -38,6 +41,7 @@ export async function initSearch() {
         }
     }
 
+    // Populate the genre dropdown with the fetched genres
     function populateGenreDropdown() {
         searchGenre.innerHTML = "";
         genresList.forEach(genre => {
@@ -48,6 +52,7 @@ export async function initSearch() {
         });
     }
 
+    // Handle search type change (e.g., show/hide input or genre dropdown)
     searchType.addEventListener("change", () => {
         const type = searchType.value;
         if (type === "GENRE") {
@@ -60,6 +65,7 @@ export async function initSearch() {
         }
     });
 
+    // Search button click event
     document.getElementById('search-button').addEventListener('click', () => {
         searchMovies(0);
     });
@@ -67,12 +73,14 @@ export async function initSearch() {
     await loadGenres();
 }
 
+// Main function to search movies based on selected filter and page
 async function searchMovies(page = 0) {
     try {
         const type = document.getElementById("search-type").value;
         currentPage = page + 1;
 
         let data;
+        // Determine which filter to use based on search type
         if (type === "YEAR") {
             currentView = 'year';
             data = await loadFilteredMovies(page, currentView);
@@ -87,14 +95,17 @@ async function searchMovies(page = 0) {
             data = await loadFilteredMovies(page, currentView);
         }
 
+        // Handle no results
         if (!data || !data.content || data.content.length === 0) {
             document.getElementById('movie-grid-search').innerHTML = '<p class="no-results">No films found</p>';
             document.getElementById('pagination-container-search').innerHTML = '';
             return;
         }
+        // Format movies for display
         const formattedMovies = data.content.map(movie => formatMovieData(movie));
         totalPages = data.totalPages;
 
+        // Display movies and pagination
         displayMoviePage(
             formattedMovies,
             document.getElementById('pagination-container-search'),
@@ -108,7 +119,7 @@ async function searchMovies(page = 0) {
             }
         );
 
-        // Reattach event listeners for search results
+        // Reattach event listeners for dynamically loaded search results
         reattachSearchListeners();
     } catch (error) {
         console.error('Error during movie search:', error);
@@ -116,9 +127,10 @@ async function searchMovies(page = 0) {
     }
 }
 
+// Load movies filtered by the current view (genre, year, language, actor)
 async function loadFilteredMovies(page = 0, currentView) {
     try {
-        showFilmLoader();
+        showFilmLoader(); // Show loader while fetching
         const size = document.getElementById("page-size").value;
         let url;
         let searchValue;
@@ -160,6 +172,7 @@ async function loadFilteredMovies(page = 0, currentView) {
         }
         const data = await response.json();
 
+        // Handle both array and paginated response
         if (Array.isArray(data)) {
             return {
                 content: data,
@@ -174,7 +187,7 @@ async function loadFilteredMovies(page = 0, currentView) {
         console.error('Error fetching filtered movies:', error);
         return { content: [], totalPages: 1, totalElements: 0 };
     } finally {
-        hideFilmLoader();
+        hideFilmLoader(); // Always hide loader after fetch
     }
 }
 

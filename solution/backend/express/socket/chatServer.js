@@ -3,7 +3,7 @@ import { createServer } from 'http'; // HTTP Server Creation Module (Used by exp
 import { Server } from 'socket.io';
 import path from 'path'; // Module to manage file paths
 import cors from 'cors'; // Allows requests from other domains (Cross-Origin)
-import { fileURLToPath } from 'url'; // Allows requests from other domains (Cross-Origin)
+import { fileURLToPath } from 'url'; // Used to get the current file path
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,16 +34,17 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../../../frontend/client_server', 'mainView.html'));
 });
 
+// Map to keep track of movie rooms and their users (currently unused, can be used for room management)
 const movieRooms = new Map();
 
-//  Socket.io event handling
+// Socket.io event handling
 io.on('connection', (socket) => {
-    console.log(`🟢 Utente connesso: ${socket.id}`);
+    console.log(`🟢 User connected: ${socket.id}`);
 
     // Client can send "joinRoom" to join a specific room
     socket.on('joinRoom', ({ room, username }) => {
-        socket.join(room);
-        socket.data = { room, username };
+        socket.join(room); // Join the specified room
+        socket.data = { room, username }; // Store user data in the socket instance
 
         // Notification when entering the chat
         io.to(room).emit('systemMessage', {
@@ -57,13 +58,14 @@ io.on('connection', (socket) => {
     // Receives a chat message from a client and forwards it to everyone in the same room
     socket.on('chatMessage', ({ room, message }) => {
         io.to(room).emit('message', {
-            username: socket.data.username,
+            username: socket.data.username, // Sender's username
             message,
             room,
             time: new Date().toISOString()
         });
     });
 
+    // Handle user disconnection
     socket.on('disconnect', () => {
         if (socket.data?.room && socket.data?.username) {
             // Notify chat exit

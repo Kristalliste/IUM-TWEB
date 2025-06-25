@@ -14,10 +14,12 @@ public class LanguageController {
 
     private final LanguageService languageService;
 
+    // Constructor injection for LanguageService dependency
     public LanguageController(LanguageService languageService) {
         this.languageService = languageService;
     }
 
+    // Returns all language names for a specific movie by its ID
     @Operation(summary = "Get all language entities for a specific movie")
     @GetMapping("/movie/{movieId}")
     public ResponseEntity<List<String>> getLanguagesByMovieId(@PathVariable Long movieId) {
@@ -25,6 +27,7 @@ public class LanguageController {
         return ResponseEntity.ok(languages);
     }
 
+    // Returns all language names for a specific movie, returns 204 if empty
     @Operation(summary = "Get all language names for a specific movie")
     @GetMapping("/names/movie/{movieId}")
     public ResponseEntity<List<String>> getLanguageNamesByMovieId(@PathVariable Long movieId) {
@@ -32,6 +35,7 @@ public class LanguageController {
         return languageNames.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(languageNames);
     }
 
+    // Returns all Language entities by language name, returns 204 if empty
     @Operation(summary = "Get all Language entities by language name")
     @GetMapping("/{languageName}")
     public ResponseEntity<List<Language>> getLanguagesByName(@PathVariable String languageName) {
@@ -39,5 +43,3 @@ public class LanguageController {
         return languages.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(languages);
     }
 }
-
-

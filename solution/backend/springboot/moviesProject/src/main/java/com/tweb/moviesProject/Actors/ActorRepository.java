@@ -11,20 +11,26 @@ import java.util.List;
 
 @Repository
 public interface ActorRepository extends JpaRepository<Actor, Long> {
+
+    // Custom query to get actor names and roles by movie ID
     @Query(value = "SELECT a.name, a.role FROM \"Actors\" a WHERE a.movie_id = :movieId", nativeQuery = true)
     List<Object[]> findActorNamesAndRolesByMovieId(@Param("movieId") Long movieId);
 
+    // Custom query to find actors whose name contains the given string (case-insensitive), returns at most one result
     @Query(value = "SELECT * FROM \"Actors\" a WHERE a.name ILIKE '%' || :nameStart || '%' LIMIT 1", nativeQuery = true)
     List<Actor> findByNameContainingIgnoreCase(@Param("nameStart") String name);
 
+    // Custom paginated query to find actors by name (case-insensitive), with count for pagination
     @Query(value = "SELECT DISTINCT ON (a.name) * FROM \"Actors\" a WHERE a.name ILIKE '%' || :nameStart || '%'",
             countQuery = "SELECT count(*) FROM \"Actors\" a WHERE a.name ILIKE '%' || :nameStart || '%'",
             nativeQuery = true)
     Page<Actor> findByNameContainingIgnoreCase(@Param("nameStart") String nameStart, Pageable pageable);
 
+    // Custom query to find distinct movie names by actor name (case-insensitive)
     @Query(value = "SELECT DISTINCT m.name FROM \"Actors\" a JOIN \"Movies\" m ON a.movie_id = m.id WHERE a.name ILIKE :name", nativeQuery = true)
     List<String> findMovieNameByActorNameIgnoreCase(@Param("name") String name);
 
+    // Custom query to find an actor by their ID
     @Query(value = "SELECT * FROM \"Actors\" a WHERE a.actor_id = :id", nativeQuery = true)
     Actor findActorById(@Param("id") Long id);
 }
