@@ -2,9 +2,7 @@ package com.tweb.moviesProject.Actors;
 
 import jakarta.persistence.*;
 
-// JPA annotation to mark this class as a database entity
 @Entity
-// Specifies the table name in the database
 @Table(name = "Actors")
 public class Actor {
     // Primary key for the Actor entity
@@ -37,10 +35,13 @@ public class Actor {
     // Getters and Setters for all fields
     public Long getActorId() { return actorId; }
     public void setActorId(Long actorId) { this.actorId = actorId; }
+
     public Long getMovieId() { return movieId; }
     public void setMovieId(Long movieId) { this.movieId = movieId; }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
 }

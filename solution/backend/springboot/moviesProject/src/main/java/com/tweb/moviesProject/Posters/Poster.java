@@ -25,14 +25,11 @@ public class Poster {
 
     // Getters and Setters for all fields
     public Long getPosterId() { return posterId; }
-
     public void setPosterId(Long posterId) { this.posterId = posterId; }
 
     public Long getMovieId() { return movieId; }
-
     public void setMovieId(Long movieId) { this.movieId = movieId; }
 
     public String getLink() { return link; }
-
     public void setLink(String link) { this.link = link; }
 }

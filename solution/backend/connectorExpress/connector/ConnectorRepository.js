@@ -129,63 +129,6 @@ const getReviewsFromReviewsServer = async (movieTitle) => {
     }
 };
 
-// Fetches movies filtered by title, paginated, with caching
-const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
-    const cacheKey = `filteredMovies_title_${title}_page_${page}_size_${size}`;
-    const cachedMovies = cache.get(cacheKey);
-    if (cachedMovies) {
-        console.log('Returning cached movies');
-        return cachedMovies;
-    }
-    try {
-        const response = await axios.get(`${SPRING_API}/movies/search/title`, {
-            params: {
-                title: title,
-                size: size,
-                page: page  // Spring Data JPA pages are 0-indexed
-            },
-            timeout: 10000
-        });
-        console.log('Connection successful');
-        const pageData = response.data;
-
-        // Transform each movieDTO to the expected format
-        const transformedMovies = pageData.content.map(movieDTO => ({
-            id: movieDTO.movieId,
-            title: movieDTO.name,
-            year: new Date(movieDTO.date).getUTCFullYear(),
-            posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
-            description: movieDTO.description || '',
-            rating: movieDTO.rating || 0.0,
-            minute: movieDTO.minute || 0,
-            actors: movieDTO.actors || [],
-            genres: movieDTO.genres || [],
-            languages: movieDTO.languages || [],
-            hasOscar: movieDTO.hasOscar || false
-        }));
-
-        const result = {
-            content: transformedMovies,
-            totalPages: pageData.totalPages,
-            totalElements: pageData.totalElements,
-            currentPage: pageData.number, // Add current page number from Spring response
-            pageSize: pageData.size       // Add page size from Spring response
-        };
-
-        // Cache result
-        cache.set(cacheKey, result);
-        return result;
-
-    } catch (error) {
-        console.error('Failed to fetch movies:', {
-            url: `${SPRING_API}/search/title?title=${title}`,
-            error: error.message,
-            stack: error.stack
-        });
-        throw error;
-    }
-};
-
 // Fetches all genres from the Spring Boot API, with caching
 const fetchAllGenres = async () => {
     const cacheKey = 'all_genres';
@@ -199,10 +142,7 @@ const fetchAllGenres = async () => {
         }
 
         // Fetch from API
-        const response = await axios.get(`${SPRING_API}/genres/allGenres`, {
-            timeout: 5000
-        });
-
+        const response = await axios.get(`${SPRING_API}/genres/allGenres`, { timeout: 5000 });
         const genres = response.data;
 
         // Cache the result
@@ -216,7 +156,6 @@ const fetchAllGenres = async () => {
             stack: error.stack
         });
 
-        // Handle different error scenarios
         if (error.response) {
             throw new Error(`Server responded with ${error.response.status}`);
         } else if (error.request) {
@@ -225,214 +164,52 @@ const fetchAllGenres = async () => {
             throw new Error('Request setup error');
         }
     }
+};
+
+// Fetches movies filtered by title, paginated, with caching
+const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
+    return supportFilteredMovies('title', title, page, size);
 };
 
 // Fetches movies filtered by genre, paginated, with caching
 const fetchFilteredByGenreMovies = async (genre, page = 0, size = 10) => {
-    const cacheKey = `filteredMovies_genre_${genre}_page_${page}_size_${size}`;
-    const cachedMovies = cache.get(cacheKey);
-    if (cachedMovies) {
-        console.log('Returning cached movies');
-        return cachedMovies;
-    }
-    try {
-        const response = await axios.get(`${SPRING_API}/movies/search/genre`, {
-            params: {
-                genre: genre,
-                size: size,
-                page: page  // Spring Data JPA pages are 0-indexed
-            },
-            timeout: 10000
-        });
-        console.log('Connection successful');
-        const pageData = response.data;
-
-        // Transform each movieDTO to the expected format
-        const transformedMovies = pageData.content.map(movieDTO => ({
-            id: movieDTO.movieId,
-            title: movieDTO.name,
-            year: new Date(movieDTO.date).getUTCFullYear(),
-            posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
-            description: movieDTO.description || '',
-            rating: movieDTO.rating || 0.0,
-            minute: movieDTO.minute || 0,
-            actors: movieDTO.actors || [],
-            genres: movieDTO.genres || [],
-            languages: movieDTO.languages || [],
-            hasOscar: movieDTO.hasOscar || false
-        }));
-
-        const result = {
-            content: transformedMovies,
-            totalPages: pageData.totalPages,
-            totalElements: pageData.totalElements,
-            currentPage: pageData.number, // Add current page number from Spring response
-            pageSize: pageData.size       // Add page size from Spring response
-        };
-
-        // Cache result
-        cache.set(cacheKey, result);
-        return result;
-
-    } catch (error) {
-        console.error('Failed to fetch movies by genre:', {
-            url: `${SPRING_API}/search/genre?genre=${genre}`,
-            error: error.message,
-            stack: error.stack
-        });
-        if (error.response) {
-            throw new Error(`Server responded with ${error.response.status}`);
-        } else if (error.request) {
-            throw new Error('No response received from server');
-        } else {
-            throw new Error('Request setup error');
-        }
-    }
+    return supportFilteredMovies('genre', genre, page, size);
 };
 
 // Fetches movies filtered by year, paginated, with caching
 const fetchFilteredByYearMovies = async (year, page = 0, size = 10) => {
-    const cacheKey = `filteredMovies_year_${year}_page_${page}_size_${size}`;
-    const cachedMovies = cache.get(cacheKey);
-    if (cachedMovies) {
-        console.log('Returning cached movies');
-        return cachedMovies;
-    }
-    try {
-        const response = await axios.get(`${SPRING_API}/movies/search/year`, {
-            params: {
-                year: year,
-                size: size,
-                page: page  // Spring Data JPA pages are 0-indexed
-            },
-            timeout: 10000
-        });
-        console.log('Connection successful');
-        const pageData = response.data;
-
-        // Transform each movieDTO to the expected format
-        const transformedMovies = pageData.content.map(movieDTO => ({
-            id: movieDTO.movieId,
-            title: movieDTO.name,
-            year: new Date(movieDTO.date).getUTCFullYear(),
-            posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
-            description: movieDTO.description || '',
-            rating: movieDTO.rating || 0.0,
-            minute: movieDTO.minute || 0,
-            actors: movieDTO.actors || [],
-            genres: movieDTO.genres || [],
-            languages: movieDTO.languages || [],
-            hasOscar: movieDTO.hasOscar || false
-        }));
-
-        const result = {
-            content: transformedMovies,
-            totalPages: pageData.totalPages,
-            totalElements: pageData.totalElements,
-            currentPage: pageData.number, // Add current page number from Spring response
-            pageSize: pageData.size       // Add page size from Spring response
-        };
-
-        // Cache result
-        cache.set(cacheKey, result);
-        return result;
-
-    } catch (error) {
-        console.error('Failed to fetch movies by year:', {
-            url: `${SPRING_API}/search/year?year=${year}`,
-            error: error.message,
-            stack: error.stack
-        });
-        if (error.response) {
-            throw new Error(`Server responded with ${error.response.status}`);
-        } else if (error.request) {
-            throw new Error('No response received from server');
-        } else {
-            throw new Error('Request setup error');
-        }
-    }
+    return supportFilteredMovies('year', year, page, size);
 };
 
 // Fetches movies filtered by language, paginated, with caching
 const fetchFilteredByLanguageMovies = async (language, page = 0, size = 10) => {
-    const cacheKey = `filteredMovies_language_${language}_page_${page}_size_${size}`;
-    const cachedMovies = cache.get(cacheKey);
-    if (cachedMovies) {
-        console.log('Returning cached movies');
-        return cachedMovies;
-    }
-    try {
-        const response = await axios.get(`${SPRING_API}/movies/search/language`, {
-            params: {
-                language: language,
-                size: size,
-                page: page  // Spring Data JPA pages are 0-indexed
-            },
-            timeout: 10000
-        });
-        console.log('Connection successful');
-        const pageData = response.data;
-
-        // Transform each movieDTO to the expected format
-        const transformedMovies = pageData.content.map(movieDTO => ({
-            id: movieDTO.movieId,
-            title: movieDTO.name,
-            year: new Date(movieDTO.date).getUTCFullYear(),
-            posterUrl: movieDTO.link || 'https://placehold.co/300x450?text=No+Image',
-            description: movieDTO.description || '',
-            rating: movieDTO.rating || 0.0,
-            minute: movieDTO.minute || 0,
-            actors: movieDTO.actors || [],
-            genres: movieDTO.genres || [],
-            languages: movieDTO.languages || [],
-            hasOscar: movieDTO.hasOscar || false
-        }));
-
-        const result = {
-            content: transformedMovies,
-            totalPages: pageData.totalPages,
-            totalElements: pageData.totalElements,
-            currentPage: pageData.number, // Add current page number from Spring response
-            pageSize: pageData.size       // Add page size from Spring response
-        };
-
-        // Cache result
-        cache.set(cacheKey, result);
-        return result;
-
-    } catch (error) {
-        console.error('Failed to fetch movies by language:', {
-            url: `${SPRING_API}/search/language?language=${language}`,
-            error: error.message,
-            stack: error.stack
-        });
-        if (error.response) {
-            throw new Error(`Server responded with ${error.response.status}`);
-        } else if (error.request) {
-            throw new Error('No response received from server');
-        } else {
-            throw new Error('Request setup error');
-        }
-    }
+    return supportFilteredMovies('language', language, page, size);
 };
 
 // Fetches movies filtered by actor, paginated, with caching
 const fetchFilteredByActorMovies = async (actor, page = 0, size = 10) => {
-    const cacheKey = `filteredMovies_actor_${actor}_page_${page}_size_${size}`;
+    return supportFilteredMovies('actor', actor, page, size);
+};
+
+// Supports filtered movie fetching, paginated, with caching
+const supportFilteredMovies = async (filterType, filterValue, page = 0, size = 10) => {
+    const cacheKey = `filteredMovies_${filterType}_${filterValue}_page_${page}_size_${size}`;
     const cachedMovies = cache.get(cacheKey);
     if (cachedMovies) {
         console.log('Returning cached movies');
         return cachedMovies;
     }
+
     try {
-        const response = await axios.get(`${SPRING_API}/movies/search/actor`, {
+        const response = await axios.get(`${SPRING_API}/movies/search/${filterType}`, {
             params: {
-                actor: actor,
-                size: size,
-                page: page  // Spring Data JPA pages are 0-indexed
+                [filterType]: filterValue,
+                page,
+                size
             },
             timeout: 10000
         });
+
         console.log('Connection successful');
         const pageData = response.data;
 
@@ -464,11 +241,12 @@ const fetchFilteredByActorMovies = async (actor, page = 0, size = 10) => {
         return result;
 
     } catch (error) {
-        console.error('Failed to fetch movies by actor:', {
-            url: `${SPRING_API}/search/actor?actor=${actor}`,
+        console.error(`Failed to fetch movies by ${filterType}:`, {
+            url: `${SPRING_API}/movies/search/${filterType}?${filterType}=${filterValue}`,
             error: error.message,
             stack: error.stack
         });
+
         if (error.response) {
             throw new Error(`Server responded with ${error.response.status}`);
         } else if (error.request) {
@@ -484,10 +262,11 @@ export default {
     fetchMovieById,
     fetchMoviesPaginated,
     getReviewsFromReviewsServer,
+    fetchAllGenres,
     fetchFilteredByTitleMovies,
     fetchFilteredByGenreMovies,
     fetchFilteredByYearMovies,
-    fetchAllGenres,
     fetchFilteredByLanguageMovies,
-    fetchFilteredByActorMovies
+    fetchFilteredByActorMovies,
+    supportFilteredMovies
 };

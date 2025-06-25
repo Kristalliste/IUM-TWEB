@@ -46,71 +46,68 @@ public class MovieService {
         this.languageService = languageService;
         this.oscarAwardService = oscarAwardService;
     }
-/*
 
-    // Find movies by title (case-insensitive), paginated
-    public Page<Movie> findByTitleIgnoreCase(String title, Pageable pageable) {
-        return movieRepository.findByTitleIgnoreCase(title, pageable);
+    //Builds the MovieDTO
+    private MovieDTO buildMovieDTO(Movie movie,
+                               String posterUrl,
+                               List<String> genres,
+                               List<ActorRoleDTO> actors,
+                               List<String> languages,
+                               boolean hasOscar) {
+        return new MovieDTO(
+            movie.getMovieId(),
+            movie.getName(),
+            movie.getDate(),
+            movie.getDescription(),
+            movie.getMinute(),
+            movie.getRating(),
+            posterUrl != null ? posterUrl : "https://placehold.co/300x450?text=No+Image",
+            genres != null ? genres : Collections.emptyList(),
+            actors != null ? actors : Collections.emptyList(),
+            languages != null ? languages : Collections.emptyList(),
+            hasOscar
+    );
+}
+    // Converts a Page of Movie entities to a Page of MovieDTOs
+    private Page<MovieDTO> convertToDTOPage(Page<Movie> moviePage) {
+        try {
+            // Get all movie IDs from the page content
+            List<Long> movieIds = moviePage.getContent().stream()
+                    .map(Movie::getMovieId)
+                    .collect(Collectors.toList());
+
+            // Batch fetch all related data
+            Map<Long, String> posters = getPostersByMovieIds(movieIds);
+            Map<Long, List<String>> genresMap = genreService.getGenreNamesByMovieIds(movieIds);
+            Map<Long, List<ActorRoleDTO>> actorsMap = actorService.getActorsByMovieIds(movieIds);
+            Map<Long, List<String>> languagesMap = languageService.getLanguageNamesByMovieIds(movieIds);
+            // Get movie names for Oscar check
+            List<String> movieNames = moviePage.getContent().stream()
+                    .map(Movie::getName)
+                    .collect(Collectors.toList());
+            Map<String, Boolean> oscarMap = oscarAwardService.hasOscarBatch(movieNames);
+
+            // Map each Movie entity to its DTO
+            return moviePage.map(movie -> {
+                Long id = movie.getMovieId();
+                return buildMovieDTO(
+                        movie,
+                        posters.get(id),
+                        genresMap.get(id),
+                        actorsMap.get(id),
+                        languagesMap.get(id),
+                        oscarMap.getOrDefault(movie.getName(), false)
+                );
+            });
+        } catch (Exception e) {
+            logger.error("Failed to convert Movie page to DTO page", e);
+            throw e; // Global exception handler will return the proper error response
+        }
     }
-
-    // Find movies by year, paginated
-    public Page<Movie> findByYear(Integer year, Pageable pageable) {
-        return movieRepository.findByYear(year, pageable);
-    }
-
-    // Find movies by genre (case-insensitive), paginated
-    public Page<Movie> findByGenreIgnoreCase(String genre, Pageable pageable) {
-        return movieRepository.findByGenreIgnoreCase(genre, pageable);
-    }
-
-// Get all movies, paginated
-
-    public Page<Movie> getAllMovies(Pageable pageable) {
-        return movieRepository.findAllMovies(pageable);
-    }
- */
 
     // Batch method to get posters by movie IDs
     public Map<Long, String> getPostersByMovieIds(List<Long> movieIds) {
         return posterService.getPostersByMovieIds(movieIds);
-    }
-
-    // Converts a Page of Movie entities to a Page of MovieDTOs
-    private Page<MovieDTO> convertToDTOPage(Page<Movie> moviePage) {
-        // Get all movie IDs from the page content
-        List<Long> movieIds = moviePage.getContent().stream()
-                .map(Movie::getMovieId)
-                .collect(Collectors.toList());
-
-        // Batch fetch all related data to avoid N+1 queries
-        Map<Long, String> posters = getPostersByMovieIds(movieIds);
-        Map<Long, List<String>> genresMap = genreService.getGenreNamesByMovieIds(movieIds);
-        Map<Long, List<ActorRoleDTO>> actorsMap = actorService.getActorsByMovieIds(movieIds);
-        Map<Long, List<String>> languagesMap = languageService.getLanguageNamesByMovieIds(movieIds);
-
-        // Get movie names for Oscar check
-        List<String> movieNames = moviePage.getContent().stream()
-                .map(Movie::getName)
-                .collect(Collectors.toList());
-        Map<String, Boolean> oscarMap = oscarAwardService.hasOscarBatch(movieNames);
-
-        // Map each Movie entity to its DTO
-        return moviePage.map(movie -> {
-            Long movieId = movie.getMovieId();
-            return new MovieDTO(
-                    movieId,
-                    movie.getName(),
-                    movie.getDate(),
-                    movie.getDescription(),
-                    movie.getMinute(),
-                    movie.getRating(),
-                    posters.getOrDefault(movieId, "https://placehold.co/300x450?text=No+Image"),
-                    genresMap.getOrDefault(movieId, Collections.emptyList()),
-                    actorsMap.getOrDefault(movieId, Collections.emptyList()), // List of ActorRoleDTO
-                    languagesMap.getOrDefault(movieId, Collections.emptyList()),
-                    oscarMap.getOrDefault(movie.getName(), false)
-            );
-        });
     }
 
     // Find movies by title and return DTOs
@@ -151,23 +148,11 @@ public class MovieService {
             List<String> genres = genreService.getGenreNamesByMovieId(movieId);
             List<ActorRoleDTO> actors = actorService.getActorsByMovieId(movieId);
             List<String> languages = languageService.getLanguageNamesByMovieId(movieId);
-
             boolean hasOscar = oscarAwardService.hasOscar(movie.getName());
 
             // Build and return the DTO
-            return new MovieDTO(
-                    movie.getMovieId(),
-                    movie.getName(),
-                    movie.getDate(),
-                    movie.getDescription(),
-                    movie.getMinute(),
-                    movie.getRating(),
-                    posterUrl != null ? posterUrl : "https://placehold.co/300x450?text=No+Image",
-                    genres,
-                    actors,
-                    languages,
-                    hasOscar
-            );
+            return buildMovieDTO(movie, posterUrl, genres, actors, languages, hasOscar);
+
         } catch (Exception e) {
             logger.error("Error building MovieDTO", e);
             throw e; // Global handler will catch this

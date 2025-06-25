@@ -18,11 +18,6 @@ public class LanguageService {
     public LanguageService(LanguageRepository languageRepository) {
         this.languageRepository = languageRepository;
     }
-/*
-// Returns all Language entities associated with a specific movie ID
-    public List<Language> getLanguagesByMovieId(Long movieId) {
-        return languageRepository.findByMovieId(movieId);
-    }*/
 
     // Returns the names of languages for a specific movie ID
     public List<String> getLanguageNamesByMovieId(Long movieId) {

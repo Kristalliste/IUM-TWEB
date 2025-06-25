@@ -76,15 +76,6 @@ public class ActorService {
     }
 
     /**
-     * Finds an actor by their unique ID.
-     * @param id Actor ID
-     * @return Actor entity or null if not found
-     */
-    public Actor findActorById(Long id) {
-        return actorRepository.findActorById(id);
-    }
-
-    /**
      * Retrieves the names of actors for a specific movie ID.
      * @param movieId Movie ID
      * @return List of actor names

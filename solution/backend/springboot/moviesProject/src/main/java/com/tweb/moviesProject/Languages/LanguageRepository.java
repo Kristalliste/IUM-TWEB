@@ -15,13 +15,7 @@ public interface LanguageRepository extends JpaRepository<Language, Long> {
     @Query(value = "SELECT DISTINCT(language) FROM \"Languages\" WHERE movie_id = :movieId ", nativeQuery = true)
     List<String> findLanguageNamesByMovieId(@Param("movieId") Long movieId);
 
-    /*
-    // Returns a list of Language entities for a given movie ID
-    @Query(value = "SELECT * FROM \"Languages\" WHERE movie_id = :movieId", nativeQuery = true)
-    List<Language> findByMovieId(Long movieId); */
-
     // Returns a list of Language entities matching the given language name (case-insensitive)
     @Query(value = "SELECT * FROM \"Languages\" WHERE genre ILIKE :language", nativeQuery = true)
     List<Language> findByLanguageName(@Param("language") String genre);
-
 }

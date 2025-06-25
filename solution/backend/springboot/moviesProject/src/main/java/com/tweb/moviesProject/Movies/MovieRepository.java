@@ -41,7 +41,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     // Override findById to use a custom query (to load details)
     @Override
     @Query(value = "SELECT * FROM \"Movies\" WHERE id = :id", nativeQuery = true)
-    Optional<Movie> findById(@Param("id") Long id); //integer
+    Optional<Movie> findById(@Param("id") Long id);
 
     // Get all movies ordered by date, rating, and id
     @Query(value = "SELECT * FROM \"Movies\" ORDER BY date DESC, rating DESC NULLS LAST, id DESC",

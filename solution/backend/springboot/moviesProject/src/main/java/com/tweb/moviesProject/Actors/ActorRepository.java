@@ -30,7 +30,7 @@ public interface ActorRepository extends JpaRepository<Actor, Long> {
     @Query(value = "SELECT DISTINCT m.name FROM \"Actors\" a JOIN \"Movies\" m ON a.movie_id = m.id WHERE a.name ILIKE :name", nativeQuery = true)
     List<String> findMovieNameByActorNameIgnoreCase(@Param("name") String name);
 
-    // Custom query to find an actor by their ID
+   /* // Custom query to find an actor by their ID
     @Query(value = "SELECT * FROM \"Actors\" a WHERE a.actor_id = :id", nativeQuery = true)
-    Actor findActorById(@Param("id") Long id);
+    Actor findActorById(@Param("id") Long id); */
 }
