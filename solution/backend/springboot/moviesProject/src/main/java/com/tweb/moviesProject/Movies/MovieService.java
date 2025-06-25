@@ -7,6 +7,9 @@ import com.tweb.moviesProject.Languages.LanguageService;
 import com.tweb.moviesProject.Posters.PosterService;
 import com.tweb.moviesProject.OscarAwards.OscarAwardService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +21,8 @@ import java.util.stream.Collectors;
 @Service
 @Tag(name = "Movie Service", description = "Service layer for movie data and DTO conversion")
 public class MovieService {
+
+    private static final Logger logger = LoggerFactory.getLogger(MovieService.class);
 
     private final MovieRepository movieRepository;
     private final PosterService posterService;
@@ -62,9 +67,8 @@ public class MovieService {
         return movieRepository.findAllMovies(pageable);
     }
 
-    /**
-     * Converts a Page of Movie entities to a Page of MovieDTOs
-     */
+
+    // Converts a Page of Movie entities to a Page of MovieDTOs
     private Page<MovieDTO> convertToDTOPage(Page<Movie> moviePage) {
         // Get all movie IDs
         List<Long> movieIds = moviePage.getContent().stream()
@@ -74,7 +78,6 @@ public class MovieService {
         // Batch fetch all related data
         Map<Long, String> posters = getPostersByMovieIds(movieIds);
         Map<Long, List<String>> genresMap = genreService.getGenreNamesByMovieIds(movieIds);
-        // Changed to use getActorsByMovieIds which returns Map<Long, List<ActorRoleDTO>>
         Map<Long, List<ActorRoleDTO>> actorsMap = actorService.getActorsByMovieIds(movieIds);
         Map<Long, List<String>> languagesMap = languageService.getLanguageNamesByMovieIds(movieIds);
 
@@ -123,19 +126,16 @@ public class MovieService {
     }
 
     public MovieDTO getMovieDetails(Long movieId) {
-        System.out.println("DEBUG: Fetching details for movie: " + movieId); // Debug log
+        logger.debug("Fetching details for movie: {}", movieId);
 
-        Movie movie = movieRepository.findById(movieId).orElseThrow(() ->{
-            System.err.println("MOVIE NOT FOUND IN DATABASE: " + movieId);
-            return new NoSuchElementException("Movie " + movieId + " doesn't exist");
+        Movie movie = movieRepository.findById(movieId).orElseThrow(() -> {
+            throw new EntityNotFoundException("Movie with id " + movieId + " doesn't exist");
         });
         try {
             String posterUrl = posterService.getPosterByMovieId(movieId); // also no exception thrown here
             List<String> genres = genreService.getGenreNamesByMovieId(movieId);
             List<ActorRoleDTO> actors = actorService.getActorsByMovieId(movieId); // Changed to get ActorRoleDTO
-            //List<Review> reviews = reviewRepository.findByMovieId(movieId);
             List<String> languages = languageService.getLanguageNamesByMovieId(movieId);
-            // .stream().map(Language::getLanguage).distinct().toList();
 
             boolean hasOscar = oscarAwardService.hasOscar(movie.getName());
 
@@ -155,9 +155,8 @@ public class MovieService {
                     //reviews.stream().map(review ->new ReviewDTO(review.getUser(), review.getComment())).collect(Collectors.toList())
             );
         } catch (Exception e) {
-            // Log the error
-            System.err.println("Error building MovieDTO: " + e.getMessage());
-            throw e; // Re-throw to be handled by controller
+            logger.error("Error building MovieDTO", e);
+            throw e; // Global handler will catch this
         }
     }
 
