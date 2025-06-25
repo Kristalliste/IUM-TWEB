@@ -168,8 +168,6 @@ const fetchFilteredByTitleMovies = async (title, page = 0, size = 10) => {
         // Cache result
         cache.set(cacheKey, result);
         return result;
-        /*cache.set(cacheKey, transformedMovies);
-        return transformedMovies;*/
 
     } catch (error) {
         console.error('Failed to fetch movies:', {
@@ -238,7 +236,6 @@ const fetchFilteredByGenreMovies = async (genre, page = 0, size = 10) => {
         });
         console.log('Connection successful');
         const pageData = response.data;
-        //const moviesDTO = response.data.content;
 
         const transformedMovies = pageData.content.map(movieDTO => ({
             id: movieDTO.movieId,
@@ -265,8 +262,6 @@ const fetchFilteredByGenreMovies = async (genre, page = 0, size = 10) => {
         // Cache result
         cache.set(cacheKey, result);
         return result;
-        /*cache.set(cacheKey, transformedMovies);
-        return transformedMovies;*/
 
     } catch (error) {
         console.error('Failed to fetch movies by genre:', {
@@ -302,7 +297,6 @@ const fetchFilteredByYearMovies = async (year, page = 0, size = 10) => {
         });
         console.log('Connection successful');
         const pageData = response.data;
-        //const moviesDTO = response.data.content;
 
         const transformedMovies = pageData.content.map(movieDTO => ({
             id: movieDTO.movieId,
@@ -329,8 +323,6 @@ const fetchFilteredByYearMovies = async (year, page = 0, size = 10) => {
         // Cache result
         cache.set(cacheKey, result);
         return result;
-        /*cache.set(cacheKey, transformedMovies);
-        return transformedMovies;*/
 
     } catch (error) {
         console.error('Failed to fetch movies by year:', {
@@ -366,7 +358,6 @@ const fetchFilteredByLanguageMovies = async (language, page = 0, size = 10) => {
         });
         console.log('Connection successful');
         const pageData = response.data;
-        //const moviesDTO = response.data.content;
 
         const transformedMovies = pageData.content.map(movieDTO => ({
             id: movieDTO.movieId,
@@ -393,8 +384,6 @@ const fetchFilteredByLanguageMovies = async (language, page = 0, size = 10) => {
         // Cache result
         cache.set(cacheKey, result);
         return result;
-        /*cache.set(cacheKey, transformedMovies);
-        return transformedMovies;*/
 
     } catch (error) {
         console.error('Failed to fetch movies by language:', {
@@ -430,7 +419,6 @@ const fetchFilteredByActorMovies = async (actor, page = 0, size = 10) => {
         });
         console.log('Connection successful');
         const pageData = response.data;
-        //const moviesDTO = response.data.content;
 
         const transformedMovies = pageData.content.map(movieDTO => ({
             id: movieDTO.movieId,
@@ -457,8 +445,6 @@ const fetchFilteredByActorMovies = async (actor, page = 0, size = 10) => {
         // Cache result
         cache.set(cacheKey, result);
         return result;
-        /*cache.set(cacheKey, transformedMovies);
-        return transformedMovies;*/
 
     } catch (error) {
         console.error('Failed to fetch movies by actor:', {

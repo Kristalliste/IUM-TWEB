@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -28,7 +27,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             countQuery = "SELECT count(*) FROM \"Movies\" m JOIN \"Genres\" g ON m.id = g.movie_id WHERE g.genre LIKE :genre",
             nativeQuery = true)
     Page<Movie> findByGenreIgnoreCase(@Param("genre")String genre, Pageable pageable);
-
 
     // Add caching annotation to the single findAllMovies method
     @Cacheable("moviesCache")
