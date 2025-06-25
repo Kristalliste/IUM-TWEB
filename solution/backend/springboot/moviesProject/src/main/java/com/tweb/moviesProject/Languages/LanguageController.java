@@ -18,12 +18,12 @@ public class LanguageController {
         this.languageService = languageService;
     }
 
-    @Operation(summary = "Get all language entities for a specific movie")
+   /* @Operation(summary = "Get all language entities for a specific movie")
     @GetMapping("/movie/{movieId}")
     public ResponseEntity<List<String>> getLanguagesByMovieId(@PathVariable Long movieId) {
         List<String> languages = languageService.getLanguageNamesByMovieId(movieId);
         return ResponseEntity.ok(languages);
-    }
+    }*/
 
     @Operation(summary = "Get all language names for a specific movie")
     @GetMapping("/names/movie/{movieId}")

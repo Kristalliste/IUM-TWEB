@@ -45,7 +45,7 @@ public class MovieService {
         this.languageService = languageService;
         this.oscarAwardService = oscarAwardService;
     }
-
+/*
     public Page<Movie> findByTitleIgnoreCase(String title, Pageable pageable) {
         return movieRepository.findByTitleIgnoreCase(title, pageable);
     }
@@ -58,15 +58,15 @@ public class MovieService {
         return movieRepository.findByGenreIgnoreCase(genre, pageable);
     }
 
+    public Page<Movie> getAllMovies(Pageable pageable) {
+        return movieRepository.findAllMovies(pageable);
+    }
+ */
+
     // Batch method to get posters by movie IDs
     public Map<Long, String> getPostersByMovieIds(List<Long> movieIds) {
         return posterService.getPostersByMovieIds(movieIds);
     }
-
-    public Page<Movie> getAllMovies(Pageable pageable) {
-        return movieRepository.findAllMovies(pageable);
-    }
-
 
     // Converts a Page of Movie entities to a Page of MovieDTOs
     private Page<MovieDTO> convertToDTOPage(Page<Movie> moviePage) {
@@ -132,9 +132,9 @@ public class MovieService {
             throw new EntityNotFoundException("Movie with id " + movieId + " doesn't exist");
         });
         try {
-            String posterUrl = posterService.getPosterByMovieId(movieId); // also no exception thrown here
+            String posterUrl = posterService.getPosterByMovieId(movieId);
             List<String> genres = genreService.getGenreNamesByMovieId(movieId);
-            List<ActorRoleDTO> actors = actorService.getActorsByMovieId(movieId); // Changed to get ActorRoleDTO
+            List<ActorRoleDTO> actors = actorService.getActorsByMovieId(movieId);
             List<String> languages = languageService.getLanguageNamesByMovieId(movieId);
 
             boolean hasOscar = oscarAwardService.hasOscar(movie.getName());
@@ -143,16 +143,14 @@ public class MovieService {
                     movie.getMovieId(),
                     movie.getName(),
                     movie.getDate(),
-                    // movie.getTagline(),
                     movie.getDescription(),
                     movie.getMinute(),
                     movie.getRating(),
                     posterUrl != null ? posterUrl : "https://placehold.co/300x450?text=No+Image",
                     genres,
-                    actors, // This now correctly passes List<ActorRoleDTO>
+                    actors,
                     languages,
                     hasOscar
-                    //reviews.stream().map(review ->new ReviewDTO(review.getUser(), review.getComment())).collect(Collectors.toList())
             );
         } catch (Exception e) {
             logger.error("Error building MovieDTO", e);

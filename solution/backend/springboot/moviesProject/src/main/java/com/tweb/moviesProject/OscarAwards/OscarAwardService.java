@@ -3,7 +3,6 @@ package com.tweb.moviesProject.OscarAwards;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -18,12 +17,6 @@ public class OscarAwardService {
     @Autowired
     public OscarAwardService(OscarAwardRepository oscarAwardRepository) {
         this.oscarAwardRepository = oscarAwardRepository;
-    }
-
-    public Map<Long, Boolean> hasOscarByMovieIds(List<Long> movieIds) {
-        // This method would need movie names, but we'll handle it differently
-        // We'll keep this as a placeholder for now
-        return Collections.emptyMap();
     }
 
     public boolean hasOscar(String film) {

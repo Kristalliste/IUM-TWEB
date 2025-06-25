@@ -1,4 +1,4 @@
-package com.tweb.moviesProject.OscarAwards;
+/*package com.tweb.moviesProject.OscarAwards;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,3 +37,4 @@ public class OscarAwardController {
         return ResponseEntity.ok(results);
     }
 }
+*/

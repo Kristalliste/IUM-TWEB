@@ -1,4 +1,4 @@
-package com.tweb.moviesProject.Posters;
+/*package com.tweb.moviesProject.Posters;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,3 +26,4 @@ public class PosterController {
                 : ResponseEntity.ok(posterLink);
     }
 }
+*/
