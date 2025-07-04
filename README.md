@@ -27,7 +27,7 @@ Running files:
 Finally, run these files, preferably in the following order:
 
 1. mongoConnect.js in express;
-2. ReviewsServer.js in express;
+2. app.js in express;
 3. ChatServer.js in express;
 4. MoviesProjectApplication in springboot;
 5. ConnectorServer.js in connectorExpress;

@@ -1,10 +1,12 @@
 /**
  * Module dependencies.
  */
-import reviewsRouter from './reviews/ReviewsController.js';
+import allRoutes from './routes/index.js'; // Import the main router
 import dotenv from 'dotenv';
 import express from 'express';
 import swaggerSetup from './swagger.js';
+import './databases/mongoConnect.js'; // Connecting to MongoDB
+
 dotenv.config();
 
 const app = express();
@@ -17,8 +19,8 @@ app.use(express.json());
 // Swagger setup
 swaggerSetup(app, API_BASE_PATH);
 
-// Mounting API routes using the base path
-app.use(`${API_BASE_PATH}/reviews`, reviewsRouter);
+// Mounting all API routes under the base path
+app.use(API_BASE_PATH, allRoutes); // Use the imported router
 
 // Root route
 app.get('/', (req, res) => {
@@ -30,9 +32,6 @@ app.use((req, res) => {
     res.status(404).json({ error: 'Route not found' });
 });
 
-// Connecting to MongoDB
-import './mongoConnect.js';
-
 // Error handling middleware
 app.use((err, req, res, _next) => {
     console.error(err.stack);
@@ -40,7 +39,5 @@ app.use((err, req, res, _next) => {
     res.status(statusCode).json({ error: { message: err.message || 'Internal Server Error' } });
 });
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Reviews server listening on http://localhost:${PORT}`);
-});
+// Export the app instance, so it can be imported by www
+export default app;

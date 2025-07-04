@@ -2,7 +2,6 @@ import express from 'express';
 import { createServer } from 'http'; // HTTP Server Creation Module (Used by express)
 import { Server } from 'socket.io';
 import path from 'path'; // Module to manage file paths
-import cors from 'cors'; // Allows requests from other domains (Cross-Origin)
 import { fileURLToPath } from 'url'; // Used to get the current file path
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,16 +13,20 @@ const app = express();
 // Create an HTTP server from express (required to use with socket.io)
 const server = createServer(app);
 
-// Initialize socket.io with the server, configuring CORS to accept connections from all domains
-const io = new Server(server, {
+// Initialize socket.io with the server,
+const io = new Server(server);
+
+//
+// configuring CORS to accept connections from all domains
+/*const io = new Server(server, {
     cors: {
         origin: "*",                // Allows requests from any source
         methods: ["GET", "POST"]    // HTTP methods allowed
     }
-});
+});*/
 
 // Middleware to handle CORS and JSON
-app.use(cors());
+//app.use(cors());
 app.use(express.json());
 
 // Serve static files (like mainView.html) from the "client_server" folder
@@ -39,7 +42,7 @@ const movieRooms = new Map();
 
 // Socket.io event handling
 io.on('connection', (socket) => {
-    console.log(`🟢 User connected: ${socket.id}`);
+    console.log(` User connected: ${socket.id}`);
 
     // Client can send "joinRoom" to join a specific room
     socket.on('joinRoom', ({ room, username }) => {
@@ -82,5 +85,5 @@ io.on('connection', (socket) => {
 
 const PORT = 3001;
 server.listen(PORT, () => {
-    console.log(`💬 Chat server started on http://localhost:${PORT}`);
+    console.log(`Chat server started on http://localhost:${PORT}`);
 });

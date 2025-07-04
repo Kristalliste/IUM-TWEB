@@ -85,7 +85,7 @@ const swaggerSetup = (app, basePath) => {
             }
         },
         // Path to the controller file containing Swagger annotations
-        apis: ['./reviews/ReviewsController.js'],
+        apis: ['./controllers/reviewsController.js'],
     };
 
     // Generate Swagger specification from options
