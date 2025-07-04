@@ -21,17 +21,16 @@ Installs:
 
 • In the main directory, on your terminal run: - npm install
 
-• In the connectorExpress directory, run : - npm install node
+• In the connectorExpress directory, run : - npm install node and -npm install socket.io
 
 Running files:
 Finally, run these files, preferably in the following order:
 
-1. mongoConnect.js in express;
-2. ReviewsServer.js in express;
-3. ChatServer.js in express;
-4. MoviesProjectApplication in springboot;
-5. ConnectorServer.js in connectorExpress;
-6. mainViev.html in frontend.
+1. www.js in express;
+2. ChatServer.js in connectorEpress;
+3. MoviesProjectApplication in springboot;
+4. www.js in connectorExpress;
+5. mainViev.html in frontend.
 
 Swagger usage:
 
