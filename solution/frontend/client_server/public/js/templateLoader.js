@@ -15,11 +15,10 @@ export async function loadTemplate(templateName) {
 
     try {
         // Fetch the template file from the templates directory
-        const response = await fetch(`templates/${templateName}.hbs`);
-        if (!response.ok) throw new Error('Template not found');
+        const response = await axios.get(`../templates/${templateName}.hbs`);
+        const templateText = response.data;
 
-        // Read the template text and compile it with Handlebars
-        const templateText = await response.text();
+        // Compile it with Handlebars
         const template = Handlebars.compile(templateText);
 
         // Cache the compiled template for future use

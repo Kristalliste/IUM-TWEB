@@ -5,7 +5,7 @@ import { loadTemplate } from './templateLoader.js';
 import { initSearch } from './searchMain.js';
 import { reattachSearchListeners } from './modalHandler.js';
 
-// Add this helper function to clear active states
+// Helper function to clear active states
 function clearActiveNavLinks() {
     const navLinks = document.querySelectorAll('.main-nav ul > li > a');
     navLinks.forEach(link => link.classList.remove('active'));

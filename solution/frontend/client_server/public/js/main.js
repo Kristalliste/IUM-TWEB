@@ -39,13 +39,8 @@ async function fetchMovies(type, page = 0, query = '') {
 
         params.append('type', type);
 
-        const response = await fetch(`${url}?${params}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        // Handle different response structures
-        const data = await response.json();
+        const response = await axios.get(`${API_BASE_URL}/movies`, { params });
+        const data = response.data;
 
         // If response is an array (for recent movies)
         if (Array.isArray(data)) {
@@ -100,18 +95,24 @@ async function loadAndDisplayMoviesPage(page = 0) {
 async function loadFilteredByTitleMovies(page = 0) {
     try {
         const title = document.getElementById("searchInput").value;
-        if(title == null || title === "") { return; }
-        console.log(title);
+       // if(title == null || title === "") { return; }
+        if (!title) return { content: [], totalPages: 1, totalElements: 0 };
+
         // URL-encode the title for use in the path
         const encodedTitle = encodeURIComponent(title);
+        const response = await axios.get(
+            `${API_BASE_URL}/filteredMovies/${encodedTitle}`,
+            {
+                params: {
+                    page,
+                    size: moviesPerPage
+                }
+            }
+        );
 
-        console.log("Encoded title:", encodedTitle);
+        const data = response.data;
 
-        const response = await fetch(`${API_BASE_URL}/filteredMovies/${encodedTitle}?page=${page}&size=${moviesPerPage}`);
-        const data = await response.json();
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-        // If response is an array (for recent movies)
+        // If response is an array
         if (Array.isArray(data)) {
             return {
                 content: data,
@@ -155,16 +156,18 @@ searchInput.addEventListener('input', debounce(async (e) => {
     showMainView(mainView, detailView);
     setActiveLink(null);
 
-    let filteredMovies = await loadFilteredByTitleMovies();
+    /*let filteredMovies = await loadFilteredByTitleMovies();
     if(!filteredMovies) {
         console.error('Could not find movie list');
         return;
     }
     currentView = 'search';
-    currentPage = 1;
+    currentPage = 1;*/
     const searchTerm = e.target.value.toLowerCase().trim();
 
     if (searchTerm) {
+        currentView = 'search';
+        currentPage = 1;
         mainTitle.textContent = `Results for: "${searchTerm}"`;
         await loadAndDisplayMoviesPage(0);
     } else {
@@ -184,7 +187,6 @@ logo.addEventListener('click', async () => {
     await loadAndDisplayMoviesPage(0);
 });
 
-// In main.js - update the advancedSearchLink event listener
 advancedSearchLink.addEventListener('click', async (e) => {
     e.preventDefault();
     setActiveLink(advancedSearchLink);  // Set this link as active
@@ -224,6 +226,7 @@ async function init() {
             loadTemplate('movie-card'),
             loadTemplate('modal-template'),
             loadTemplate('movie-detail'),
+            loadTemplate('advanced-search'),
         ]);
 
         movieGrid.innerHTML = '<p class="loading">Loading Films...</p>';

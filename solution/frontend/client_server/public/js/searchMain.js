@@ -1,3 +1,4 @@
+//import axios from 'axios';
 import { API_BASE_URL, formatMovieData, moviesPerPage } from './utils.js';
 import { displayMoviePage } from './pagination.js';
 import { showFilmLoader, hideFilmLoader } from '../loader/loader.js'; // Loader functions for UI feedback
@@ -11,12 +12,8 @@ const modal = document.getElementById('movie-modal-search');
 // Fetch all available genres from the API
 async function fetchAllGenres() {
     try {
-        const response = await fetch(`${API_BASE_URL}/genres`);
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Failed to fetch genres');
-        }
-        return await response.json();
+        const response = await axios.get(`${API_BASE_URL}/genres`);
+        return response.data;
     } catch (error) {
         console.error('API Error: Failed to fetch genres', error);
         throw error;
@@ -166,11 +163,8 @@ async function loadFilteredMovies(page = 0, currentView) {
             }
         }
 
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
+        const response = await axios.get(url);
+        const data = response.data;
 
         // Handle both array and paginated response
         if (Array.isArray(data)) {

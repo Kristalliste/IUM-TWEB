@@ -10,14 +10,8 @@ const modalContent = modal?.querySelector('.modal-content');
 // Fetch movie details from API and format them
 export async function loadMovieDetails(movieId) {
     try {
-        const response = await fetch(`${API_BASE_URL}/movies/${movieId}`);
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`API error: ${response.status} - ${JSON.stringify(errorData)}`);
-        }
-        const movie = await response.json();
-
-        return formatMovieDetails(movie);
+        const response = await axios.get(`${API_BASE_URL}/movies/${movieId}`);
+        return formatMovieDetails(response.data);
     } catch (error) {
         console.error("Fetch error:", error);
         // Return a default error object if fetch fails
