@@ -4,7 +4,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import swaggerSetup from './swagger.js';
-import connectorRoutes from './connector/ConnectorController.js';
+import allRoutes from './routes/index.js'; // THIS IS THE CORRECT IMPORT FOR THE ROUTES INDEX
 import cors from 'cors';
 
 dotenv.config();
@@ -18,18 +18,18 @@ app.use(cors());
 // JSON parser
 app.use(express.json());
 
-// Swagger
+// Swagger setup
 swaggerSetup(app, API_BASE_PATH);
 
 // Routes
-app.use(`${API_BASE_PATH}`, connectorRoutes);
+app.use(`${API_BASE_PATH}`, allRoutes); // Use the consolidated router from routes/index.js
 
 // Root route
 app.get('/', (req, res) => {
     res.json({ message: 'Connector API is running' });
 });
 
-// 404
+// 404 Not Found handler
 app.use((req, res) => {
     res.status(404).json({ error: 'Route not found' });
 });
@@ -41,7 +41,4 @@ app.use((err, req, res, _next) => {
     res.status(statusCode).json({ error: { message: err.message || 'Internal Server Error' } });
 });
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Connector server listening on http://localhost:${PORT}`);
-});
+export default app; // Export the app for bin/www
