@@ -10,7 +10,6 @@ import './databases/mongoConnect.js'; // Connecting to MongoDB
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 const API_BASE_PATH = process.env.API_BASE_PATH || '/api';
 
 // Middleware to parse JSON

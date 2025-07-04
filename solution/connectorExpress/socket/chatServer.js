@@ -16,17 +16,7 @@ const server = createServer(app);
 // Initialize socket.io with the server,
 const io = new Server(server);
 
-//
-// configuring CORS to accept connections from all domains
-/*const io = new Server(server, {
-    cors: {
-        origin: "*",                // Allows requests from any source
-        methods: ["GET", "POST"]    // HTTP methods allowed
-    }
-});*/
-
 // Middleware to handle CORS and JSON
-//app.use(cors());
 app.use(express.json());
 
 // Serve static files (like mainView.html) from the "client_server" folder
