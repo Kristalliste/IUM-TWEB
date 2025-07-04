@@ -53,11 +53,6 @@ const swaggerSetup = (app, basePath) => {
                                 type: 'number',
                                 description: 'Score given in the review'
                             },
-                            review_date: {
-                                type: 'string',
-                                format: 'date-time',
-                                description: 'Date of the review'
-                            },
                             review_content: {
                                 type: 'string',
                                 description: 'Content of the review'

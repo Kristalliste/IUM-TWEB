@@ -19,11 +19,6 @@ class ReviewDTO {
         /** @type {boolean} Whether the critic is a top critic */
         this.topCritic = Boolean(reviewDoc.top_critic);
 
-        /** @type {Date} Date of the review */
-        this.reviewDate = reviewDoc.review_date instanceof Date
-            ? reviewDoc.review_date
-            : new Date(reviewDoc.review_date);
-
         /** @type {string|null} Content of the review */
         this.reviewContent = reviewDoc.review_content || null;
 
@@ -58,13 +53,6 @@ class ReviewDTO {
     }
     setTopCritic(isTopCritic) {
         this.topCritic = Boolean(isTopCritic);
-    }
-
-    getReviewDate() {
-        return this.reviewDate;
-    }
-    setReviewDate(date) {
-        this.reviewDate = date instanceof Date ? date : new Date(date);
     }
 
     getReviewContent() {
