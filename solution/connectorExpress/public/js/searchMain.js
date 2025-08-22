@@ -1,7 +1,6 @@
 //import axios from 'axios';
 import { API_BASE_URL, formatMovieData, moviesPerPage } from './utils.js';
 import { displayMoviePage } from './pagination.js';
-import { showFilmLoader, hideFilmLoader } from '../loader/loader.js'; // Loader functions for UI feedback
 import { reattachSearchListeners } from './modalHandler.js';
 
 let currentPage = 1;
@@ -127,7 +126,6 @@ async function searchMovies(page = 0) {
 // Load movies filtered by the current view (genre, year, language, actor)
 async function loadFilteredMovies(page = 0, currentView) {
     try {
-        showFilmLoader(); // Show loader while fetching
         const size = document.getElementById("page-size").value;
         let url;
         let searchValue;
@@ -180,8 +178,6 @@ async function loadFilteredMovies(page = 0, currentView) {
     } catch (error) {
         console.error('Error fetching filtered movies:', error);
         return { content: [], totalPages: 1, totalElements: 0 };
-    } finally {
-        hideFilmLoader(); // Always hide loader after fetch
     }
 }
 
