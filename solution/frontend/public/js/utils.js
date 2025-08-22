@@ -113,11 +113,11 @@ export function capitalizeDescription(str) {
 export function formatMovieReviews(movieReviewsData) {
     return {
         reviews: movieReviewsData.map(review => ({
-            critic_name: review.criticName || 'Anonymous',
-            top_critic: review.topCritic || false,
-            review_date: review.reviewDate || '',
-            review_content: review.reviewContent || "The critic didn't leave any comment.",
-            normalized_score: review.normalizedScore || 'N/A'
+            critic_name: review.critic_name || 'Anonymous',
+            top_critic: review.top_critic || false,
+            review_date: review.review_date || '',
+            review_content: review.review_content || "The critic didn't leave any comment.",
+            normalized_score: review.normalized_score || 'N/A'
         }))
     };
 }
