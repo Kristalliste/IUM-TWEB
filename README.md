@@ -26,11 +26,11 @@ Installs:
 Running files:
 Finally, run these files, preferably in the following order:
 
-1. www.js in express;
-2. ChatServer.js in connectorEpress;
-3. MoviesProjectApplication in springboot;
-4. www.js in connectorExpress;
-5. mainViev.html in frontend.
+1. www.js in backend/express/bin;
+2. MoviesProjectApplication in backend/springboot/moviesProject;
+3. ChatServer.js in fronend/socket;
+4. www.js in frontend/bin;
+5. mainViev.html in frontend/public/html.
 
 Swagger usage:
 
