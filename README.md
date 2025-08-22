@@ -21,22 +21,21 @@ Installs:
 
 • In the main directory, on your terminal run: - npm install
 
-• In the connectorExpress directory, run : - npm install node
+• In the connectorExpress directory, run : - npm install node and -npm install socket.io
 
 Running files:
 Finally, run these files, preferably in the following order:
 
-1. mongoConnect.js in express;
-2. app.js in express;
-3. ChatServer.js in express;
-4. MoviesProjectApplication in springboot;
-5. ConnectorServer.js in connectorExpress;
-6. mainViev.html in frontend.
+1. www.js in backend/express/bin;
+2. MoviesProjectApplication in backend/springboot/moviesProject;
+3. ChatServer.js in fronend/socket;
+4. www.js in frontend/bin;
+5. mainViev.html in frontend/public/html.
 
 Swagger usage:
 
 For Express server debugging go to http://localhost:3000/api-docs
 
-For connector Express server debugging go to http://localhost:4000/api-docs
+For frontend/routes/index.js debugging go to http://localhost:4000/api-docs
 
 For Springboot server debugging go to http://localhost:8080/swagger-ui/index.html
