@@ -1,6 +1,6 @@
 /**
  * Module dependencies.
- */
+*/
 import express from 'express';
 import dotenv from 'dotenv';
 import swaggerSetup from './swagger.js';

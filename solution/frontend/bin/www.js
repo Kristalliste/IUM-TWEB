@@ -2,7 +2,7 @@
 
 /**
  * Module dependencies.
- */
+*/
 import app from '../app.js'; // Import the main app instance
 import http from 'http';
 
@@ -14,7 +14,7 @@ app.set('port', port);
 
 /**
  * Create HTTP server.
- */
+*/
 const server = http.createServer(app);
 
 /**

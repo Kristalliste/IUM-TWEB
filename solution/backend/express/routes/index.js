@@ -6,7 +6,7 @@ const router = express.Router();
 /**
  * @swagger
  * paths:
- *   /movies/{movie_title}:
+ *   /reviews/movies/{movie_title}:
  *     get:
  *       summary: Get reviews by movie title
  *       description: Retrieve all reviews associated with the specified movie title.
@@ -27,24 +27,7 @@ const router = express.Router();
  *               schema:
  *                 type: array
  *                 items:
- *                   type: object
- *                   properties:
- *                     _id:
- *                       type: string
- *                       example: "60d0fe4f5311236168a109ca"
- *                     reviewer:
- *                       type: string
- *                       example: "John Doe"
- *                     rating:
- *                       type: number
- *                       format: float
- *                       example: 4.5
- *                     comment:
- *                       type: string
- *                       example: "Great movie with excellent performances!"
- *                     movie_title:
- *                       type: string
- *                       example: "Inception"
+ *                   $ref: '#/components/schemas/Review'
  *         '400':
  *           description: Invalid movie title supplied
  *         '404':
