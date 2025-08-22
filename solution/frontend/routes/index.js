@@ -8,12 +8,6 @@ const MONGO_API = process.env.MONGO_SERVER_URL || 'http://localhost:3000/api';
 const SPRING_API = process.env.SPRING_SERVER_URL || 'http://localhost:8080/api';
 
 
-
-
-
-
-
-
 /**
  * Fetches a movie by its ID.
  */
