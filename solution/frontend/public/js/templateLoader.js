@@ -7,12 +7,13 @@
 export async function loadTemplate(templateName) {
     try {
         // Fetch the template file from the templates directory
-        const response = await axios.get(`../templates/${templateName}.hbs`);
+        const response = await axios.get(`../../views/${templateName}.hbs`);
         const templateText = response.data;
 
         // Compile it with Handlebars
         const template = Handlebars.compile(templateText);
 
+        return template;
     } catch (error) {
         // Log error and return null if loading fails
         console.error(`Error loading template: ${templateName}`, error);
@@ -21,21 +22,21 @@ export async function loadTemplate(templateName) {
 }
 
 // Initialize Handlebars helpers when the module loads
-(function initHandlebars() {
-    /**
+/*(function initHandlebars() {
+    /!**
      * Handlebars helper: ifEquals
      * Usage: {{#ifEquals arg1 arg2}} ... {{/ifEquals}}
      * Renders the block if arg1 == arg2, otherwise renders the inverse block.
-     */
+     *!/
     Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
-        return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+        return (arg1 === arg2) ? options.fn(this) : options.inverse(this);
     });
 
-    /**
+    /!**
      * Handlebars helper: escape
      * Escapes HTML special characters in the given context string.
      * Usage: {{escape someVar}}
-     */
+     *!/
     Handlebars.registerHelper('escape', function(context) {
         return new Handlebars.SafeString(
             context.replace(/[&<>"'`]/g, function(m) {
@@ -50,4 +51,4 @@ export async function loadTemplate(templateName) {
             })
         );
     });
-})();
+})();*/

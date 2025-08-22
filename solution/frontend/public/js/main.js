@@ -234,7 +234,7 @@ async function init() {
         const urlParams = new URLSearchParams(window.location.search);
         const requestedView = urlParams.get('view');
         currentPage = 1;    // Always resets pagination
-        const initialData = await fetchMovies('recent', 0);
+        await fetchMovies('recent', 0);
 
         showMainView(mainView, detailView);
         await loadAndDisplayMoviesPage(0);
