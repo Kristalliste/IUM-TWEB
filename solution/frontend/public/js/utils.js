@@ -45,6 +45,19 @@ export function formatMovieDetails(movieData) {
     };
 }
 
+// Format movie reviews response to a consistent structure
+export function formatMovieReviews(movieReviewsData) {
+    return {
+        reviews: movieReviewsData.map(review => ({
+            critic_name: review.critic_name || 'Anonymous',
+            top_critic: review.top_critic || false,
+            review_date: review.review_date || '',
+            review_content: review.review_content || "The critic didn't leave any comment.",
+            normalized_score: review.normalized_score || 'N/A'
+        }))
+    };
+}
+
 export function escapeHTML(str) {
     return str.replace(/[&<>"']/g, function(match) {
         return {
@@ -107,19 +120,6 @@ export function capitalizeDescription(str) {
         .filter(sentence => sentence) // Remove any empty strings
         .join(' ')
         .trim();
-}
-
-// Format movie reviews response to a consistent structure
-export function formatMovieReviews(movieReviewsData) {
-    return {
-        reviews: movieReviewsData.map(review => ({
-            critic_name: review.critic_name || 'Anonymous',
-            top_critic: review.top_critic || false,
-            review_date: review.review_date || '',
-            review_content: review.review_content || "The critic didn't leave any comment.",
-            normalized_score: review.normalized_score || 'N/A'
-        }))
-    };
 }
 
 export const moviesPerPage = 10;
