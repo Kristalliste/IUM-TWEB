@@ -36,6 +36,6 @@ Swagger usage:
 
 For Express server debugging go to http://localhost:3000/api-docs
 
-For connector Express server debugging go to http://localhost:4000/api-docs
+For frontend/routes/index.js debugging go to http://localhost:4000/api-docs
 
 For Springboot server debugging go to http://localhost:8080/swagger-ui/index.html
