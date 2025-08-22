@@ -1,29 +1,7 @@
-/*import express from 'express';
-import connectorRoutes from './connector.js'; // Import your connector routes
-
-const router = express.Router();
-
-// Use the connector routes under the root path
-router.use('/', connectorRoutes);
-
-export default router;
-*/
-
-/*
-import axios from 'axios';
-
-*/
-
-
 import express from 'express';
 import axios from 'axios';
 
 const router = express.Router();
-
-/*
-var express = require('express');
-var router = express.Router();
-var axios = require('axios');*/
 
 // Constants Configuration
 const MONGO_API = process.env.MONGO_SERVER_URL || 'http://localhost:3000/api';
@@ -235,58 +213,46 @@ export const validateMovieId = (req, res, next) => {
     next();
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * @swagger
  * /movies:
- * get:
- * summary: Get paginated movies
- * tags: [Connector]
- * parameters:
- * - in: query
- * name: type
- * schema:
- * type: string
- * enum: [recent, top-rated]
- * default: recent
- * description: Type of movies to retrieve (recent or top-rated)
- * - in: query
- * name: page
- * schema:
- * type: integer
- * minimum: 0
- * default: 0
- * description: Page number (0-indexed)
- * - in: query
- * name: size
- * schema:
- * type: integer
- * minimum: 1
- * maximum: 100
- * default: 10
- * description: Number of items per page
- * responses:
- * 200:
- * description: Paginated movie list
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/PaginatedMovies'
- * 400:
- * description: Invalid request parameters
- * 500:
- * description: Server error
+ *   get:
+ *     summary: Get paginated movies
+ *     tags: [Movies]
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum: [recent, top-rated]
+ *           default: recent
+ *         description: Type of movies to retrieve (recent or top-rated)
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 0
+ *           default: 0
+ *         description: Page number (0-indexed)
+ *       - in: query
+ *         name: size
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 10
+ *         description: Number of items per page
+ *     responses:
+ *       200:
+ *         description: Paginated movie list
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedMovies'
+ *       400:
+ *         description: Invalid request parameters
+ *       500:
+ *         description: Server error
  */
 router.get('/movies', async (req, res, next) => {
     console.log('[GET /movies] Entered handler');
@@ -316,31 +282,30 @@ router.get('/movies', async (req, res, next) => {
     }
 });
 
-
 /**
  * @swagger
  * /movies/{id}:
- * get:
- * summary: Get movie details by ID
- * tags: [Connector]
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: integer
- * description: Numeric ID of the movie
- * responses:
- * 200:
- * description: Movie details
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Movie'
- * 404:
- * description: Movie not found
- * 500:
- * description: Server error
+ *   get:
+ *     summary: Get movie details by ID
+ *     tags: [Movies]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Numeric ID of the movie
+ *     responses:
+ *       200:
+ *         description: Movie details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Movie'
+ *       404:
+ *         description: Movie not found
+ *       500:
+ *         description: Server error
  */
 router.get('/movies/:id', validateMovieId, async (req, res, next) => {
     console.log('[GET /movies/:id] Entered handler');
@@ -359,60 +324,61 @@ router.get('/movies/:id', validateMovieId, async (req, res, next) => {
 /**
  * @swagger
  * /reviews/movies/{movie_title}:
- * get:
- * summary: Get reviews by movie title with validation
- * description: >
- * Fetches reviews for a specified movie title after validating the parameter.
- * Returns 400 if the movie title is missing or invalid.
- * parameters:
- * - name: movie_title
- * in: path
- * required: true
- * description: The movie title to fetch reviews for (non-empty string).
- * schema:
- * type: string
- * responses:
- * '200':
- * description: Reviews retrieved successfully.
- * content:
- * application/json:
- * schema:
- * type: array
- * items:
- * type: object
- * properties:
- * _id:
- * type: string
- * example: "60d21b4667d0d8992e610c85"
- * movie_title:
- * type: string
- * example: "Inception"
- * review_text:
- * type: string
- * example: "Amazing visual effects and story."
- * normalized_score:
- * type: number
- * example: 9.0
- * '400':
- * description: Invalid or missing movie title parameter.
- * content:
- * application/json:
- * schema:
- * type: object
- * properties:
- * error:
- * type: string
- * example: "Invalid or missing movieTitle parameter"
- * '500':
- * description: Server error while fetching reviews.
- * content:
- * application/json:
- * schema:
- * type: object
- * properties:
- * error:
- * type: string
- * example: "Failed to fetch reviews from Reviews Server"
+ *   get:
+ *     summary: Get reviews by movie title with validation
+ *     tags: [Reviews]
+ *     description: >
+ *       Fetches reviews for a specified movie title after validating the parameter.
+ *       Returns 400 if the movie title is missing or invalid.
+ *     parameters:
+ *       - name: movie_title
+ *         in: path
+ *         required: true
+ *         description: The movie title to fetch reviews for (non-empty string).
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Reviews retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "60d21b4667d0d8992e610c85"
+ *                   movie_title:
+ *                     type: string
+ *                     example: "Inception"
+ *                   review_text:
+ *                     type: string
+ *                     example: "Amazing visual effects and story."
+ *                   normalized_score:
+ *                     type: number
+ *                     example: 9.0
+ *       '400':
+ *         description: Invalid or missing movie title parameter.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid or missing movieTitle parameter"
+ *       '500':
+ *         description: Server error while fetching reviews.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to fetch reviews from Reviews Server"
  */
 router.get('/reviews/movies/:movie_title', async (req, res, next) => {
     console.log('[GET /reviews/movies/:movie_title] Entered handler');
@@ -434,77 +400,47 @@ router.get('/reviews/movies/:movie_title', async (req, res, next) => {
     }
 });
 
-
 /**
  * @swagger
- * paths:
  * /filteredMovies/{title}:
- * get:
- * summary: Get filtered movies by title with pagination
- * description: Retrieve a paginated list of movies that match the given title.
- * tags:
- * - Movies
- * parameters:
- * - name: title
- * in: path
- * required: true
- * description: The title (or partial title) of the movie to search for
- * schema:
- * type: string
- * - name: page
- * in: query
- * required: false
- * description: The page number for pagination (defaults to 0)
- * schema:
- * type: integer
- * default: 0
- * minimum: 0
- * - name: size
- * in: query
- * required: false
- * description: Number of results per page (defaults to 10)
- * schema:
- * type: integer
- * default: 10
- * minimum: 1
- * responses:
- * '200':
- * description: A list of filtered movies
- * content:
- * application/json:
- * schema:
- * type: object
- * properties:
- * content:
- * type: array
- * items:
- * type: object
- * properties:
- * id:
- * type: integer
- * example: 101
- * title:
- * type: string
- * example: "The Matrix"
- * release_year:
- * type: integer
- * example: 1999
- * genre:
- * type: string
- * example: "Science Fiction"
- * totalPages:
- * type: integer
- * example: 5
- * totalElements:
- * type: integer
- * example: 50
- * currentPage:
- * type: integer
- * example: 0
- * '400':
- * description: Missing or invalid title parameter
- * '500':
- * description: Internal server error
+ *   get:
+ *     summary: Get filtered movies by title with pagination
+ *     description: Retrieve a paginated list of movies that match the given title.
+ *     tags: [Movies]
+ *     parameters:
+ *       - name: title
+ *         in: path
+ *         required: true
+ *         description: The title (or partial title) of the movie to search for
+ *         schema:
+ *           type: string
+ *       - name: page
+ *         in: query
+ *         required: false
+ *         description: The page number for pagination (defaults to 0)
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *           minimum: 0
+ *       - name: size
+ *         in: query
+ *         required: false
+ *         description: Number of results per page (defaults to 10)
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *           minimum: 1
+ *     responses:
+ *       '200':
+ *         description: A list of filtered movies
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedMovies'
+ *       '400':
+ *         description: Missing or invalid title parameter
+ *       '500':
+ *         description: Internal server error
  */
 router.get('/filteredMovies/:title', async (req, res, next) => {
     console.log('[GET /filteredMovies/:title] Entered handler');
@@ -531,44 +467,42 @@ router.get('/filteredMovies/:title', async (req, res, next) => {
 
 /**
  * @swagger
- * paths:
  * /filteredByGenreMovies/{genre}:
- * get:
- * summary: Get movies filtered by genre
- * parameters:
- * - name: genre
- * in: path
- * required: true
- * description: Genre to filter movies by
- * schema:
- * type: string
- * - name: page
- * in: query
- * required: false
- * description: Page number (starting from 0)
- * schema:
- * type: integer
- * default: 0
- * - name: size
- * in: query
- * required: false
- * description: Number of results per page
- * schema:
- * type: integer
- * default: 10
- * responses:
- * 200:
- * description: List of movies by genre
- * content:
- * application/json:
- * schema:
- * type: array
- * items:
- * $ref: '#/components/schemas/Movie'
- * 400:
- * description: Genre query parameter is required
- * 500:
- * description: Internal server error
+ *   get:
+ *     summary: Get movies filtered by genre
+ *     tags: [Movies]
+ *     parameters:
+ *       - name: genre
+ *         in: path
+ *         required: true
+ *         description: Genre to filter movies by
+ *         schema:
+ *           type: string
+ *       - name: page
+ *         in: query
+ *         required: false
+ *         description: Page number (starting from 0)
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *       - name: size
+ *         in: query
+ *         required: false
+ *         description: Number of results per page
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *     responses:
+ *       200:
+ *         description: List of movies by genre
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedMovies'
+ *       400:
+ *         description: Genre query parameter is required
+ *       500:
+ *         description: Internal server error
  */
 router.get('/filteredByGenreMovies/:genre', async (req, res, next) => {
     console.log('[GET /filteredByGenreMovies/:genre] Entered handler');
@@ -596,42 +530,41 @@ router.get('/filteredByGenreMovies/:genre', async (req, res, next) => {
 /**
  * @swagger
  * /filteredByYearMovies/{year}:
- * get:
- * summary: Get movies filtered by year
- * parameters:
- * - name: year
- * in: path
- * required: true
- * description: Year to filter movies by
- * schema:
- * type: integer
- * - name: page
- * in: query
- * required: false
- * description: Page number (starting from 0)
- * schema:
- * type: integer
- * default: 0
- * - name: size
- * in: query
- * required: false
- * description: Number of results per page
- * schema:
- * type: integer
- * default: 10
- * responses:
- * 200:
- * description: List of movies by year
- * content:
- * application/json:
- * schema:
- * type: array
- * items:
- * $ref: '#/components/schemas/Movie'
- * 400:
- * description: Year parameter is required
- * 500:
- * description: Internal server error
+ *   get:
+ *     summary: Get movies filtered by year
+ *     tags: [Movies]
+ *     parameters:
+ *       - name: year
+ *         in: path
+ *         required: true
+ *         description: Year to filter movies by
+ *         schema:
+ *           type: integer
+ *       - name: page
+ *         in: query
+ *         required: false
+ *         description: Page number (starting from 0)
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *       - name: size
+ *         in: query
+ *         required: false
+ *         description: Number of results per page
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *     responses:
+ *       200:
+ *         description: List of movies by year
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedMovies'
+ *       400:
+ *         description: Year parameter is required
+ *       500:
+ *         description: Internal server error
  */
 router.get('/filteredByYearMovies/:year', async (req, res, next) => {
     console.log('[GET /filteredByYearMovies/:year] Entered handler');
@@ -659,42 +592,41 @@ router.get('/filteredByYearMovies/:year', async (req, res, next) => {
 /**
  * @swagger
  * /filteredByLanguageMovies/{language}:
- * get:
- * summary: Get movies filtered by language
- * parameters:
- * - name: language
- * in: path
- * required: true
- * description: Language to filter movies by
- * schema:
- * type: string
- * - name: page
- * in: query
- * required: false
- * description: Page number (starting from 0)
- * schema:
- * type: integer
- * default: 0
- * - name: size
- * in: query
- * required: false
- * description: Number of results per page
- * schema:
- * type: integer
- * default: 10
- * responses:
- * 200:
- * description: List of movies by language
- * content:
- * application/json:
- * schema:
- * type: array
- * items:
- * $ref: '#/components/schemas/Movie'
- * 400:
- * description: Language parameter is required
- * 500:
- * description: Internal server error
+ *   get:
+ *     summary: Get movies filtered by language
+ *     tags: [Movies]
+ *     parameters:
+ *       - name: language
+ *         in: path
+ *         required: true
+ *         description: Language to filter movies by
+ *         schema:
+ *           type: string
+ *       - name: page
+ *         in: query
+ *         required: false
+ *         description: Page number (starting from 0)
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *       - name: size
+ *         in: query
+ *         required: false
+ *         description: Number of results per page
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *     responses:
+ *       200:
+ *         description: List of movies by language
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedMovies'
+ *       400:
+ *         description: Language parameter is required
+ *       500:
+ *         description: Internal server error
  */
 router.get('/filteredByLanguageMovies/:language', async (req, res, next) => {
     try {
@@ -718,73 +650,60 @@ router.get('/filteredByLanguageMovies/:language', async (req, res, next) => {
 
 /**
  * @swagger
- * paths:
  * /filteredByActorMovies/{actor}:
- * get:
- * summary: Get paginated movies by actor
- * description: Returns a paginated list of movies filtered by the specified actor name.
- * tags:
- * - Movies
- * parameters:
- * - name: actor
- * in: path
- * required: true
- * description: Name of the actor to filter movies by
- * schema:
- * type: string
- * - name: page
- * in: query
- * required: false
- * description: Page number (starting from 0)
- * schema:
- * type: integer
- * minimum: 0
- * default: 0
- * - name: size
- * in: query
- * required: false
- * description: Number of results per page
- * schema:
- * type: integer
- * minimum: 1
- * default: 10
- * responses:
- * '200':
- * description: A list of movies featuring the specified actor
- * content:
- * application/json:
- * schema:
- * type: array
- * items:
- * type: object
- * properties:
- * title:
- * type: string
- * year:
- * type: integer
- * actors:
- * type: array
- * items:
- * type: string
- * '400':
- * description: Missing or invalid actor parameter
- * content:
- * application/json:
- * schema:
- * type: object
- * properties:
- * error:
- * type: string
- * example: Actor parameter is required.
- * '500':
- * description: Internal server error
- * content:
- * application/json:
- * schema:
- * type: object
- * properties:
- * error:
- * type: string
+ *   get:
+ *     summary: Get paginated movies by actor
+ *     description: Returns a paginated list of movies filtered by the specified actor name.
+ *     tags: [Movies]
+ *     parameters:
+ *       - name: actor
+ *         in: path
+ *         required: true
+ *         description: Name of the actor to filter movies by
+ *         schema:
+ *           type: string
+ *       - name: page
+ *         in: query
+ *         required: false
+ *         description: Page number (starting from 0)
+ *         schema:
+ *           type: integer
+ *           minimum: 0
+ *           default: 0
+ *       - name: size
+ *         in: query
+ *         required: false
+ *         description: Number of results per page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 10
+ *     responses:
+ *       '200':
+ *         description: A list of movies featuring the specified actor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedMovies'
+ *       '400':
+ *         description: Missing or invalid actor parameter
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Actor parameter is required."
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
  */
 router.get('/filteredByActorMovies/:actor', async (req, res, next) => {
     try {
@@ -805,19 +724,20 @@ router.get('/filteredByActorMovies/:actor', async (req, res, next) => {
 /**
  * @swagger
  * /genres:
- * get:
- * summary: Get all available movie genres
- * responses:
- * 200:
- * description: List of genres
- * content:
- * application/json:
- * schema:
- * type: array
- * items:
- * type: string
- * 500:
- * description: Internal server error
+ *   get:
+ *     summary: Get all available movie genres
+ *     tags: [Movies]
+ *     responses:
+ *       200:
+ *         description: List of genres
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: string
+ *       500:
+ *         description: Internal server error
  */
 router.get('/genres', async (req, res, next) => {
     try {
@@ -832,8 +752,5 @@ router.get('/genres', async (req, res, next) => {
         res.json({});
     }
 });
-
-
-
 
 export default router;

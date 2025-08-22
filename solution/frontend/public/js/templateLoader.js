@@ -6,7 +6,7 @@
  */
 export async function loadTemplate(templateName) {
     try {
-        // Fetch the template file from the templates directory
+        // Fetch the handlebars file
         const response = await axios.get(`../../views/${templateName}.hbs`);
         const templateText = response.data;
 
