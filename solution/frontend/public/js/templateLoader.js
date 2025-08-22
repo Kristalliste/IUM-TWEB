@@ -1,18 +1,10 @@
-// Simple in-memory cache for compiled Handlebars templates
-const templateCache = {};
 
 /**
  * Loads and compiles a Handlebars template asynchronously.
- * Caches the compiled template for future use.
  * @param {string} templateName - The name of the template file (without extension)
  * @returns {Promise<Function|null>} - The compiled template function or null if loading fails
  */
 export async function loadTemplate(templateName) {
-    if (templateCache[templateName]) {
-        // Return cached template if available
-        return templateCache[templateName];
-    }
-
     try {
         // Fetch the template file from the templates directory
         const response = await axios.get(`../templates/${templateName}.hbs`);
@@ -21,9 +13,6 @@ export async function loadTemplate(templateName) {
         // Compile it with Handlebars
         const template = Handlebars.compile(templateText);
 
-        // Cache the compiled template for future use
-        templateCache[templateName] = template;
-        return template;
     } catch (error) {
         // Log error and return null if loading fails
         console.error(`Error loading template: ${templateName}`, error);

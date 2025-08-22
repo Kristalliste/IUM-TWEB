@@ -1,28 +1,46 @@
-import axios from 'axios';
-import NodeCache from 'node-cache';
+/*import express from 'express';
+import connectorRoutes from './connector.js'; // Import your connector routes
 
-// --- Configuration Constants ---
+const router = express.Router();
+
+// Use the connector routes under the root path
+router.use('/', connectorRoutes);
+
+export default router;
+*/
+
+/*
+import axios from 'axios';
+
+*/
+
+
+import express from 'express';
+import axios from 'axios';
+
+const router = express.Router();
+
+/*
+var express = require('express');
+var router = express.Router();
+var axios = require('axios');*/
+
+// Constants Configuration
 const MONGO_API = process.env.MONGO_SERVER_URL || 'http://localhost:3000/api';
 const SPRING_API = process.env.SPRING_SERVER_URL || 'http://localhost:8080/api';
 
-// --- Cache Instance ---
-const cache = new NodeCache({ stdTTL: 300 });
 
-// --- Helper Functions (Internal to this controller) ---
+
+
+
+
+
 
 /**
- * Fetches a movie by its ID, using cache to avoid unnecessary API calls.
+ * Fetches a movie by its ID.
  */
 const fetchMovieByIdInternal = async (id) => {
-    const cacheKey = `movie_${id}`;
-
     try {
-        const cachedMovie = cache.get(cacheKey);
-        if (cachedMovie) {
-            console.log(`Returning cached movie ${id}`);
-            return cachedMovie;
-        }
-
         const response = await axios.get(`${SPRING_API}/movies/${id}`);
         const movieDTO = response.data;
 
@@ -40,7 +58,6 @@ const fetchMovieByIdInternal = async (id) => {
             hasOscar: movieDTO.hasOscar || false
         };
 
-        cache.set(cacheKey, transformedMovie);
         return transformedMovie;
 
     } catch (error) {
@@ -53,15 +70,7 @@ const fetchMovieByIdInternal = async (id) => {
  * Fetches a paginated list of movies by type (recent or top-rated) with caching.
  */
 const fetchMoviesPaginatedInternal = async (type, page = 0, size = 10) => {
-    const cacheKey = `movies_${type}_${page}_${size}`;
-
     try {
-        const cachedData = cache.get(cacheKey);
-        if (cachedData) {
-            console.log(`Returning cached ${type} movies page ${page}`);
-            return cachedData;
-        }
-
         let url;
         switch(type) {
             case 'recent':
@@ -100,7 +109,6 @@ const fetchMoviesPaginatedInternal = async (type, page = 0, size = 10) => {
             totalElements: pageData.totalElements
         };
 
-        cache.set(cacheKey, result);
         return result;
 
     } catch (error) {
@@ -133,19 +141,10 @@ const getReviewsFromReviewsServerInternal = async (movieTitle) => {
  * Fetches all genres from the Spring Boot API, with caching.
  */
 const fetchAllGenresInternal = async () => {
-    const cacheKey = 'all_genres';
-
     try {
-        const cachedGenres = cache.get(cacheKey);
-        if (cachedGenres) {
-            console.log('Returning cached genres');
-            return cachedGenres;
-        }
-
         const response = await axios.get(`${SPRING_API}/genres/allGenres`, { timeout: 5000 });
         const genres = response.data;
 
-        cache.set(cacheKey, genres);
         return genres;
 
     } catch (error) {
@@ -169,13 +168,6 @@ const fetchAllGenresInternal = async () => {
  * Supports filtered movie fetching, paginated, with caching.
  */
 const supportFilteredMoviesInternal = async (filterType, filterValue, page = 0, size = 10) => {
-    const cacheKey = `filteredMovies_${filterType}_${filterValue}_page_${page}_size_${size}`;
-    const cachedMovies = cache.get(cacheKey);
-    if (cachedMovies) {
-        console.log('Returning cached movies');
-        return cachedMovies;
-    }
-
     try {
         const response = await axios.get(`${SPRING_API}/movies/search/${filterType}`, {
             params: {
@@ -211,7 +203,6 @@ const supportFilteredMoviesInternal = async (filterType, filterValue, page = 0, 
             pageSize: pageData.size
         };
 
-        cache.set(cacheKey, result);
         return result;
 
     } catch (error) {
@@ -244,9 +235,60 @@ export const validateMovieId = (req, res, next) => {
     next();
 };
 
-// --- Controller Handler Functions (Exported for use by routes) ---
 
-export const getMoviesHandler = async (req, res, next) => {
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * @swagger
+ * /movies:
+ * get:
+ * summary: Get paginated movies
+ * tags: [Connector]
+ * parameters:
+ * - in: query
+ * name: type
+ * schema:
+ * type: string
+ * enum: [recent, top-rated]
+ * default: recent
+ * description: Type of movies to retrieve (recent or top-rated)
+ * - in: query
+ * name: page
+ * schema:
+ * type: integer
+ * minimum: 0
+ * default: 0
+ * description: Page number (0-indexed)
+ * - in: query
+ * name: size
+ * schema:
+ * type: integer
+ * minimum: 1
+ * maximum: 100
+ * default: 10
+ * description: Number of items per page
+ * responses:
+ * 200:
+ * description: Paginated movie list
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/PaginatedMovies'
+ * 400:
+ * description: Invalid request parameters
+ * 500:
+ * description: Server error
+ */
+router.get('/movies', async (req, res, next) => {
     console.log('[GET /movies] Entered handler');
     console.log('[GET /movies] req.query:', req.query);
 
@@ -272,9 +314,35 @@ export const getMoviesHandler = async (req, res, next) => {
         console.error('[GET /movies] Error:', error.message);
         res.json({});
     }
-};
+});
 
-export const getMovieByIdHandler = async (req, res, next) => {
+
+/**
+ * @swagger
+ * /movies/{id}:
+ * get:
+ * summary: Get movie details by ID
+ * tags: [Connector]
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * schema:
+ * type: integer
+ * description: Numeric ID of the movie
+ * responses:
+ * 200:
+ * description: Movie details
+ * content:
+ * application/json:
+ * schema:
+ * $ref: '#/components/schemas/Movie'
+ * 404:
+ * description: Movie not found
+ * 500:
+ * description: Server error
+ */
+router.get('/movies/:id', validateMovieId, async (req, res, next) => {
     console.log('[GET /movies/:id] Entered handler');
     console.log('[GET /movies/:id] req.params:', req.params);
 
@@ -286,9 +354,67 @@ export const getMovieByIdHandler = async (req, res, next) => {
         console.error('[GET /movies/:id] Error:', error.message);
         res.json({});
     }
-};
+});
 
-export const getReviewsByMovieTitleHandler = async (req, res, next) => {
+/**
+ * @swagger
+ * /reviews/movies/{movie_title}:
+ * get:
+ * summary: Get reviews by movie title with validation
+ * description: >
+ * Fetches reviews for a specified movie title after validating the parameter.
+ * Returns 400 if the movie title is missing or invalid.
+ * parameters:
+ * - name: movie_title
+ * in: path
+ * required: true
+ * description: The movie title to fetch reviews for (non-empty string).
+ * schema:
+ * type: string
+ * responses:
+ * '200':
+ * description: Reviews retrieved successfully.
+ * content:
+ * application/json:
+ * schema:
+ * type: array
+ * items:
+ * type: object
+ * properties:
+ * _id:
+ * type: string
+ * example: "60d21b4667d0d8992e610c85"
+ * movie_title:
+ * type: string
+ * example: "Inception"
+ * review_text:
+ * type: string
+ * example: "Amazing visual effects and story."
+ * normalized_score:
+ * type: number
+ * example: 9.0
+ * '400':
+ * description: Invalid or missing movie title parameter.
+ * content:
+ * application/json:
+ * schema:
+ * type: object
+ * properties:
+ * error:
+ * type: string
+ * example: "Invalid or missing movieTitle parameter"
+ * '500':
+ * description: Server error while fetching reviews.
+ * content:
+ * application/json:
+ * schema:
+ * type: object
+ * properties:
+ * error:
+ * type: string
+ * example: "Failed to fetch reviews from Reviews Server"
+ */
+router.get('/reviews/movies/:movie_title', async (req, res, next) => {
     console.log('[GET /reviews/movies/:movie_title] Entered handler');
     console.log('[GET /reviews/movies/:movie_title] req.params:', req.params);
 
@@ -306,9 +432,81 @@ export const getReviewsByMovieTitleHandler = async (req, res, next) => {
         console.error('[GET /reviews/movies/:movie_title] Error:', error.message);
         res.json({});
     }
-};
+});
 
-export const getFilteredMoviesByTitleHandler = async (req, res, next) => {
+
+/**
+ * @swagger
+ * paths:
+ * /filteredMovies/{title}:
+ * get:
+ * summary: Get filtered movies by title with pagination
+ * description: Retrieve a paginated list of movies that match the given title.
+ * tags:
+ * - Movies
+ * parameters:
+ * - name: title
+ * in: path
+ * required: true
+ * description: The title (or partial title) of the movie to search for
+ * schema:
+ * type: string
+ * - name: page
+ * in: query
+ * required: false
+ * description: The page number for pagination (defaults to 0)
+ * schema:
+ * type: integer
+ * default: 0
+ * minimum: 0
+ * - name: size
+ * in: query
+ * required: false
+ * description: Number of results per page (defaults to 10)
+ * schema:
+ * type: integer
+ * default: 10
+ * minimum: 1
+ * responses:
+ * '200':
+ * description: A list of filtered movies
+ * content:
+ * application/json:
+ * schema:
+ * type: object
+ * properties:
+ * content:
+ * type: array
+ * items:
+ * type: object
+ * properties:
+ * id:
+ * type: integer
+ * example: 101
+ * title:
+ * type: string
+ * example: "The Matrix"
+ * release_year:
+ * type: integer
+ * example: 1999
+ * genre:
+ * type: string
+ * example: "Science Fiction"
+ * totalPages:
+ * type: integer
+ * example: 5
+ * totalElements:
+ * type: integer
+ * example: 50
+ * currentPage:
+ * type: integer
+ * example: 0
+ * '400':
+ * description: Missing or invalid title parameter
+ * '500':
+ * description: Internal server error
+ */
+router.get('/filteredMovies/:title', async (req, res, next) => {
     console.log('[GET /filteredMovies/:title] Entered handler');
     console.log('[GET /filteredMovies/:title] req.params:', req.params);
     console.log('[GET /filteredMovies/:title] req.query:', req.query);
@@ -329,9 +527,50 @@ export const getFilteredMoviesByTitleHandler = async (req, res, next) => {
         console.error('[GET /filteredMovies/:title] Error:', error.message);
         res.json({});
     }
-};
+});
 
-export const getFilteredMoviesByGenreHandler = async (req, res, next) => {
+/**
+ * @swagger
+ * paths:
+ * /filteredByGenreMovies/{genre}:
+ * get:
+ * summary: Get movies filtered by genre
+ * parameters:
+ * - name: genre
+ * in: path
+ * required: true
+ * description: Genre to filter movies by
+ * schema:
+ * type: string
+ * - name: page
+ * in: query
+ * required: false
+ * description: Page number (starting from 0)
+ * schema:
+ * type: integer
+ * default: 0
+ * - name: size
+ * in: query
+ * required: false
+ * description: Number of results per page
+ * schema:
+ * type: integer
+ * default: 10
+ * responses:
+ * 200:
+ * description: List of movies by genre
+ * content:
+ * application/json:
+ * schema:
+ * type: array
+ * items:
+ * $ref: '#/components/schemas/Movie'
+ * 400:
+ * description: Genre query parameter is required
+ * 500:
+ * description: Internal server error
+ */
+router.get('/filteredByGenreMovies/:genre', async (req, res, next) => {
     console.log('[GET /filteredByGenreMovies/:genre] Entered handler');
     console.log('[GET /filteredByGenreMovies/:genre] req.params:', req.params);
     console.log('[GET /filteredByGenreMovies/:genre] req.query:', req.query);
@@ -352,9 +591,49 @@ export const getFilteredMoviesByGenreHandler = async (req, res, next) => {
         console.error('[GET /filteredByGenreMovies/:genre] Error:', error.message);
         res.json({});
     }
-};
+});
 
-export const getFilteredMoviesByYearHandler = async (req, res, next) => {
+/**
+ * @swagger
+ * /filteredByYearMovies/{year}:
+ * get:
+ * summary: Get movies filtered by year
+ * parameters:
+ * - name: year
+ * in: path
+ * required: true
+ * description: Year to filter movies by
+ * schema:
+ * type: integer
+ * - name: page
+ * in: query
+ * required: false
+ * description: Page number (starting from 0)
+ * schema:
+ * type: integer
+ * default: 0
+ * - name: size
+ * in: query
+ * required: false
+ * description: Number of results per page
+ * schema:
+ * type: integer
+ * default: 10
+ * responses:
+ * 200:
+ * description: List of movies by year
+ * content:
+ * application/json:
+ * schema:
+ * type: array
+ * items:
+ * $ref: '#/components/schemas/Movie'
+ * 400:
+ * description: Year parameter is required
+ * 500:
+ * description: Internal server error
+ */
+router.get('/filteredByYearMovies/:year', async (req, res, next) => {
     console.log('[GET /filteredByYearMovies/:year] Entered handler');
     console.log('[GET /filteredByYearMovies/:year] req.params:', req.params);
     console.log('[GET /filteredByYearMovies/:year] req.query:', req.query);
@@ -375,9 +654,49 @@ export const getFilteredMoviesByYearHandler = async (req, res, next) => {
         console.error('[GET /filteredByYearMovies/:year] Error:', error.message);
         res.json({});
     }
-};
+});
 
-export const getFilteredMoviesByLanguageHandler = async (req, res, next) => {
+/**
+ * @swagger
+ * /filteredByLanguageMovies/{language}:
+ * get:
+ * summary: Get movies filtered by language
+ * parameters:
+ * - name: language
+ * in: path
+ * required: true
+ * description: Language to filter movies by
+ * schema:
+ * type: string
+ * - name: page
+ * in: query
+ * required: false
+ * description: Page number (starting from 0)
+ * schema:
+ * type: integer
+ * default: 0
+ * - name: size
+ * in: query
+ * required: false
+ * description: Number of results per page
+ * schema:
+ * type: integer
+ * default: 10
+ * responses:
+ * 200:
+ * description: List of movies by language
+ * content:
+ * application/json:
+ * schema:
+ * type: array
+ * items:
+ * $ref: '#/components/schemas/Movie'
+ * 400:
+ * description: Language parameter is required
+ * 500:
+ * description: Internal server error
+ */
+router.get('/filteredByLanguageMovies/:language', async (req, res, next) => {
     try {
         const language = req.params.language;
         const page = parseInt(req.query.page) || 0;
@@ -395,9 +714,79 @@ export const getFilteredMoviesByLanguageHandler = async (req, res, next) => {
         console.error(`[ERROR] Failed to fetch movies by language: ${error.message}`);
         res.json({});
     }
-};
+});
 
-export const getFilteredMoviesByActorHandler = async (req, res, next) => {
+/**
+ * @swagger
+ * paths:
+ * /filteredByActorMovies/{actor}:
+ * get:
+ * summary: Get paginated movies by actor
+ * description: Returns a paginated list of movies filtered by the specified actor name.
+ * tags:
+ * - Movies
+ * parameters:
+ * - name: actor
+ * in: path
+ * required: true
+ * description: Name of the actor to filter movies by
+ * schema:
+ * type: string
+ * - name: page
+ * in: query
+ * required: false
+ * description: Page number (starting from 0)
+ * schema:
+ * type: integer
+ * minimum: 0
+ * default: 0
+ * - name: size
+ * in: query
+ * required: false
+ * description: Number of results per page
+ * schema:
+ * type: integer
+ * minimum: 1
+ * default: 10
+ * responses:
+ * '200':
+ * description: A list of movies featuring the specified actor
+ * content:
+ * application/json:
+ * schema:
+ * type: array
+ * items:
+ * type: object
+ * properties:
+ * title:
+ * type: string
+ * year:
+ * type: integer
+ * actors:
+ * type: array
+ * items:
+ * type: string
+ * '400':
+ * description: Missing or invalid actor parameter
+ * content:
+ * application/json:
+ * schema:
+ * type: object
+ * properties:
+ * error:
+ * type: string
+ * example: Actor parameter is required.
+ * '500':
+ * description: Internal server error
+ * content:
+ * application/json:
+ * schema:
+ * type: object
+ * properties:
+ * error:
+ * type: string
+ */
+router.get('/filteredByActorMovies/:actor', async (req, res, next) => {
     try {
         const actor = req.params.actor;
         const page = parseInt(req.query.page) || 0;
@@ -411,9 +800,26 @@ export const getFilteredMoviesByActorHandler = async (req, res, next) => {
     } catch (error) {
         res.json({});
     }
-};
+});
 
-export const getAllGenresHandler = async (req, res, next) => {
+/**
+ * @swagger
+ * /genres:
+ * get:
+ * summary: Get all available movie genres
+ * responses:
+ * 200:
+ * description: List of genres
+ * content:
+ * application/json:
+ * schema:
+ * type: array
+ * items:
+ * type: string
+ * 500:
+ * description: Internal server error
+ */
+router.get('/genres', async (req, res, next) => {
     try {
         console.log('[GET] /genres | Fetching all movie genres');
 
@@ -425,4 +831,9 @@ export const getAllGenresHandler = async (req, res, next) => {
         console.error(`[ERROR] Failed to fetch genres: ${error.message}`);
         res.json({});
     }
-};
+});
+
+
+
+
+export default router;

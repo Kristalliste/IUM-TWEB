@@ -1,5 +1,4 @@
 import Reviews from '../models/reviews.js';
-import ReviewsDTO from "../DTO/reviewsDTO.js";
 
 /**
  * Retrieves reviews by movie title.
@@ -12,13 +11,14 @@ async function getReviewsByMovieTitle(movieTitle) {
         // Regular expression for case-insensitive matching
         const reviews = await Reviews.find({ movie_title: new RegExp(movieTitle, 'i') });
         console.log(`Found ${reviews.length} reviews for movie title: "${movieTitle}"`);
+
         // Ensure reviews is an array before mapping to DTOs
         if (!Array.isArray(reviews)) {
             console.log("Reviews found is not an array, returning empty array.");
             return []; // Return an empty array if reviews is not an array
         }
-        // Map each review to a DTO for consistent data transfer
-        return reviews.map(review => new ReviewsDTO(review));
+
+        return reviews;
     } catch (err) {
         console.error(`Error fetching reviews for movie title "${movieTitle}": ` + err.message);
         throw new Error(`Error fetching reviews for movie title "${movieTitle}": ` + err.message);
