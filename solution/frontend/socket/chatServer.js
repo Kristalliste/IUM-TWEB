@@ -1,86 +1,97 @@
 import express from 'express';
-import { createServer } from 'http'; // HTTP Server Creation Module (Used by express)
+import { createServer } from 'http';
 import { Server } from 'socket.io';
-import path from 'path'; // Module to manage file paths
+import path from 'path';
 import { fileURLToPath } from 'url';
-import {methods} from "express/lib/utils.js";
-import cors from "cors"; // Used to get the current file path
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Create an express Application
+// Create express application
 const app = express();
 
-// Create an HTTP server from express (required to use with socket.io)
+// Create HTTP server
 const server = createServer(app);
 
-// Initialize socket.io with the server,
+// Initialize Socket.io with CORS configuration
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:63342", // Add your frontend origin
+        origin: "http://localhost:63342",
         methods: ["GET", "POST"]
     }
 });
 
-// Middleware to handle CORS and JSON
+// Middleware
 app.use(express.json());
-
-// Serve static files (like mainView.html) from the "client_server" folder
 app.use(express.static(path.join(__dirname, '../public/html')));
 
-// Default route to access directly
+// Default route
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../public/html', 'mainView.html'));
 });
 
-// Map to keep track of movie rooms and their users (currently unused, can be used for room management)
-const movieRooms = new Map();
-
-// Socket.io event handling
+// Socket.io connection handling
 io.on('connection', (socket) => {
-    console.log(` User connected: ${socket.id}`);
+    console.log('A user connected:', socket.id);
 
-    // Client can send "joinRoom" to join a specific room
+    // Join room event
     socket.on('joinRoom', ({ room, username }) => {
-        socket.join(room); // Join the specified room
-        socket.data = { room, username }; // Store user data in the socket instance
-
-        // Notification when entering the chat
+        socket.join(room);
+        // Broadcast join message to all users in the room
         io.to(room).emit('systemMessage', {
             type: 'join',
-            username,
-            room, // Include the room in the system message
+            username: username,
+            room: room,
             time: new Date().toISOString()
         });
     });
 
-    // Receives a chat message from a client and forwards it to everyone in the same room
+    // Chat message event
     socket.on('chatMessage', ({ room, message }) => {
+        const username = socket.username || 'Anonymous';
+        // Broadcast message to all users in room
         io.to(room).emit('message', {
-            username: socket.data.username, // Sender's username
-            message,
-            room,
+            username: username,
+            message: message,
+            room: room,
             time: new Date().toISOString()
         });
     });
 
-    // Handle user disconnection
+    // Leave room event
+    socket.on('leaveRoom', ({ room, username }) => {
+        // Broadcast leave message
+        io.to(room).emit('message', {
+            username: username,
+            message: 'has left the conversation',
+            room: room,
+            time: new Date().toISOString()
+        });
+        socket.leave(room);
+    });
+
+    // Store username when user joins (to maintain consistency)
+    socket.on('setUsername', (username) => {
+        socket.username = username;
+    });
+
+    // Disconnect event
     socket.on('disconnect', () => {
-        if (socket.data?.room && socket.data?.username) {
-            // Notify chat exit
-            io.to(socket.data.room).emit('systemMessage', {
+        console.log('A user disconnected:', socket.id);
+        // If we had stored room and username, send a disconnect message
+        if (socket.room && socket.username) {
+            io.to(socket.room).emit('systemMessage', {
                 type: 'leave',
-                username: socket.data.username,
-                room: socket.data.room,
+                username: socket.username,
+                room: socket.room,
                 time: new Date().toISOString()
             });
         }
-        console.log('User disconnected:', socket.id);
     });
 });
 
+// Start server
 const PORT = 3001;
 server.listen(PORT, () => {
-    console.log(`Chat server started on http://localhost:${PORT}`);
+    console.log(`Chat server listening on http://localhost:${PORT}`);
 });

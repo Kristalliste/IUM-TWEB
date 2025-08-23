@@ -11,7 +11,7 @@ export function renderUsernamePrompt(container, movieTitle, movieId) {
     currentRoom = movieId;
     container.innerHTML = `
         <div class="username-prompt">
-            <p> Choose your username or join anonymously.</p>
+            <p>Choose your username or join anonymously.</p>
             <input type="text" id="username-input" placeholder="Type your username..." maxlength="20">
             <div class="username-prompt-buttons">
                 <button id="anonymous-chat-btn">Join anonymously</button>
@@ -39,11 +39,11 @@ export function renderUsernamePrompt(container, movieTitle, movieId) {
     });
 }
 
-// Connects to the chat server and sets up event listeners
+// Connects to chat server
 function connectToChat(username, movieTitle, roomId) {
-    // Close all pre-existing connections
+    // Close existing connections
     if (socket) {
-        socket.removeAllListeners(); // Remove all listeners
+        socket.removeAllListeners();
         socket.disconnect();
         socket = null;
     }
@@ -52,23 +52,25 @@ function connectToChat(username, movieTitle, roomId) {
     socket = io('http://localhost:3001');
 
     socket.on('connect', () => {
-        currentUsername = username;
+        // Store username in socket session
+        socket.emit('setUsername', username);
+
+        // Join room
         socket.emit('joinRoom', {
             room: roomId,
             username: username
         });
-        // Render the appropriate chat interface based on room
-        if(roomId === 1){
+
+        // Render chat interface
+        if (roomId === 1) {
             renderChatInterface(document.getElementById('floating-chat-body'), movieTitle, username, roomId);
-        }else {
+        } else {
             renderChatInterface(document.getElementById('chat-wrapper'), movieTitle, username, roomId);
         }
-
     });
 
-    // Listen for incoming chat messages
+    // Listen for chat messages
     socket.on('message', (data) => {
-        // Only if we're in the correct room
         if (data.room === currentRoom) {
             appendMessage(data.username, data.message, data.time);
         }
@@ -76,19 +78,22 @@ function connectToChat(username, movieTitle, roomId) {
 
     // Listen for system messages (join/leave notifications)
     socket.on('systemMessage', (data) => {
-        // Only if we're in the correct room
         if (data.room === currentRoom) {
             const systemMsg = document.createElement('p');
             systemMsg.className = 'chat-system';
 
             if (data.type === 'join') {
-                systemMsg.textContent = `${data.username} joined the chat`;
+                // Don't show your join
+                if (data.username !== currentUsername) {
+                    systemMsg.textContent = `${data.username} joined the chat`;
+                    document.getElementById('chat-messages').appendChild(systemMsg);
+                    scrollToBottom();
+                }
             } else if (data.type === 'leave') {
-                systemMsg.textContent = `${data.username} left the chat chat`;
+                systemMsg.textContent = `${data.username} left the chat`;
+                document.getElementById('chat-messages').appendChild(systemMsg);
+                scrollToBottom();
             }
-
-            document.getElementById('chat-messages').appendChild(systemMsg);
-            scrollToBottom();
         }
     });
 
@@ -99,8 +104,7 @@ function connectToChat(username, movieTitle, roomId) {
 }
 
 export function renderChatInterface(container, movieTitle, username, roomId) {
-
-    if(roomId === 1){
+    if (roomId === 1) {
         container.innerHTML = `
         <div class="chat-username-display">
             You're chatting as: <strong>${escapeHTML(username)}</strong> | 
@@ -130,13 +134,13 @@ export function renderChatInterface(container, movieTitle, username, roomId) {
         `;
     }
 
-    
     const sendBtn = document.getElementById('send-chat-btn');
     const chatInput = document.getElementById('chat-input');
 
     const handleSendMessage = () => {
         const message = chatInput.value.trim();
-        if (message&& socket && socket.connected) {
+        if (message && socket && socket.connected) {
+            // Send message
             socket.emit('chatMessage', {
                 room: roomId,
                 message: message
@@ -144,7 +148,7 @@ export function renderChatInterface(container, movieTitle, username, roomId) {
             chatInput.value = '';
         }
     };
-    
+
     sendBtn.addEventListener('click', handleSendMessage);
     chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleSendMessage();
@@ -152,32 +156,44 @@ export function renderChatInterface(container, movieTitle, username, roomId) {
     chatInput.focus();
 }
 
-// Appends a new message to the chat window
+// Appends message to chat (now manages its messages better)
 function appendMessage(username, message, timestamp) {
     const chatMessages = document.getElementById('chat-messages');
     const messageEl = document.createElement('p');
 
     const time = new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    messageEl.innerHTML = `
-        <strong>${escapeHTML(username)}</strong>
-        <span class="message-time">[${time}]</span>: 
-        ${escapeHTML(message)}
-    `;
+
+    // If the message contains "has left the conversation", it is a system message.
+    if (message === 'has left the conversation') {
+        messageEl.className = 'chat-system';
+        messageEl.textContent = `${username} has left the conversation`;
+    } else {
+        // Normal message
+        const displayName = (username === currentUsername) ? "Me" : username;
+        messageEl.innerHTML = `
+            <strong>${escapeHTML(displayName)}</strong>
+            <span class="message-time">[${time}]</span>: 
+            ${escapeHTML(message)}
+        `;
+    }
 
     chatMessages.appendChild(messageEl);
     scrollToBottom();
 }
 
-// Scrolls the chat window to the bottom
+// Scrolls chat to bottom
 function scrollToBottom() {
     const chatMessages = document.getElementById('chat-messages');
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// Disconnects from the chat and resets state
+// Disconnect from chat
 export function disconnectChat() {
-    if (socket) {
-        socket.emit('leaveRoom', { room: currentRoom, username: currentUsername });
+    if (socket && currentRoom && currentUsername) {
+        socket.emit('leaveRoom', {
+            room: currentRoom,
+            username: currentUsername
+        });
         socket.disconnect();
         socket = null;
         currentRoom = null;
@@ -185,12 +201,12 @@ export function disconnectChat() {
     }
 }
 
-// Returns true if the current room is the general chat
+// Returns true if current room is general chat
 export function isGeneralChat() {
     return currentRoom === 1;
 }
 
-// Cleanup: disconnect from chat when the window is closed or refreshed
+// Cleanup on window close
 window.addEventListener('beforeunload', () => {
     disconnectChat();
 });
