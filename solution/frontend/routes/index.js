@@ -194,19 +194,6 @@ const supportFilteredMoviesInternal = async (filterType, filterValue, page = 0, 
     }
 };
 
-// --- Middleware (Exported for use by routes) ---
-export const validateMovieId = (req, res, next) => {
-    const id = Number(req.params.id);
-    console.log('[validateMovieId] req.params:', req.params);
-    if (isNaN(id) || id <= 0 || !Number.isInteger(id)) {
-        return res.status(400).json({
-            error: 'Invalid movie ID. Must be a positive integer'
-        });
-    }
-    req.validatedId = id;
-    next();
-};
-
 /**
  * @swagger
  * /movies:
@@ -301,13 +288,22 @@ router.get('/movies', async (req, res, next) => {
  *       500:
  *         description: Server error
  */
-router.get('/movies/:id', validateMovieId, async (req, res, next) => {
+router.get('/movies/:id', async (req, res, next) => {
     console.log('[GET /movies/:id] Entered handler');
     console.log('[GET /movies/:id] req.params:', req.params);
 
     try {
+        const id = Number(req.params.id);
+        console.log('[validateMovieId] req.params:', req.params);
+
+        if (isNaN(id) || id <= 0 || !Number.isInteger(id)) {
+            return res.status(400).json({
+                error: 'Invalid movie ID. Must be a positive integer'
+            });
+        }
+
         console.log('[GET /movies/:id] Calling fetchMovieByIdInternal');
-        const movie = await fetchMovieByIdInternal(req.validatedId);
+        const movie = await fetchMovieByIdInternal(id);
         res.json(movie);
     } catch (error) {
         console.error('[GET /movies/:id] Error:', error.message);
