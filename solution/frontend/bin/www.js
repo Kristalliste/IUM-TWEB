@@ -2,9 +2,10 @@
 
 /**
  * Module dependencies.
-*/
+ */
 import app from '../app.js'; // Import the main app instance
 import http from 'http';
+import { startChatServer } from '../socket/chatServer.js'; // Importa la funzione del chat server
 
 /**
  * Get port from environment and store in Express.
@@ -14,7 +15,7 @@ app.set('port', port);
 
 /**
  * Create HTTP server.
-*/
+ */
 const server = http.createServer(app);
 
 /**
@@ -23,6 +24,11 @@ const server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+/**
+ * Avvia il server di chat
+ */
+startChatServer();
 
 /**
  * Normalize a port into a number, string, or false.
