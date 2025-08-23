@@ -24,6 +24,7 @@ Installs:
 • In the connectorExpress directory, run : - npm install node and -npm install socket.io
 
 Running files:
+
 Finally, run these files, preferably in the following order:
 
 1. www.js in backend/express/bin;
