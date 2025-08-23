@@ -15,36 +15,6 @@ const swaggerSetup = (app, basePath) => {
                 url: basePath,
             },
         ],
-        components: {
-            schemas: {
-                Movie: {
-                    type: 'object',
-                    properties: {
-                        id: { type: 'integer', description: 'Movie ID' },
-                        title: { type: 'string', description: 'Movie title' },
-                        year: { type: 'integer', description: 'Release year' },
-                        posterUrl: { type: 'string', description: 'Movie poster URL' },
-                        description: { type: 'string', description: 'Movie description' },
-                        rating: { type: 'number', description: 'Movie rating' },
-                        minute: { type: 'integer', description: 'Movie duration in minutes' },
-                        actors: { type: 'array', items: { type: 'string' }, description: 'List of actors' },
-                        genres: { type: 'array', items: { type: 'string' }, description: 'List of genres' },
-                        languages: { type: 'array', items: { type: 'string' }, description: 'List of languages' },
-                        hasOscar: { type: 'boolean', description: 'Whether the movie has won an Oscar' }
-                    }
-                },
-                PaginatedMovies: {
-                    type: 'object',
-                    properties: {
-                        content: { type: 'array', items: { $ref: '#/components/schemas/Movie' } },
-                        totalPages: { type: 'integer', description: 'Total number of pages' },
-                        totalElements: { type: 'integer', description: 'Total number of elements' },
-                        currentPage: { type: 'integer', description: 'Current page number' },
-                        pageSize: { type: 'integer', description: 'Number of items per page' }
-                    }
-                }
-            }
-        },
         paths: {
             '/movies': {
                 get: {
@@ -71,14 +41,7 @@ const swaggerSetup = (app, basePath) => {
                         }
                     ],
                     responses: {
-                        200: {
-                            description: 'Paginated movie list',
-                            content: {
-                                'application/json': {
-                                    schema: { $ref: '#/components/schemas/PaginatedMovies' }
-                                }
-                            }
-                        },
+                        200: { description: 'Paginated movie list' },
                         400: { description: 'Invalid request parameters' },
                         500: { description: 'Server error' }
                     }
@@ -98,14 +61,7 @@ const swaggerSetup = (app, basePath) => {
                         }
                     ],
                     responses: {
-                        200: {
-                            description: 'Movie details',
-                            content: {
-                                'application/json': {
-                                    schema: { $ref: '#/components/schemas/Movie' }
-                                }
-                            }
-                        },
+                        200: { description: 'Movie details' },
                         404: { description: 'Movie not found' },
                         500: { description: 'Server error' }
                     }
@@ -125,25 +81,7 @@ const swaggerSetup = (app, basePath) => {
                         }
                     ],
                     responses: {
-                        200: {
-                            description: 'Reviews retrieved successfully',
-                            content: {
-                                'application/json': {
-                                    schema: {
-                                        type: 'array',
-                                        items: {
-                                            type: 'object',
-                                            properties: {
-                                                _id: { type: 'string', example: '60d21b4667d0d8992e610c85' },
-                                                movie_title: { type: 'string', example: 'Inception' },
-                                                review_text: { type: 'string', example: 'Amazing visual effects and story.' },
-                                                normalized_score: { type: 'number', example: 9.0 }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        },
+                        200: { description: 'Reviews retrieved successfully' },
                         400: { description: 'Invalid or missing movie title parameter' },
                         500: { description: 'Server error while fetching reviews' }
                     }
@@ -158,31 +96,21 @@ const swaggerSetup = (app, basePath) => {
                             in: 'path',
                             name: 'title',
                             required: true,
-                            schema: { type: 'string' },
-                            description: 'Title to search for'
+                            schema: { type: 'string' }
                         },
                         {
                             in: 'query',
                             name: 'page',
-                            schema: { type: 'integer', default: 0 },
-                            description: 'Page number'
+                            schema: { type: 'integer', default: 0 }
                         },
                         {
                             in: 'query',
                             name: 'size',
-                            schema: { type: 'integer', default: 10 },
-                            description: 'Page size'
+                            schema: { type: 'integer', default: 10 }
                         }
                     ],
                     responses: {
-                        200: {
-                            description: 'Filtered movies',
-                            content: {
-                                'application/json': {
-                                    schema: { $ref: '#/components/schemas/PaginatedMovies' }
-                                }
-                            }
-                        }
+                        200: { description: 'Filtered movies' }
                     }
                 }
             },
@@ -195,31 +123,21 @@ const swaggerSetup = (app, basePath) => {
                             in: 'path',
                             name: 'genre',
                             required: true,
-                            schema: { type: 'string' },
-                            description: 'Genre to filter by'
+                            schema: { type: 'string' }
                         },
                         {
                             in: 'query',
                             name: 'page',
-                            schema: { type: 'integer', default: 0 },
-                            description: 'Page number'
+                            schema: { type: 'integer', default: 0 }
                         },
                         {
                             in: 'query',
                             name: 'size',
-                            schema: { type: 'integer', default: 10 },
-                            description: 'Page size'
+                            schema: { type: 'integer', default: 10 }
                         }
                     ],
                     responses: {
-                        200: {
-                            description: 'Movies by genre',
-                            content: {
-                                'application/json': {
-                                    schema: { $ref: '#/components/schemas/PaginatedMovies' }
-                                }
-                            }
-                        }
+                        200: { description: 'Movies by genre' }
                     }
                 }
             },
@@ -232,31 +150,21 @@ const swaggerSetup = (app, basePath) => {
                             in: 'path',
                             name: 'year',
                             required: true,
-                            schema: { type: 'integer' },
-                            description: 'Year to filter by'
+                            schema: { type: 'integer' }
                         },
                         {
                             in: 'query',
                             name: 'page',
-                            schema: { type: 'integer', default: 0 },
-                            description: 'Page number'
+                            schema: { type: 'integer', default: 0 }
                         },
                         {
                             in: 'query',
                             name: 'size',
-                            schema: { type: 'integer', default: 10 },
-                            description: 'Page size'
+                            schema: { type: 'integer', default: 10 }
                         }
                     ],
                     responses: {
-                        200: {
-                            description: 'Movies by year',
-                            content: {
-                                'application/json': {
-                                    schema: { $ref: '#/components/schemas/PaginatedMovies' }
-                                }
-                            }
-                        }
+                        200: { description: 'Movies by year' }
                     }
                 }
             },
@@ -269,31 +177,21 @@ const swaggerSetup = (app, basePath) => {
                             in: 'path',
                             name: 'language',
                             required: true,
-                            schema: { type: 'string' },
-                            description: 'Language to filter by'
+                            schema: { type: 'string' }
                         },
                         {
                             in: 'query',
                             name: 'page',
-                            schema: { type: 'integer', default: 0 },
-                            description: 'Page number'
+                            schema: { type: 'integer', default: 0 }
                         },
                         {
                             in: 'query',
                             name: 'size',
-                            schema: { type: 'integer', default: 10 },
-                            description: 'Page size'
+                            schema: { type: 'integer', default: 10 }
                         }
                     ],
                     responses: {
-                        200: {
-                            description: 'Movies by language',
-                            content: {
-                                'application/json': {
-                                    schema: { $ref: '#/components/schemas/PaginatedMovies' }
-                                }
-                            }
-                        }
+                        200: { description: 'Movies by language' }
                     }
                 }
             },
@@ -306,31 +204,21 @@ const swaggerSetup = (app, basePath) => {
                             in: 'path',
                             name: 'actor',
                             required: true,
-                            schema: { type: 'string' },
-                            description: 'Actor name to filter by'
+                            schema: { type: 'string' }
                         },
                         {
                             in: 'query',
                             name: 'page',
-                            schema: { type: 'integer', default: 0 },
-                            description: 'Page number'
+                            schema: { type: 'integer', default: 0 }
                         },
                         {
                             in: 'query',
                             name: 'size',
-                            schema: { type: 'integer', default: 10 },
-                            description: 'Page size'
+                            schema: { type: 'integer', default: 10 }
                         }
                     ],
                     responses: {
-                        200: {
-                            description: 'Movies by actor',
-                            content: {
-                                'application/json': {
-                                    schema: { $ref: '#/components/schemas/PaginatedMovies' }
-                                }
-                            }
-                        }
+                        200: { description: 'Movies by actor' }
                     }
                 }
             },
@@ -339,17 +227,7 @@ const swaggerSetup = (app, basePath) => {
                     summary: 'Get all available movie genres',
                     tags: ['Movies'],
                     responses: {
-                        200: {
-                            description: 'List of genres',
-                            content: {
-                                'application/json': {
-                                    schema: {
-                                        type: 'array',
-                                        items: { type: 'string' }
-                                    }
-                                }
-                            }
-                        },
+                        200: { description: 'List of genres' },
                         500: { description: 'Internal server error' }
                     }
                 }
@@ -357,10 +235,9 @@ const swaggerSetup = (app, basePath) => {
         }
     };
 
-    // Since we're defining everything manually, we don't need to scan files
     const options = {
         definition: swaggerDefinition,
-        apis: [] // Empty since we're not scanning files
+        apis: []
     };
 
     const specs = swaggerJsDoc(options);
