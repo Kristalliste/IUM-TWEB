@@ -28,9 +28,8 @@ Finally, run these files, preferably in the following order:
 
 1. www.js in backend/express/bin;
 2. MoviesProjectApplication in backend/springboot/moviesProject;
-3. ChatServer.js in fronend/socket;
-4. www.js in frontend/bin;
-5. mainViev.html in frontend/public/html.
+3. www.js in frontend/bin;
+4. mainViev.html in frontend/public/html.
 
 Swagger usage:
 
