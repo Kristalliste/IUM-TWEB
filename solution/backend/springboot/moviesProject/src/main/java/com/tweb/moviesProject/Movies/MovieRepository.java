@@ -1,6 +1,5 @@
 package com.tweb.moviesProject.Movies;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,8 +30,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             nativeQuery = true)
     Page<Movie> findByGenreIgnoreCase(@Param("genre")String genre, Pageable pageable);
 
-    // Cache the result of retrieving all movies (for performance)
-    @Cacheable("moviesCache")
     @Query(value = "SELECT * FROM \"Movies\"",
             countQuery = "SELECT count(*) FROM \"Movies\" ",
             nativeQuery = true)
