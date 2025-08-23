@@ -20,11 +20,11 @@ const io = new Server(server);
 app.use(express.json());
 
 // Serve static files (like mainView.html) from the "client_server" folder
-app.use(express.static(path.join(__dirname, '../../../frontend/client_server')));
+app.use(express.static(path.join(__dirname, '../public/html')));
 
 // Default route to access directly
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../../frontend/client_server', 'mainView.html'));
+    res.sendFile(path.join(__dirname, '../public/html', 'mainView.html'));
 });
 
 // Map to keep track of movie rooms and their users (currently unused, can be used for room management)
