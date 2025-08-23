@@ -2,7 +2,9 @@ import express from 'express';
 import { createServer } from 'http'; // HTTP Server Creation Module (Used by express)
 import { Server } from 'socket.io';
 import path from 'path'; // Module to manage file paths
-import { fileURLToPath } from 'url'; // Used to get the current file path
+import { fileURLToPath } from 'url';
+import {methods} from "express/lib/utils.js";
+import cors from "cors"; // Used to get the current file path
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,7 +16,12 @@ const app = express();
 const server = createServer(app);
 
 // Initialize socket.io with the server,
-const io = new Server(server);
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:63342", // Add your frontend origin
+        methods: ["GET", "POST"]
+    }
+});
 
 // Middleware to handle CORS and JSON
 app.use(express.json());
