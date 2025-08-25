@@ -1,9 +1,8 @@
-import { formatMovieDetails, formatMovieReviews } from './utils.js';
+import { formatMovieDetails, formatMovieReviews, loadTemplate } from './utils.js';
 import { renderUsernamePrompt } from './chat.js';
-import { fetchMovieDetails, fetchMovieReviews } from './api.js';
-import { loadTemplate } from './templateLoader.js';
-import { initSearch } from './searchMain.js';
-import { reattachSearchListeners } from './modalHandler.js';
+import {fetchAllGenres, fetchMovieDetails, fetchMovieReviews} from './api.js';
+import { attachSearchListeners } from './modalHandler.js';
+import { searchMovies } from './main.js';
 
 // Helper function to clear active states
 function clearActiveNavLinks() {
@@ -44,7 +43,8 @@ export async function showAdvancedSearch(mainView, detailView) {
         await initSearch();
 
         // Attach search listeners after rendering
-        reattachSearchListeners();
+        //reattachSearchListeners();
+        attachSearchListeners();
 
         // Set up back button
         const backButton = document.createElement('button');
@@ -90,8 +90,9 @@ export async function showDetailView(movieId, mainView, detailView) {
     `;
 
     try {
-        const movieData = await fetchMovieDetails(movieId);
-        const formattedMovie = formatMovieDetails(movieData);
+        /*const movieData = await fetchMovieDetails(movieId);
+        const formattedMovie = formatMovieDetails(movieData);*/
+        const formattedMovie = await fetchMovieDetails(movieId);
 
         const movieReviews = await fetchMovieReviews(formattedMovie.originalTitle);
         const formattedReviews = formatMovieReviews(movieReviews);
@@ -233,4 +234,141 @@ export async function renderMovies(movieList, movieGrid, mainView, detailView) {
         });
         movieGrid.insertAdjacentHTML('beforeend', html);
     });
+}
+
+export async function initSearch() {
+    const searchType = document.getElementById("search-type");
+    const searchInput = document.getElementById("search-input");
+    const searchGenre = document.getElementById("search-genre");
+    let genresList = ["Select a genre"];
+
+    // Load genres from the API and populate the dropdown
+    async function loadGenres() {
+        try {
+            let genres = await fetchAllGenres();
+            genresList.push(...genres);
+            populateGenreDropdown();
+        } catch (error) {
+            console.error("Error loading genres:", error);
+        }
+    }
+
+    // Populate the genre dropdown with the fetched genres
+    function populateGenreDropdown() {
+        searchGenre.innerHTML = "";
+        genresList.forEach(genre => {
+            const option = document.createElement("option");
+            option.value = genre;
+            option.textContent = genre;
+            searchGenre.appendChild(option);
+        });
+    }
+
+    // Handle search type change (e.g., show/hide input or genre dropdown)
+    searchType.addEventListener("change", () => {
+        const type = searchType.value;
+        if (type === "GENRE") {
+            searchInput.style.display = "none";
+            searchGenre.style.display = "inline-block";
+            populateGenreDropdown();
+        } else {
+            searchGenre.style.display = "none";
+            searchInput.style.display = "inline-block";
+        }
+    });
+
+    // Search button click event
+    document.getElementById('search-button').addEventListener('click', () => {
+        searchMovies(0);
+    });
+
+    await loadGenres();
+}
+
+
+/// PAGINATION ----------------------------
+
+// Main function to display a page of movies with pagination controls
+export function displayMoviePage(movieList, paginationContainer,movieGrid, currentPage, totalPages, mainView, detailView, onPageChange) {
+    renderMovies(movieList, movieGrid, mainView, detailView);
+
+    renderPagination(totalPages, paginationContainer, currentPage, onPageChange);
+    window.scrollTo(0, 0);
+}
+
+// Improved pagination rendering
+export function renderPagination( totalPages, paginationContainer, currentPage, onPageChange) {
+    paginationContainer.innerHTML = '';
+    if (totalPages <= 1) return;
+
+    const pagination = document.createElement('div');
+    pagination.className = 'pagination';
+
+    // Previous button
+    if (currentPage > 1) {
+        const prevButton = createPaginationButton('←', () => {
+            // Convert to 0-indexed for backend
+            onPageChange(currentPage - 2);
+        });
+        pagination.appendChild(prevButton);
+    }
+
+    // Always show first page
+    const firstPageButton = createPaginationButton(1, () => {
+        onPageChange(0);  // Page 0 for backend
+    }, currentPage === 1);
+    pagination.appendChild(firstPageButton);
+
+    // Calculate page range to show
+    let startPage = Math.max(2, currentPage - 3);
+    let endPage = Math.min(totalPages - 1, currentPage + 3);
+
+    // Show ellipsis if needed before middle pages
+    if (startPage > 2) {
+        const ellipsis = document.createElement('span');
+        ellipsis.className = 'ellipsis';
+        ellipsis.textContent = '…';
+        pagination.appendChild(ellipsis);
+    }
+
+    // Middle pages (current page ±3)
+    for (let i = startPage; i <= endPage; i++) {
+        const pageButton = createPaginationButton(i, () => {
+            onPageChange(i - 1);  // Convert to 0-indexed
+        }, i === currentPage);
+        pagination.appendChild(pageButton);
+    }
+
+    // Show ellipsis if needed after middle pages
+    if (endPage < totalPages - 1) {
+        const ellipsis = document.createElement('span');
+        ellipsis.className = 'ellipsis';
+        ellipsis.textContent = '…';
+        pagination.appendChild(ellipsis);
+    }
+
+    // Always show last page if there is more than one page
+    if (totalPages > 1) {
+        const lastPageButton = createPaginationButton(totalPages, () => {
+            onPageChange(totalPages - 1);  // Last page 0-indexed
+        }, currentPage === totalPages);
+        pagination.appendChild(lastPageButton);
+    }
+
+    // Next button
+    if (currentPage < totalPages) {
+        const nextButton = createPaginationButton('→', () => {
+            onPageChange(currentPage);  // currentPage is 1-indexed, so next is same as current
+        });
+        pagination.appendChild(nextButton);
+    }
+    paginationContainer.appendChild(pagination);
+}
+
+function createPaginationButton(text, onClick, isActive = false) {
+    const button = document.createElement('button');
+    button.textContent = text;
+    button.addEventListener('click', onClick);
+    if (isActive) button.classList.add('active');
+    return button;
 }

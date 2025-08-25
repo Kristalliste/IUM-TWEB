@@ -1,30 +1,12 @@
-import {API_BASE_URL, formatMovieDetails} from './utils.js';
+import {API_BASE_URL, formatMovieDetails, loadTemplate} from './utils.js';
 import {showDetailView} from './views.js';
-import { loadTemplate } from './templateLoader.js';
 import { disconnectChat, isGeneralChat } from './chat.js';
+import {fetchMovieDetails} from "./api.js";
 
 // Get modal element and its content container
 const modal = document.getElementById('movieModal');
 const modalContent = modal?.querySelector('.modal-content');
 
-// Fetch movie details from API and format them
-export async function loadMovieDetails(movieId) {
-    try {
-        const response = await axios.get(`${API_BASE_URL}/movies/${movieId}`);
-        return formatMovieDetails(response.data);
-    } catch (error) {
-        console.error("Fetch error:", error);
-        // Return a default error object if fetch fails
-        return {
-            title: "Error Loading Movie",
-            description: error.message,
-            rating: 0,
-            posterUrl: "https://placehold.co/300x450?text=Error+Loading",
-            year: 'N/A',
-            hasOscar: false
-        };
-    }
-}
 
 // Show the modal with movie details
 export async function showModal(movieId) {
@@ -40,7 +22,7 @@ export async function showModal(movieId) {
     document.body.style.overflow = 'hidden';
 
     try {
-        const movie = await loadMovieDetails(movieId);
+        const movie = await fetchMovieDetails(movieId);
         const template = await loadTemplate('modal-template');
 
         if (!template) {
@@ -135,6 +117,7 @@ export function attachModalListeners() {
 document.addEventListener('DOMContentLoaded', attachModalListeners);
 
 // Reattach search listeners when advanced search is loaded
+/*
 export function reattachSearchListeners() {
     attachSearchListeners();
-}
+}*/

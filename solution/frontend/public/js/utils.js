@@ -1,5 +1,6 @@
 // Connector server URL
 export const API_BASE_URL = 'http://localhost:4000/api';
+export const moviesPerPage = 10;
 
 // Add debounce function
 export function debounce(func, wait) {
@@ -122,4 +123,24 @@ export function capitalizeDescription(str) {
         .trim();
 }
 
-export const moviesPerPage = 10;
+/**
+ * Loads and compiles a Handlebars template asynchronously.
+ * @param {string} templateName - The name of the template file (without extension)
+ * @returns {Promise<Function|null>} - The compiled template function or null if loading fails
+ */
+export async function loadTemplate(templateName) {
+    try {
+        // Fetch the handlebars file
+        const response = await axios.get(`../../views/${templateName}.hbs`);
+        const templateText = response.data;
+
+        // Compile it with Handlebars
+        const template = Handlebars.compile(templateText);
+
+        return template;
+    } catch (error) {
+        // Log error and return null if loading fails
+        console.error(`Error loading template: ${templateName}`, error);
+        return null;
+    }
+}
