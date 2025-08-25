@@ -1,8 +1,8 @@
-import { API_BASE_URL, debounce, moviesPerPage, formatMovieData } from './utils.js';
-import { showMainView, showAdvancedSearch} from './views.js';
-import { displayMoviePage } from './pagination.js';
+import { API_BASE_URL, debounce, moviesPerPage, formatMovieData, loadTemplate } from './utils.js';
+import { showMainView, showAdvancedSearch, displayMoviePage} from './views.js';
 import { renderUsernamePrompt, disconnectChat } from "./chat.js";
-import { loadTemplate } from './templateLoader.js';
+import { fetchMovies, fetchFilteredByTitleMovies, fetchFilteredMovies } from './api.js';
+import {attachSearchListeners} from './modalHandler.js';
 
 // DOM elements
 const movieGrid = document.getElementById('movie-grid');
@@ -25,42 +25,9 @@ const floatingChatBody = document.getElementById('floating-chat-body');
 // State
 let currentPage = 1;
 let currentView = 'recent'; // 'recent', 'top-rated', 'search'
-let currentSearchTerm = '';
+//let currentSearchTerm = '';
 let totalPages = 1;
 
-// Fetch movies from the API with pagination and type (recent, top-rated, etc.)
-async function fetchMovies(type, page = 0, query = '') {
-    try {
-        let url = `${API_BASE_URL}/movies`;
-        const params = new URLSearchParams({
-            page,
-            size: moviesPerPage
-        });
-
-        params.append('type', type);
-
-        const response = await axios.get(`${API_BASE_URL}/movies`, { params });
-        const data = response.data;
-
-        // If response is an array (for recent movies)
-        if (Array.isArray(data)) {
-            return {
-                content: data,
-                totalPages: Math.ceil(data.length / moviesPerPage),
-                totalElements: data.length
-            };
-        }
-        // If response is paginated object
-        else if (data.content) {
-            return data;
-        }
-        // Fallback for unexpected formats
-        return { content: [], totalPages: 1, totalElements: 0 };
-    } catch (error) {
-        console.error(`Error fetching ${type} movies:`, error);
-        return { content: [], totalPages: 1, totalElements: 0 };
-    }
-}
 
 // Loads and displays a page of movies in the grid
 async function loadAndDisplayMoviesPage(page = 0) {
@@ -68,7 +35,7 @@ async function loadAndDisplayMoviesPage(page = 0) {
     let data;
     console.log('Fetching movies page...');
     if (currentView === 'search') {
-        data = await loadFilteredByTitleMovies(page);
+        data = await fetchFilteredByTitleMovies(page);
     } else {
         data = await fetchMovies(currentView, page);
     }
@@ -89,45 +56,6 @@ async function loadAndDisplayMoviesPage(page = 0) {
             loadAndDisplayMoviesPage(pageIndex);
         }
     );
-}
-
-// Fetch movies filtered by title, with pagination
-async function loadFilteredByTitleMovies(page = 0) {
-    try {
-        const title = document.getElementById("searchInput").value;
-       // if(title == null || title === "") { return; }
-        if (!title) return { content: [], totalPages: 1, totalElements: 0 };
-
-        // URL-encode the title for use in the path
-        const encodedTitle = encodeURIComponent(title);
-        const response = await axios.get(
-            `${API_BASE_URL}/filteredMovies/${encodedTitle}`,
-            {
-                params: {
-                    page,
-                    size: moviesPerPage
-                }
-            }
-        );
-
-        const data = response.data;
-
-        // If response is an array
-        if (Array.isArray(data)) {
-            return {
-                content: data,
-                totalPages: Math.ceil(data.length / moviesPerPage),
-                totalElements: data.length
-            };
-        }
-        else if (data.content) {    // If response is paginated object
-            return data;
-        }
-        return { content: [], totalPages: 1, totalElements: 0 };    // Fallback for unexpected formats
-    } catch (error) {
-        console.error('Error fetching filtered movies:', error);
-        return { content: [], totalPages: 1, totalElements: 0, error: error.message };
-    }
 }
 
 // Set the active navigation link in the UI
@@ -231,8 +159,8 @@ async function init() {
 
         movieGrid.innerHTML = '<p class="loading">Loading Films...</p>';
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const requestedView = urlParams.get('view');
+        //const urlParams = new URLSearchParams(window.location.search);
+        //const requestedView = urlParams.get('view');
         currentPage = 1;    // Always resets pagination
         await fetchMovies('recent', 0);
 
@@ -257,3 +185,58 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Unhandled initialization error:', error);
     });
 });
+
+// Main function to search movies based on selected filter and page
+export async function searchMovies(page = 0) {
+    try {
+        const type = document.getElementById("search-type").value;
+        currentPage = page + 1;
+
+        let data;
+        // Determine which filter to use based on search type
+        if (type === "YEAR") {
+            currentView = 'year';
+            data = await fetchFilteredMovies(page, currentView);
+        } else if (type === "GENRE") {
+            currentView = 'genre';
+            data = await fetchFilteredMovies(page, currentView);
+        } else if (type === "LANGUAGE") {
+            currentView = 'language';
+            data = await fetchFilteredMovies(page, currentView);
+        } else if (type === "ACTOR") {
+            currentView = 'actor';
+            data = await fetchFilteredMovies(page, currentView);
+        }
+
+        // Handle no results
+        if (!data || !data.content || data.content.length === 0) {
+            document.getElementById('movie-grid-search').innerHTML = '<p class="no-results">No films found</p>';
+            document.getElementById('pagination-container-search').innerHTML = '';
+            return;
+        }
+        // Format movies for display
+        const formattedMovies = data.content.map(movie => formatMovieData(movie));
+        totalPages = data.totalPages;
+
+        // Display movies and pagination
+        displayMoviePage(
+            formattedMovies,
+            document.getElementById('pagination-container-search'),
+            document.getElementById('movie-grid-search'),
+            currentPage,
+            totalPages,
+            document.querySelector('main'),
+            document.getElementById('movie-detail-view-search'),
+            (pageIndex) => {
+                searchMovies(pageIndex);
+            }
+        );
+
+        // Reattach event listeners for dynamically loaded search results
+        //reattachSearchListeners();
+        attachSearchListeners();
+    } catch (error) {
+        console.error('Error during movie search:', error);
+        document.getElementById('movie-grid-search').innerHTML = '<p class="error-message">Failed to load movies. Please try again.</p>';
+    }
+}
