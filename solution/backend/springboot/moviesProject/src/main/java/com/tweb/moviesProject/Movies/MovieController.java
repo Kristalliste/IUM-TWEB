@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,42 +26,49 @@ public class MovieController {
     @Operation(summary = "Get paginated movies by title (case insensitive)")
     @GetMapping("/search/title")
     public ResponseEntity<Page<MovieDTO>> getMoviesByTitle(@RequestParam String title, Pageable pageable) {
-        Page<MovieDTO> movies = movieService.findByTitleIgnoreCaseDTO(title, pageable);
+        // Create a new Pageable without sorting to let the query handle ordering
+        Pageable unsortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        Page<MovieDTO> movies = movieService.findByTitleIgnoreCaseDTO(title, unsortedPageable);
         return ResponseEntity.ok(movies);
     }
 
     @Operation(summary = "Get paginated movies by release year")
     @GetMapping("/search/year")
     public ResponseEntity<Page<MovieDTO>> getMoviesByYear(@RequestParam Integer year, Pageable pageable) {
-        Page<MovieDTO> movies = movieService.findByYearDTO(year, pageable);
+        Pageable unsortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        Page<MovieDTO> movies = movieService.findByYearDTO(year, unsortedPageable);
         return ResponseEntity.ok(movies);
     }
 
     @Operation(summary = "Get paginated movies by genre")
     @GetMapping("/search/genre")
     public ResponseEntity<Page<MovieDTO>> getMoviesByGenre(@RequestParam String genre, Pageable pageable) {
-        Page<MovieDTO> movies = movieService.findByGenreIgnoreCaseDTO(genre, pageable);
+        Pageable unsortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        Page<MovieDTO> movies = movieService.findByGenreIgnoreCaseDTO(genre, unsortedPageable);
         return ResponseEntity.ok(movies);
     }
 
     @Operation(summary = "Get paginated movies by language")
     @GetMapping("/search/language")
     public ResponseEntity<Page<MovieDTO>> getMoviesByLanguage(@RequestParam String language, Pageable pageable) {
-        Page<MovieDTO> movies = movieService.findByLanguageIgnoreCaseDTO(language, pageable);
+        Pageable unsortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        Page<MovieDTO> movies = movieService.findByLanguageIgnoreCaseDTO(language, unsortedPageable);
         return ResponseEntity.ok(movies);
     }
 
     @Operation(summary = "Get paginated movies by actor")
     @GetMapping("/search/actor")
     public ResponseEntity<Page<MovieDTO>> getMoviesByActor(@RequestParam String actor, Pageable pageable) {
-        Page<MovieDTO> movies = movieService.findByActorIgnoreCase(actor, pageable);
+        Pageable unsortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        Page<MovieDTO> movies = movieService.findByActorIgnoreCase(actor, unsortedPageable);
         return ResponseEntity.ok(movies);
     }
 
     @Operation(summary = "Get paginated list of all movies")
     @GetMapping
     public ResponseEntity<Page<MovieDTO>> getAllMovies(Pageable pageable) {
-        Page<MovieDTO> movies = movieService.getAllMoviesDTO(pageable);
+        Pageable unsortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        Page<MovieDTO> movies = movieService.getAllMoviesDTO(unsortedPageable);
         return ResponseEntity.ok(movies);
     }
 
@@ -75,14 +83,16 @@ public class MovieController {
     @Operation(summary = "Get paginated recent movies")
     @GetMapping("/recent")
     public ResponseEntity<Page<MovieDTO>> getRecentMovies(Pageable pageable) {
-        Page<MovieDTO> movies = movieService.getAllMoviesOrderedByDateDescDTO(pageable);
+        Pageable unsortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        Page<MovieDTO> movies = movieService.getAllMoviesOrderedByDateDescDTO(unsortedPageable);
         return ResponseEntity.ok(movies);
     }
 
     @Operation(summary = "Get paginated top rated movies")
     @GetMapping("/top-rated")
     public ResponseEntity<Page<MovieDTO>> getTopRatedMovies(Pageable pageable) {
-        Page<MovieDTO> movies = movieService.getAllMoviesOrderedByRatingDescDTO(pageable);
+        Pageable unsortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        Page<MovieDTO> movies = movieService.getAllMoviesOrderedByRatingDescDTO(unsortedPageable);
         return ResponseEntity.ok(movies);
     }
 }
