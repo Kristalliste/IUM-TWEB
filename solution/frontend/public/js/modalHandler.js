@@ -1,4 +1,4 @@
-import {API_BASE_URL, formatMovieDetails, loadTemplate} from './utils.js';
+import {loadTemplate} from './utils.js';
 import {showDetailView} from './views.js';
 import { disconnectChat, isGeneralChat } from './chat.js';
 import {fetchMovieDetails} from "./api.js";
@@ -116,8 +116,3 @@ export function attachModalListeners() {
 // Initialize once when DOM is loaded
 document.addEventListener('DOMContentLoaded', attachModalListeners);
 
-// Reattach search listeners when advanced search is loaded
-/*
-export function reattachSearchListeners() {
-    attachSearchListeners();
-}*/

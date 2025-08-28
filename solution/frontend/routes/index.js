@@ -16,7 +16,7 @@ const fetchMovieByIdInternal = async (id) => {
         const response = await axios.get(`${SPRING_API}/movies/${id}`);
         const movieDTO = response.data;
 
-        const transformedMovie = {
+        return {
             id: movieDTO?.movieId || 0,
             title: movieDTO?.name || 'Unknown',
             year: movieDTO?.date ? new Date(movieDTO.date).getUTCFullYear() : 0,
@@ -29,8 +29,6 @@ const fetchMovieByIdInternal = async (id) => {
             languages: movieDTO.languages || [],
             hasOscar: movieDTO.hasOscar || false
         };
-
-        return transformedMovie;
 
     } catch (error) {
         console.error(`Failed to fetch movie ${id}:`, error);
@@ -56,15 +54,11 @@ const fetchMoviesPaginatedInternal = async (type, page = 0, size = 10) => {
         }
 
         const response = await axios.get(url, {
-            params: {
-                page,
-                size
-            },
+            params: { page, size },
             timeout: 10000
         });
 
         const pageData = response.data;
-
         const transformedMovies = pageData.content.map(movieDTO => ({
             id: movieDTO.movieId,
             title: movieDTO.name,
@@ -75,13 +69,11 @@ const fetchMoviesPaginatedInternal = async (type, page = 0, size = 10) => {
             rating: movieDTO.rating || 0.0
         }));
 
-        const result = {
+        return {
             content: transformedMovies,
             totalPages: pageData.totalPages,
             totalElements: pageData.totalElements
         };
-
-        return result;
 
     } catch (error) {
         console.error(`Failed to fetch ${type} movies:`, error);
@@ -115,9 +107,7 @@ const getReviewsFromReviewsServerInternal = async (movieTitle) => {
 const fetchAllGenresInternal = async () => {
     try {
         const response = await axios.get(`${SPRING_API}/genres/allGenres`, { timeout: 5000 });
-        const genres = response.data;
-
-        return genres;
+        return response.data;
 
     } catch (error) {
         console.error('Failed to fetch genres:', {
@@ -142,11 +132,7 @@ const fetchAllGenresInternal = async () => {
 const supportFilteredMoviesInternal = async (filterType, filterValue, page = 0, size = 10) => {
     try {
         const response = await axios.get(`${SPRING_API}/movies/search/${filterType}`, {
-            params: {
-                [filterType]: filterValue,
-                page,
-                size
-            },
+            params: { [filterType]: filterValue, page, size },
             timeout: 10000
         });
 
@@ -167,15 +153,13 @@ const supportFilteredMoviesInternal = async (filterType, filterValue, page = 0, 
             hasOscar: movieDTO.hasOscar || false
         }));
 
-        const result = {
+        return {
             content: transformedMovies,
             totalPages: pageData.totalPages,
             totalElements: pageData.totalElements,
             currentPage: pageData.number,
             pageSize: pageData.size
         };
-
-        return result;
 
     } catch (error) {
         console.error(`Failed to fetch movies by ${filterType}:`, {

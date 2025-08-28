@@ -32,7 +32,6 @@ export async function fetchMovieReviews(movieTitle) {
 // Fetch movies from the API with pagination and type (recent, top-rated, etc.)
 export async function fetchMovies(type, page = 0, query = '') {
     try {
-        let url = `${API_BASE_URL}/movies`;
         const params = new URLSearchParams({
             page,
             size: moviesPerPage

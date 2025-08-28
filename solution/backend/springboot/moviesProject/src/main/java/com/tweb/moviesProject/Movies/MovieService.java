@@ -139,9 +139,7 @@ public class MovieService {
     public MovieDTO getMovieDetails(Long movieId) {
         logger.debug("Fetching details for movie: {}", movieId);
 
-        Movie movie = movieRepository.findById(movieId).orElseThrow(() -> {
-            throw new EntityNotFoundException("Movie with id " + movieId + " doesn't exist");
-        });
+        Movie movie = movieRepository.findById(movieId).orElseThrow(() -> new EntityNotFoundException("Movie with id " + movieId + " doesn't exist"));
         try {
             // Fetch related data for the movie
             String posterUrl = posterService.getPosterByMovieId(movieId);

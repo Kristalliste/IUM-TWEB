@@ -236,6 +236,7 @@ export async function renderMovies(movieList, movieGrid, mainView, detailView) {
     });
 }
 
+/// ADVANCED SEARCH
 export async function initSearch() {
     const searchType = document.getElementById("search-type");
     const searchInput = document.getElementById("search-input");

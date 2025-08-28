@@ -29,7 +29,7 @@ export function formatMovieData(movie) {
 export function formatMovieDetails(movieData) {
     return {
         id: movieData.id,
-        title: toTitleCase(movieData.title) || 'Unkonwn',
+        title: toTitleCase(movieData.title) || 'Unknown',
         originalTitle: movieData.title || 'Unknown', // we keep the original titles to look for its reviews
         year: movieData.year || 0,
         minute: movieData.minute || 0,
@@ -135,9 +135,7 @@ export async function loadTemplate(templateName) {
         const templateText = response.data;
 
         // Compile it with Handlebars
-        const template = Handlebars.compile(templateText);
-
-        return template;
+        return Handlebars.compile(templateText);
     } catch (error) {
         // Log error and return null if loading fails
         console.error(`Error loading template: ${templateName}`, error);
