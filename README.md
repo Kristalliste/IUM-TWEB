@@ -13,7 +13,7 @@ Language level: 20 - No new language features.
 
 Data Bases: We uploaded on Google Drive the exports of the two databases:
 - backup dbTWEB.sql for PostgreSQL
-- MongoDB TWEB.reviews.json for MongDB
+- MongoDB TWEB.reviews.json for MongoDB
   
 at the following link: https://drive.google.com/drive/folders/1Qja4sgJ0SL4IggdNUxnNAPXd_bWQi6rX?usp=drive_link
 
